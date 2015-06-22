@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>  
+<selector xmlns:android="http://schemas.android.com/apk/res/android">  
+    <item android:state_checked="true"   
+        android:drawable="@drawable/check_yes" /><!--選中時效果-->  
+    <item android:state_checked="false"   
+        android:drawable="@drawable/check_null" /><!--未選中時效果-->  
+  <!-- 修改成自己的圖片 -->  
+</selector>  

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget79"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" 
+    android:background="@drawable/bg_photomovie">
+
+	<TableRow
+        
+        android:id="@+id/widget149"
+        android:layout_width="fill_parent"
+        android:layout_height="292dp"
+        android:layout_weight="0.62"
+        android:orientation="horizontal" >
+
+        <ImageSwitcher
+	        android:id="@+id/imgSw2"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content" >
+
+    	</ImageSwitcher>
+	</TableRow>
+        <ImageButton
+            android:id="@+id/btn_play"
+            android:layout_width="15pt"
+            android:layout_height="15pt"
+            android:scaleType="centerInside"
+            android:background="@null"            
+            android:src="@drawable/speaker_black" 
+            android:onClick="onPlay"
+            android:visibility="gone" >
+      	</ImageButton>
+      	
+	
+
+	    <HorizontalScrollView
+	        android:id="@+id/honScview"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content" >
+	
+	        <LinearLayout
+	            android:id="@+id/anogallery"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:orientation="horizontal" >
+
+	        </LinearLayout>
+	    </HorizontalScrollView>
+
+    
+ 
+	<TextView
+	    android:id="@+id/text_sec"
+	    android:layout_width="wrap_content"
+	    android:layout_height="26dp"
+	    android:text="秒數：1"
+	    android:textSize="16sp" />
+
+	<SeekBar
+	    android:id="@+id/seekBar_sec"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:max="9"
+	    android:enabled="false" />
+
+    <TableRow
+        android:id="@+id/widget153"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btn_addPic"
+            android:layout_width="105dp"
+            android:layout_height="wrap_content"
+            android:text="加入圖片" />
+
+        <Button
+            android:id="@+id/btn_addMus"
+            android:layout_width="105dp"
+            android:layout_height="wrap_content"
+            android:text="加入音樂" />
+
+        <Button
+            android:id="@+id/btn_addSpe"
+            android:layout_width="105dp"
+            android:layout_height="wrap_content"
+            android:text="加入語音" 
+            android:enabled="false"/>
+    </TableRow>
+
+    <Button
+        android:id="@+id/btn_generate"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="產生電影" />
+
+</LinearLayout>
