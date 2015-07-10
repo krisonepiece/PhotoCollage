@@ -16,6 +16,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -28,6 +29,7 @@ import android.os.Message;
 import android.speech.SpeechRecognizer;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -63,12 +65,15 @@ public class MainActivity extends Activity implements ViewFactory{
 	private ImageSwitcher imgSwi2;		//圖片選擇器
 	private int currentPhoto;			//當前選擇的照片編號
 	private final static int MUSIC = 11 ;
+	private int photoCount = 0;
 	//上傳圖片
 	//private HttpPhotoUpload photoUpload = new HttpPhotoUpload("http://192.168.0.100/php/UploadPhoto.php", user);
 	private HttpPhotoUpload photoUpload = new HttpPhotoUpload("http://140.134.26.13/PhotoCollage/php/UploadPhoto.php", user);
 	//增加語音
 	private AlertDialog dialog;
     private ImageButton record_button;
+    private Button record_ok;
+    private Button record_cancel;
     private boolean isRecording = false;
     private ProgressBar record_volumn;
     private MyRecoder myRecoder;
@@ -94,6 +99,8 @@ public class MainActivity extends Activity implements ViewFactory{
 		login_view = inflater.inflate(R.layout.activity_record,null);
 		record_button = (ImageButton)login_view.findViewById(R.id.record_button);
         record_volumn = (ProgressBar)login_view.findViewById(R.id.record_volumn);
+        record_ok = (Button)login_view.findViewById(R.id.record_ok);
+        record_cancel = (Button)login_view.findViewById(R.id.record_cancel);
         btnPlay = (ImageButton)findViewById(R.id.btn_play);
 	}
 
@@ -105,12 +112,12 @@ public class MainActivity extends Activity implements ViewFactory{
     	//titleTV = (TextView) findViewById(R.id.text_bar);
 		initializeVariables();				
 		//圖片畫廊
-		linelay = (LinearLayout)findViewById(R.id.anogallery);
-        
+		linelay = (LinearLayout)findViewById(R.id.anogallery);        
         imgSwi2 = (ImageSwitcher)findViewById(R.id.imgSw2);
         imgSwi2.setFactory(this);
         imgSwi2.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
         imgSwi2.setOutAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_out));  
+        pList = new ArrayList<Photo>();
         /*
         for(int i=0; i < thumbImgArr.length; i++)
         {
@@ -120,8 +127,7 @@ public class MainActivity extends Activity implements ViewFactory{
         //加入圖片
         btnAddPic.setOnClickListener(new OnClickListener() {			
 			@Override
-			public void onClick(View v) {
-				pList = new ArrayList<Photo>();
+			public void onClick(View v) {								
 				Intent intent = new Intent(MainActivity.this, com.fcu.imagepicker.PhotoWallActivity.class);
 		        startActivity(intent);				
 			}
@@ -147,9 +153,9 @@ public class MainActivity extends Activity implements ViewFactory{
 			public void onClick(View v) {
 				if(btnAddSpe.getText().equals("加入語音")){
 					dialog.show();
-					pList.get( currentPhoto ).setRecPath("/sdcard/" + fileName);	//儲存語音路徑
-					btnPlay.setVisibility(View.VISIBLE);
-					btnAddSpe.setText("移除語音");
+					//pList.get( currentPhoto ).setRecPath("/sdcard/" + fileName);	//儲存語音路徑
+					//btnPlay.setVisibility(View.VISIBLE);
+					//btnAddSpe.setText("移除語音");
 				}
 				else{
 					fileName = currentPhoto + ".3gp";
@@ -197,13 +203,13 @@ public class MainActivity extends Activity implements ViewFactory{
 			
 			@Override
 			public void onStopTrackingTouch(SeekBar seekBar) {
-				// TODO Auto-generated method stub
+
 				
 			}
 			
 			@Override
 			public void onStartTrackingTouch(SeekBar seekBar) {
-				// TODO Auto-generated method stub
+
 				
 			}
 			
@@ -219,21 +225,26 @@ public class MainActivity extends Activity implements ViewFactory{
 	/**
 	 *  點選縮圖事件
 	 */
-	private ImageView getImageView(int i){
+	private ImageView getImageView(int i, int pCount){
 		//讀取手機解析度
-		mPhone = new DisplayMetrics();
-	    getWindowManager().getDefaultDisplay().getMetrics(mPhone);
+		//mPhone = new DisplayMetrics();
+	    //getWindowManager().getDefaultDisplay().getMetrics(mPhone);
 	    
 	    ImageView img = new ImageView(this);
-        //img.setImageResource(thumbImgArr[i]);
+	    img.setBackgroundColor(Color.BLACK);	//設定 ImageView 背景顏色
+	    img.setPadding(5, 2, 5, 2);	//設定 ImageView 內縮
+	    //將 ImageView 置中
+	    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);  
+	    lp.gravity = Gravity.CENTER;
+	    img.setLayoutParams(lp);
+
         File imgFile = new File(paths.get(i));
-        //*************圖片壓縮
-        //Bitmap myBitmap = ScalePicEx(imgFile.getAbsolutePath(), 70f, 70f);
-        Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-        Bitmap sBitmap = ScalePic(myBitmap, 1.3f, 1.4f);        
+        //圖片壓縮
+        Bitmap myBitmap = ScalePicEx(imgFile.getAbsolutePath(), 768, 1024);
+        //Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+        //Bitmap sBitmap = ScalePic(myBitmap, 1.3f, 1.4f);
         img.setImageBitmap(myBitmap);
-        //img.setImageResource(paths.indexOf(i));
-        img.setId(i);
+        img.setId(pCount);
         img.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v)
             {
@@ -241,13 +252,16 @@ public class MainActivity extends Activity implements ViewFactory{
             	btnAddSpe.setEnabled(true);
             	seekBarSec.setEnabled(true);
                 //imgSwi2.setImageResource(imgArr[v.getId()]);
-            	File sFile = new File(paths.get(currentPhoto));
-            	fileName = currentPhoto + ".3gp";
-            	File gpFile = new File("/sdcard/" + fileName);
-            	seekBarSec.setProgress(pList.get(currentPhoto).getSec() - 1);	//設定SeekBar秒數
+            	//File sFile = new File(paths.get(currentPhoto));
+            	//fileName = currentPhoto + ".3gp";
+            	//File gpFile = new File("/sdcard/" + fileName);
+            	Log.i("onClickView", Integer.toString(currentPhoto));
+            	seekBarSec.setProgress(pList.get(currentPhoto).getSec() - 1);	//設定SeekBar秒數            	
+                record_ok.setEnabled(false);//隱藏確定按鈕
             	//判斷加入語音
             	if( pList.get(currentPhoto).getRecPath() == null ){
-                    btnPlay.setVisibility(View.INVISIBLE);
+            		//隱藏播放圖示
+                    btnPlay.setVisibility(View.INVISIBLE);                    
                     Log.i("TEST", "File not exist");
                     //加入語音
                     btnAddSpe.setText("加入語音");
@@ -260,9 +274,10 @@ public class MainActivity extends Activity implements ViewFactory{
             	}
             	//btnAddSpe.setId(v.getId());
             	//Bitmap sBitmap = ScalePicEx(sFile.getAbsolutePath(), 800f, 500f);
-            	Bitmap sBitmap = ScalePic(BitmapFactory.decodeFile(sFile.getAbsolutePath()), 12, 17);
+            	
+            	/*Bitmap sBitmap = ScalePic(BitmapFactory.decodeFile(sFile.getAbsolutePath()), 12, 17);
             	Drawable sDrawable = new BitmapDrawable(getResources(), sBitmap);
-                imgSwi2.setImageDrawable(sDrawable);
+                imgSwi2.setImageDrawable(sDrawable);*/
                 Toast.makeText(v.getContext(), "您選擇了"+( currentPhoto + 1 ), Toast.LENGTH_SHORT).show();                
             }
         });
@@ -286,10 +301,19 @@ public class MainActivity extends Activity implements ViewFactory{
      * @return
      */
     public Bitmap ScalePic(Bitmap bitmap, float w, float h){
-    	int width = bitmap.getWidth();
-    	int height = bitmap.getHeight();
-    	Matrix matrix = new Matrix();
-    	matrix.postScale(w, h);
+    	//轉換為圖片指定大小
+        //獲得圖片的寬高
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        // 設置想要的大小
+        int newWidth = 800;
+        int newHeight = 600;
+        // 計算缩放比例
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        // 取得想要缩放的matrix參數
+        Matrix matrix = new Matrix();
+        matrix.postScale(scaleWidth, scaleHeight);
     	Bitmap bmResult = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, false);
     	return bmResult;
     }
@@ -300,13 +324,27 @@ public class MainActivity extends Activity implements ViewFactory{
      * @param w
      * @return
      */
-    public Bitmap ScalePicEx(String path, float h, float w){
-    	BitmapFactory.Options options =new BitmapFactory.Options();
+    public Bitmap ScalePicEx(String path, int height, int width){
+
+        BitmapFactory.Options opts = null;  
+        opts = new BitmapFactory.Options();  
+        opts.inJustDecodeBounds = true;  
+        BitmapFactory.decodeFile(path, opts);  
+        // 計算圖片縮放比例 
+        final int minSideLength = Math.min(width, height);  
+        opts.inSampleSize = computeSampleSize(opts, minSideLength,  
+                width * height);  
+        opts.inJustDecodeBounds = false;  
+        opts.inInputShareable = true;  
+        opts.inPurgeable = true;  
+        return BitmapFactory.decodeFile(path, opts);  
+
+    	/*BitmapFactory.Options options =new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         Bitmap bitmap = BitmapFactory.decodeFile(path, options);
         options.inJustDecodeBounds = false;
 	    //計算縮放比
-	    int be = (int)(options.outHeight/ h);
+	    int be = (int)(options.outHeight / h);
 	    if (be <= 0)
 	    	be = 1;
 	    options.inSampleSize = be;
@@ -315,9 +353,49 @@ public class MainActivity extends Activity implements ViewFactory{
 	    int wg = bitmap.getWidth();
 	    int hg = bitmap.getHeight();
 	    Log.i("PIC",wg + "," + hg);
-	    return bitmap;
+	    return bitmap;*/
     }
-    
+    public static int computeSampleSize(BitmapFactory.Options options,  
+            int minSideLength, int maxNumOfPixels) {  
+        int initialSize = computeInitialSampleSize(options, minSideLength,  
+                maxNumOfPixels);  
+      
+        int roundedSize;  
+        if (initialSize <= 8) {  
+            roundedSize = 1;  
+            while (roundedSize < initialSize) {  
+                roundedSize <<= 1;  
+            }  
+        } else {  
+            roundedSize = (initialSize + 7) / 8 * 8;  
+        }  
+      
+        return roundedSize;  
+    }  
+      
+    private static int computeInitialSampleSize(BitmapFactory.Options options,  
+            int minSideLength, int maxNumOfPixels) {  
+        double w = options.outWidth;  
+        double h = options.outHeight;  
+      
+        int lowerBound = (maxNumOfPixels == -1) ? 1 : (int) Math.ceil(Math  
+                .sqrt(w * h / maxNumOfPixels));  
+        int upperBound = (minSideLength == -1) ? 128 : (int) Math.min(Math  
+                .floor(w / minSideLength), Math.floor(h / minSideLength));  
+      
+        if (upperBound < lowerBound) {  
+            // return the larger one when there is no overlapping zone.  
+            return lowerBound;  
+        }  
+      
+        if ((maxNumOfPixels == -1) && (minSideLength == -1)) {  
+            return 1;  
+        } else if (minSideLength == -1) {  
+            return lowerBound;  
+        } else {  
+            return upperBound;  
+        }  
+    }  
     /**
      * 取得路徑
      */
@@ -331,8 +409,8 @@ public class MainActivity extends Activity implements ViewFactory{
         }
         Bundle bundle = intent.getExtras();        
         paths = bundle.getStringArrayList("paths1");
-        Log.i("PHOTO - URI",paths.get(0));
-    	for(int i=0; i < paths.size(); i++){
+        Log.i("PHOTO - URI",paths.get(0));        
+    	for(int i = 0; i < paths.size(); i++){
     		Photo tmpP = new Photo(paths.get(i), null, 1, 3, 0, 1);
     		//取得拍攝日期    		
     		try {
@@ -360,8 +438,10 @@ public class MainActivity extends Activity implements ViewFactory{
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
-    		pList.add(tmpP);	//將相片加入相片群
-    		linelay.addView(getImageView(i));
+    		pList.add(tmpP);	//將相片加入相片群    		
+    		linelay.addView(getImageView(i,photoCount));
+    		Log.i("ADD-PHOTO",Integer.toString(photoCount));
+    		photoCount++;
     	}
 
     }
@@ -390,7 +470,10 @@ public class MainActivity extends Activity implements ViewFactory{
             // 讀取使用者輸入的標題與內容
             /*String titleText = title_text.getText().toString();
             String contentText = content_text.getText().toString();*/
- 
+        	pList.get( currentPhoto ).setRecPath("/sdcard/" + fileName);	//儲存語音路徑
+			btnPlay.setVisibility(View.VISIBLE);
+			btnAddSpe.setText("移除語音");
+			record_ok.setEnabled(false);//隱藏確定按鈕
             // 取得回傳資料用的Intent物件
             Intent result = getIntent();
             // 設定標題與內容
@@ -399,6 +482,9 @@ public class MainActivity extends Activity implements ViewFactory{
  
             // 設定回應結果為確定
             setResult(Activity.RESULT_OK, result);
+        }
+        else if(view.getId() == R.id.record_cancel) {
+        	record_ok.setEnabled(false);//隱藏確定按鈕
         }
  
         // 結束
@@ -415,6 +501,9 @@ public class MainActivity extends Activity implements ViewFactory{
  
         // 開始錄音
         if (isRecording) {
+        	//錄音中，關閉確定和取消按鈕
+        	record_ok.setEnabled(false);
+        	record_cancel.setEnabled(false);
             // 設定按鈕圖示為錄音中
             record_button.setImageResource(R.drawable.record_red_icon);
             // 建立錄音物件
@@ -425,9 +514,9 @@ public class MainActivity extends Activity implements ViewFactory{
             //new MicLevelTask().execute();
             
     		 
-          //開始辨識，將此code移到某個按鈕的onClick()裡            
-          //  sr.startListening(recognizerIntent);
-
+            //開始辨識，將此code移到某個按鈕的onClick()裡            
+            //  sr.startListening(recognizerIntent);
+            
         }
         // 停止錄音
         else {
@@ -437,11 +526,15 @@ public class MainActivity extends Activity implements ViewFactory{
             record_volumn.setProgress(0);
             // 停止錄音
             myRecoder.stop();
-          //停止辨識，將此code移到某個按鈕的onClick()裡
-          //我們平常不需要做這個處理，語音辨識完畢它自己會停
-          //但如果我們想中斷它，或者有異常發生時，就可以呼叫底下的程式碼
-          //sr.stopListening();
-          //sr.cancel();
+            //錄音完成，開啟確定和取消按鈕
+            record_cancel.setEnabled(true);
+            record_ok.setEnabled(true);
+            
+	        //停止辨識，將此code移到某個按鈕的onClick()裡
+	        //我們平常不需要做這個處理，語音辨識完畢它自己會停
+	        //但如果我們想中斷它，或者有異常發生時，就可以呼叫底下的程式碼
+	        //sr.stopListening();
+	        //sr.cancel();            
         }
     } 
     

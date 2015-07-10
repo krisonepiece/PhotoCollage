@@ -6,7 +6,7 @@ import java.util.Date;
 public class Photo {
 	private int pid;			//相片編號
 	private String pname;		//相片名稱
-	private String takeDate;		//拍攝日期
+	private String takeDate;	//拍攝日期
 	private String pPath;		//相片路徑
 	private String recPath;		//語音路徑
 	private int albumID;		//相簿編號

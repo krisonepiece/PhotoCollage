@@ -45,6 +45,7 @@
             <Button
                 android:id="@+id/record_ok"
                 android:text="@android:string/ok"
+                android:enabled="false"
                 android:onClick="onSubmit" />
         </TableRow>
     </TableLayout>
