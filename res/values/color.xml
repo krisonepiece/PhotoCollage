@@ -15,4 +15,10 @@
     <color name="back_color_click">#8fff</color>
     
     <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="green_1">#4CAF50</color>
+    <color name="green_2">#CCFFCC</color>
+    <color name="green_3">#98d98e</color>
+    <color name="green_4">#3eb370</color>
+    <color name="green_5">#028760</color>
 </resources>

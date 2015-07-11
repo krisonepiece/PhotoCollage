@@ -1,100 +1,176 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget79"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical" 
-    android:background="@drawable/bg_photomovie">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/green_2"
+    android:orientation="vertical" >
 
-	<TableRow
-        
-        android:id="@+id/widget149"
-        android:layout_width="fill_parent"
-        android:layout_height="292dp"
-        android:layout_weight="0.62"
-        android:orientation="horizontal" >
-<!-- 
+    <!--
         <ImageSwitcher
 	        android:id="@+id/imgSw2"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content" >
     	</ImageSwitcher>
--->
-	</TableRow>
-        <ImageButton
-            android:id="@+id/btn_play"
-            android:layout_width="15pt"
-            android:layout_height="15pt"
-            android:scaleType="centerInside"
-            android:background="@null"            
-            android:src="@drawable/speaker_black" 
-            android:onClick="onPlay"
-            android:visibility="gone" >
-      	</ImageButton>
-      	
-	
+    -->
 
-	    <HorizontalScrollView
-	        android:id="@+id/honScview"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content" >
-	
-	        <LinearLayout
-	            android:id="@+id/anogallery"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:orientation="horizontal" 
-	            android:layout_gravity="center_vertical"
-	            android:background="@color/black"> 
-	        </LinearLayout>
-	    </HorizontalScrollView>
+    <TableRow
+        android:id="@+id/widget151"
+        android:layout_width="match_parent"
+        android:layout_height="120sp"
+        android:layout_margin="2sp" >
 
-    
- 
-	<TextView
-	    android:id="@+id/text_sec"
-	    android:layout_width="wrap_content"
-	    android:layout_height="26dp"
-	    android:text="秒數：1"
-	    android:textSize="16sp" />
+        <HorizontalScrollView
+            android:id="@+id/honScview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
 
-	<SeekBar
-	    android:id="@+id/seekBar_sec"
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:max="9"
-	    android:enabled="false" />
+            <LinearLayout
+                android:id="@+id/anogallery"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="@color/black"
+                android:orientation="horizontal" >
+            </LinearLayout>
+        </HorizontalScrollView>
+    </TableRow>
+
+    <ImageButton
+        android:id="@+id/btn_play"
+        android:layout_width="12pt"
+        android:layout_height="12pt"
+        android:background="@null"
+        android:onClick="onPlay"
+        android:scaleType="centerInside"
+        android:src="@drawable/speaker_black" >
+    </ImageButton>
+
+    <TextView
+        android:id="@+id/text_sec"
+        android:layout_width="wrap_content"
+        android:layout_height="26dp"
+        android:text="@string/text_sec"
+        android:textSize="16sp"
+        android:visibility="gone" />
+
+    <SeekBar
+        android:id="@+id/seekBar_sec"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:max="9"
+        android:visibility="gone" />
 
     <TableRow
         android:id="@+id/widget153"
-        android:layout_width="320dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:layout_width="match_parent"
+        android:layout_height="120sp"
+        android:layout_marginRight="5sp"
+        android:layout_marginLeft="5sp" >
 
         <Button
             android:id="@+id/btn_addPic"
-            android:layout_width="105dp"
-            android:layout_height="wrap_content"
-            android:text="加入圖片" />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="2sp"
+            android:layout_marginRight="4sp"
+            android:layout_marginTop="2sp"
+            android:layout_marginBottom="3sp"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/images_64"
+            android:paddingTop="18sp"
+            android:paddingBottom="6sp"
+            android:background="@color/white"
+            android:textColor="@color/green_1"
+            android:textSize="15sp"
+            android:text="@string/btn_addPic" />
 
         <Button
             android:id="@+id/btn_addMus"
-            android:layout_width="105dp"
-            android:layout_height="wrap_content"
-            android:text="加入音樂" />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="4sp"
+            android:layout_marginRight="2sp"
+            android:layout_marginTop="2sp"
+            android:layout_marginBottom="3sp"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/note_beam_64"
+            android:paddingTop="18sp"
+            android:paddingBottom="6sp"
+            android:background="@color/white"
+            android:textColor="@color/green_1"
+            android:textSize="15sp"
+            android:text="@string/btn_addMus" />
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/widget154"
+        android:layout_width="match_parent"
+        android:layout_height="120sp"
+        android:layout_marginRight="5sp"
+        android:layout_marginLeft="5sp" >
 
         <Button
             android:id="@+id/btn_addSpe"
-            android:layout_width="105dp"
-            android:layout_height="wrap_content"
-            android:text="加入語音" 
-            android:enabled="false"/>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="2sp"
+            android:layout_marginRight="4sp"
+            android:layout_marginTop="2sp"
+            android:layout_marginBottom="3sp"
+            android:layout_weight="1"            
+            android:enabled="false"
+            android:drawableTop="@drawable/recorder_microphone_64"
+            android:paddingTop="18sp"
+            android:paddingBottom="6sp"
+            android:background="@color/white"
+            android:textColor="@color/green_1"
+            android:textSize="15sp"
+            android:text="@string/btn_addRec" />
+
+        <Button
+            android:id="@+id/btn_addEff"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="4sp"
+            android:layout_marginRight="2sp"
+            android:layout_marginTop="2sp"
+            android:layout_marginBottom="3sp"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/camera_effects_magic_wand_64"
+            android:paddingTop="18sp"
+            android:paddingBottom="6sp"
+            android:background="@color/white"
+            android:textColor="@color/green_1"
+            android:textSize="15sp"
+            android:text="@string/btn_addEff" />
     </TableRow>
 
-    <Button
-        android:id="@+id/btn_generate"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="產生電影" />
+    <TableRow
+        android:id="@+id/widget156"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginRight="5sp"
+        android:layout_marginLeft="5sp" >
+
+        <Button
+            android:id="@+id/btn_generate"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="2sp"
+            android:layout_marginRight="2sp"
+            android:layout_marginTop="3sp"
+            android:layout_marginBottom="5sp"            
+            android:drawableLeft="@drawable/movie_film_32"
+            android:paddingLeft="110sp"
+            android:paddingRight="80sp"
+            android:paddingTop="12sp"
+            android:paddingBottom="6sp"
+            android:background="@color/green_1"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:text="@string/btn_generate" />
+    </TableRow>
 
 </LinearLayout>

@@ -24,6 +24,11 @@ public final class R {
         public static final int black=0x7f050007;
         public static final int gray_bg=0x7f050000;
         public static final int gray_dark_bg=0x7f050001;
+        public static final int green_1=0x7f050009;
+        public static final int green_2=0x7f05000a;
+        public static final int green_3=0x7f05000b;
+        public static final int green_4=0x7f05000c;
+        public static final int green_5=0x7f05000d;
         public static final int image_checked_bg=0x7f050003;
         /** 主題顏色
          */
@@ -31,6 +36,7 @@ public final class R {
         /**  選單欄 按鈕文字顏色 
          */
         public static final int topbar_btn_text_color=0x7f050004;
+        public static final int white=0x7f050008;
     }
     public static final class dimen {
         /**  Default screen margins, per the Android Design guidelines. 
@@ -46,69 +52,79 @@ public final class R {
     public static final class drawable {
         public static final int add_music=0x7f020000;
         public static final int add_pic=0x7f020001;
-        public static final int bg_photomovie=0x7f020002;
-        public static final int check_green=0x7f020003;
-        public static final int check_null=0x7f020004;
-        public static final int check_yes=0x7f020005;
-        public static final int checkbox_selector=0x7f020006;
-        public static final int create_movie=0x7f020007;
-        public static final int ic_launcher=0x7f020008;
-        public static final int img1=0x7f020009;
-        public static final int img1th=0x7f02000a;
-        public static final int img2=0x7f02000b;
-        public static final int img2th=0x7f02000c;
-        public static final int img3=0x7f02000d;
-        public static final int img3th=0x7f02000e;
-        public static final int img4=0x7f02000f;
-        public static final int img4th=0x7f020010;
-        public static final int img5=0x7f020011;
-        public static final int img5th=0x7f020012;
-        public static final int img6=0x7f020013;
-        public static final int img6th=0x7f020014;
-        public static final int no=0x7f020015;
-        public static final int pause_icon=0x7f020016;
-        public static final int play=0x7f020017;
-        public static final int play_icon=0x7f020018;
-        public static final int record=0x7f020019;
-        public static final int record_dark_icon=0x7f02001a;
-        public static final int record_red_icon=0x7f02001b;
-        public static final int record_sound_icon=0x7f02001c;
-        public static final int retangle_drawable=0x7f02001d;
-        public static final int speaker_black=0x7f02001e;
-        public static final int speaker_blue=0x7f02001f;
-        public static final int stop_icon=0x7f020020;
-        public static final int uncheck=0x7f020021;
+        public static final int add_picture_64=0x7f020002;
+        public static final int bg_photomovie=0x7f020003;
+        public static final int camera_effects_magic_wand_64=0x7f020004;
+        public static final int check_green=0x7f020005;
+        public static final int check_null=0x7f020006;
+        public static final int check_yes=0x7f020007;
+        public static final int checkbox_selector=0x7f020008;
+        public static final int create_movie=0x7f020009;
+        public static final int ic_launcher=0x7f02000a;
+        public static final int images_64=0x7f02000b;
+        public static final int img1=0x7f02000c;
+        public static final int img1th=0x7f02000d;
+        public static final int img2=0x7f02000e;
+        public static final int img2th=0x7f02000f;
+        public static final int img3=0x7f020010;
+        public static final int img3th=0x7f020011;
+        public static final int img4=0x7f020012;
+        public static final int img4th=0x7f020013;
+        public static final int img5=0x7f020014;
+        public static final int img5th=0x7f020015;
+        public static final int img6=0x7f020016;
+        public static final int img6th=0x7f020017;
+        public static final int movie_film_32=0x7f020018;
+        public static final int movie_film_64=0x7f020019;
+        public static final int no=0x7f02001a;
+        public static final int note_beam_64=0x7f02001b;
+        public static final int pause_icon=0x7f02001c;
+        public static final int play=0x7f02001d;
+        public static final int play_icon=0x7f02001e;
+        public static final int record=0x7f02001f;
+        public static final int record_dark_icon=0x7f020020;
+        public static final int record_red_icon=0x7f020021;
+        public static final int record_sound_icon=0x7f020022;
+        public static final int recorder_microphone_64=0x7f020023;
+        public static final int retangle_drawable=0x7f020024;
+        public static final int speaker_black=0x7f020025;
+        public static final int speaker_blue=0x7f020026;
+        public static final int stop_icon=0x7f020027;
+        public static final int uncheck=0x7f020028;
     }
     public static final class id {
-        public static final int LinearLayout1=0x7f070015;
-        public static final int RelativeLayout1=0x7f070017;
-        public static final int action_settings=0x7f07001d;
-        public static final int anogallery=0x7f070006;
+        public static final int LinearLayout1=0x7f070018;
+        public static final int RelativeLayout1=0x7f07001a;
+        public static final int action_settings=0x7f070020;
+        public static final int anogallery=0x7f070005;
+        public static final int btn_addEff=0x7f07000e;
         public static final int btn_addMus=0x7f07000b;
         public static final int btn_addPic=0x7f07000a;
-        public static final int btn_addSpe=0x7f07000c;
-        public static final int btn_back=0x7f07001a;
-        public static final int btn_fin=0x7f070014;
-        public static final int btn_generate=0x7f07000d;
-        public static final int btn_play=0x7f070004;
-        public static final int btn_select=0x7f07001b;
-        public static final int check_item=0x7f070019;
-        public static final int grid_photowall=0x7f070016;
-        public static final int honScview=0x7f070005;
-        public static final int image_item=0x7f070018;
-        public static final int record_button=0x7f07000e;
-        public static final int record_cancel=0x7f070010;
-        public static final int record_ok=0x7f070011;
-        public static final int record_volumn=0x7f07000f;
+        public static final int btn_addSpe=0x7f07000d;
+        public static final int btn_back=0x7f07001d;
+        public static final int btn_fin=0x7f070017;
+        public static final int btn_generate=0x7f070010;
+        public static final int btn_play=0x7f070006;
+        public static final int btn_select=0x7f07001e;
+        public static final int check_item=0x7f07001c;
+        public static final int grid_photowall=0x7f070019;
+        public static final int honScview=0x7f070004;
+        public static final int image_item=0x7f07001b;
+        public static final int record_button=0x7f070011;
+        public static final int record_cancel=0x7f070013;
+        public static final int record_ok=0x7f070014;
+        public static final int record_volumn=0x7f070012;
         public static final int seekBar_sec=0x7f070008;
         public static final int tag_first=0x7f070000;
         public static final int tag_second=0x7f070001;
-        public static final int text1=0x7f070013;
-        public static final int text_bar=0x7f07001c;
+        public static final int text1=0x7f070016;
+        public static final int text_bar=0x7f07001f;
         public static final int text_sec=0x7f070007;
-        public static final int video_movie=0x7f070012;
-        public static final int widget149=0x7f070003;
+        public static final int video_movie=0x7f070015;
+        public static final int widget151=0x7f070003;
         public static final int widget153=0x7f070009;
+        public static final int widget154=0x7f07000c;
+        public static final int widget156=0x7f07000f;
         public static final int widget79=0x7f070002;
     }
     public static final class layout {
@@ -125,7 +141,13 @@ public final class R {
     public static final class string {
         public static final int action_settings=0x7f080002;
         public static final int app_name=0x7f080000;
+        public static final int btn_addEff=0x7f080006;
+        public static final int btn_addMus=0x7f080004;
+        public static final int btn_addPic=0x7f080003;
+        public static final int btn_addRec=0x7f080005;
+        public static final int btn_generate=0x7f080007;
         public static final int hello_world=0x7f080001;
+        public static final int text_sec=0x7f080008;
     }
     public static final class style {
         /** 
