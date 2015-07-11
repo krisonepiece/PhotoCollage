@@ -13,4 +13,6 @@
     <!-- 返回按鈕 字體顏色 -->
     <color name="back_color_noclick">#ffff</color>
     <color name="back_color_click">#8fff</color>
+    
+    <color name="black">#000000</color>
 </resources>

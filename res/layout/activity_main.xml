@@ -13,13 +13,13 @@
         android:layout_height="292dp"
         android:layout_weight="0.62"
         android:orientation="horizontal" >
-
+<!-- 
         <ImageSwitcher
 	        android:id="@+id/imgSw2"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content" >
-
     	</ImageSwitcher>
+-->
 	</TableRow>
         <ImageButton
             android:id="@+id/btn_play"
@@ -44,9 +44,8 @@
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:orientation="horizontal" 
-	            android:layout_gravity="center_vertical">
-	            
-
+	            android:layout_gravity="center_vertical"
+	            android:background="@color/black"> 
 	        </LinearLayout>
 	    </HorizontalScrollView>
 

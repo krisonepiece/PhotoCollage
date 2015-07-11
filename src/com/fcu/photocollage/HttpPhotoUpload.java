@@ -38,10 +38,10 @@ public class HttpPhotoUpload{
 	private String commend;
 	
 	/*	[張數]
-		[Pid][秒數][翻轉][語音][特效]
+		[Pid][秒數][翻轉][特效][語音]
 		.
 		.
-		[Pid][秒數][翻轉][語音][特效]
+		[Pid][秒數][翻轉][特效][語音]
 		[音樂]
 	*/
 	
@@ -96,13 +96,13 @@ public class HttpPhotoUpload{
 					msg = EntityUtils.toString(entity, "utf-8");// 如果成功將網頁內容存入key
 					pList.get(i).setPid( Integer.parseInt(msg) ); 
 					commend += " " + msg + " " + pList.get(i).getSec() + " " + pList.get(i).getTurn();	//命令[Pid][秒數][翻轉][語音][特效]
+					commend += " " + pList.get(i).getEffect();	//命令[特效]
 					if( pList.get(i).getRecPath() != null ){
 						commend += " " + 1;	//命令[語音]
 					}
 					else{
 						commend += " " + 0;	//命令[語音]
 					}
-					commend += " " + pList.get(i).getEffect();	//命令[特效]
 					
 					Log.i("Pid",msg);
 				}
@@ -114,7 +114,7 @@ public class HttpPhotoUpload{
 				String picFileResponse = fileUpload.executeMultiPartRequest(uploadUrl, picFile, picRootPlus ) ;
 				Log.i("FILE - pic",picFileResponse);
 				//上傳語音
-				if( recPath != null ){
+				if( pList.get(i).getRecPath() != null ){
 					String recRootPlus = recRoot + user + "/" + recName;
 					File recFile = new File( pList.get(i).getRecPath() );
 					String recFileResponse = fileUpload.executeMultiPartRequest(uploadUrl, recFile, recRootPlus ) ;
@@ -145,7 +145,7 @@ public class HttpPhotoUpload{
 			HttpPost method = new HttpPost("http://140.134.26.13/PhotoCollage/php/ffmpegShell.php");
 
 			// 傳值給PHP
-			List<NameValuePair> vars = new ArrayList<NameValuePair>();
+			List<NameValuePair> vars = new ArrayList<NameValuePair>();			
 			vars.add(new BasicNameValuePair("commend", commend));
 			method.setEntity(new UrlEncodedFormEntity(vars, HTTP.UTF_8));
 			HttpResponse response = httpclient.execute(method);
