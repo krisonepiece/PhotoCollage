@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="50dp"
     android:orientation="vertical" 
-    android:background="@color/top_color">
+    android:background="@color/green_1">
 
     <Button
         android:id="@+id/btn_back"
