@@ -12,16 +12,11 @@ import com.fcu.speechtag.MyRecoder;
 import com.fcu.R;
 import com.fcu.imagepicker.*;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ContentResolver;
-import android.content.ContentUris;
-import android.content.Context;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -29,20 +24,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.media.ExifInterface;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
-import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.provider.MediaStore.MediaColumns;
-import android.speech.SpeechRecognizer;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.Gravity;
@@ -53,8 +39,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageSwitcher;
@@ -72,15 +56,16 @@ public class MainActivity extends Activity implements ViewFactory {
 	private ArrayList<Photo> pList; // 照片清單
 	private String musicPath; // 儲存音樂路徑
 	private String user = "Kris"; // 使用者名稱
-	private DisplayMetrics mPhone; // 手機解析度
-	private TextView textSec; // 秒數文字
+	//private DisplayMetrics mPhone; // 手機解析度
+	//private TextView textSec; // 秒數文字
 	private Button btnGenerate; // 產生按鈕
 	private Button btnAddPic; // 增加圖片按鈕
 	private Button btnAddMus; // 增加音樂按鈕
 	private Button btnAddSpe; // 增加語音按鈕
-	private SeekBar seekBarSec; // 秒數滑動桿
+	private Button btnAddEff; // 增加特效按鈕
+	//private SeekBar seekBarSec; // 秒數滑動桿
 	private LinearLayout linelay; // 圖片縮圖線性布局
-	private ImageSwitcher imgSwi2; // 圖片選擇器
+	//private ImageSwitcher imgSwi2; // 圖片選擇器
 	private int currentPhoto; // 當前選擇的照片編號
 	private final static int MUSIC = 11;
 	private int photoCount = 0;
@@ -107,12 +92,13 @@ public class MainActivity extends Activity implements ViewFactory {
 	private LayoutInflater inflater;
 
 	private void initializeVariables() {
-		textSec = (TextView) findViewById(R.id.text_sec);
+		//textSec = (TextView) findViewById(R.id.text_sec);
 		btnGenerate = (Button) findViewById(R.id.btn_generate);
 		btnAddPic = (Button) findViewById(R.id.btn_addPic);
 		btnAddMus = (Button) findViewById(R.id.btn_addMus);
 		btnAddSpe = (Button) findViewById(R.id.btn_addSpe);
-		seekBarSec = (SeekBar) findViewById(R.id.seekBar_sec);
+		btnAddEff = (Button) findViewById(R.id.btn_addEff);
+		//seekBarSec = (SeekBar) findViewById(R.id.seekBar_sec);
 		musicPath = null;
 
 		inflater = LayoutInflater.from(MainActivity.this);
@@ -133,6 +119,13 @@ public class MainActivity extends Activity implements ViewFactory {
 		ScreenUtils.initScreen(this);
 		// titleTV = (TextView) findViewById(R.id.text_bar);
 		initializeVariables();
+		//按鈕狀態初始化
+		btnPlay.setEnabled(false);
+		btnPlay.setAlpha(0.8f);
+		btnAddSpe.setEnabled(false);
+		btnAddSpe.setAlpha(0.8f);
+		btnAddEff.setEnabled(false);
+		btnAddEff.setAlpha(0.8f);
 
 		// 圖片畫廊
 		linelay = (LinearLayout) findViewById(R.id.anogallery);
@@ -191,7 +184,8 @@ public class MainActivity extends Activity implements ViewFactory {
 						pList.get(currentPhoto).setRecPath(null); // 移除語音路徑
 						Toast.makeText(MainActivity.this, "移除成功",
 								Toast.LENGTH_SHORT).show();
-						btnPlay.setVisibility(View.INVISIBLE);
+						btnPlay.setEnabled(false);
+						btnPlay.setAlpha(0.8f);
 						btnAddSpe.setText("加入語音");
 					}
 				}
@@ -206,6 +200,7 @@ public class MainActivity extends Activity implements ViewFactory {
 		 * Uri.parse("/sdcard/" + fileName); mediaPlayer =
 		 * MediaPlayer.create(this, uri); mediaPlayer.start(); } });
 		 */
+
 		// 產生電影
 		btnGenerate.setOnClickListener(new OnClickListener() {
 			@Override
@@ -225,6 +220,7 @@ public class MainActivity extends Activity implements ViewFactory {
 
 			}
 		});
+		/*
 		// SeekBar秒數限制
 		seekBarSec.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 
@@ -246,6 +242,7 @@ public class MainActivity extends Activity implements ViewFactory {
 
 			}
 		});
+		*/
 	}
 
 	/**
@@ -290,23 +287,28 @@ public class MainActivity extends Activity implements ViewFactory {
 				lastView = v;
 				currentPhoto = v.getId(); // 設定當前選擇的照片編號
 				btnAddSpe.setEnabled(true);
-				seekBarSec.setEnabled(true);
+				btnAddSpe.setAlpha(1f);
+				btnAddEff.setEnabled(true);
+				btnAddEff.setAlpha(1f);
+				//seekBarSec.setEnabled(true);
 				// imgSwi2.setImageResource(imgArr[v.getId()]);
 				// File sFile = new File(paths.get(currentPhoto));
 				// fileName = currentPhoto + ".3gp";
 				// File gpFile = new File("/sdcard/" + fileName);
 				Log.i("onClickView", Integer.toString(currentPhoto) );
-				seekBarSec.setProgress(pList.get(currentPhoto).getSec() - 1); // 設定SeekBar秒數
+				//seekBarSec.setProgress(pList.get(currentPhoto).getSec() - 1); // 設定SeekBar秒數
 				record_ok.setEnabled(false);// 隱藏確定按鈕
 				// 判斷加入語音
 				if (pList.get(currentPhoto).getRecPath() == null) {
 					// 隱藏播放圖示
-					btnPlay.setVisibility(View.INVISIBLE);
+					btnPlay.setEnabled(false);
+					btnPlay.setAlpha(0.8f);
 					Log.i("TEST", "File not exist");
 					// 加入語音
 					btnAddSpe.setText("加入語音");
 				} else {
-					btnPlay.setVisibility(View.VISIBLE);
+					btnPlay.setEnabled(true);
+					btnPlay.setAlpha(1f);
 					Log.i("TEST", "File exist");
 					// 移除語音
 					btnAddSpe.setText("移除語音");
@@ -359,7 +361,6 @@ public class MainActivity extends Activity implements ViewFactory {
 						int tmp = view.getId();
 						view.setId(dragState.view.getId());
 						dragState.view.setId(tmp);
-						
 						Log.i("Drag-swapViews",view.getId()+" " + index + " " + dragState.view.getId());
 					} else {
 						swapViewsBetweenIfNeeded(viewGroup, index, dragState);
@@ -582,7 +583,8 @@ public class MainActivity extends Activity implements ViewFactory {
 			 * contentText = content_text.getText().toString();
 			 */
 			pList.get(currentPhoto).setRecPath("/sdcard/" + fileName); // 儲存語音路徑
-			btnPlay.setVisibility(View.VISIBLE);
+			btnPlay.setEnabled(true);
+			btnPlay.setAlpha(1f);
 			btnAddSpe.setText("移除語音");
 			record_ok.setEnabled(false);// 隱藏確定按鈕
 			// 取得回傳資料用的Intent物件
@@ -657,7 +659,67 @@ public class MainActivity extends Activity implements ViewFactory {
 		mediaPlayer = MediaPlayer.create(this, uri);
 		mediaPlayer.start();
 	}
-
+	// 設定秒數事件
+	public void setSecond(View view) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("設定照片秒數");
+		builder.setIcon(android.R.drawable.ic_dialog_info);
+		builder.setSingleChoiceItems(new String[] { "3", "4", "5", "6", "7", "8", "9", "10" }, pList.get(currentPhoto).getSec() - 3,new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				pList.get(currentPhoto).setSec(which + 3);
+				Log.i("SET-SECOND", which + "");
+				dialog.dismiss();
+			}
+		});
+		builder.setNegativeButton("取消", null).show();		
+	}
+	//翻轉事件
+	public void turn(View view) {
+		ViewGroup viewGroup = linelay;
+		ImageView currentView = (ImageView)viewGroup.getChildAt(currentPhoto);	
+		Bitmap bitmap = ((BitmapDrawable)currentView.getDrawable()).getBitmap();
+		Matrix matrix = new Matrix();
+		if(view.getId() == R.id.btn_turnLeft)
+			matrix.setRotate(-90);
+		else if(view.getId() == R.id.btn_turnRight)
+			matrix.setRotate(90);
+        bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);  
+        currentView.setImageBitmap(bitmap);
+	}
+	//移動事件
+	public void move(View view) {		
+		int flag;		
+		if(view.getId() == R.id.btn_moveLeft && currentPhoto != 0)
+			flag = -1;	
+		else if(view.getId() == R.id.btn_moveRight && currentPhoto != pList.size() - 1)
+			flag = 1;
+		else
+			return;		
+		ViewGroup viewGroup = linelay;
+		View currentView = viewGroup.getChildAt(currentPhoto);
+		View moveView = viewGroup.getChildAt(currentPhoto + flag);
+		AppUtils.swapViewGroupChildren(viewGroup, moveView, currentView);
+		Collections.swap(pList,moveView.getId(),currentView.getId());	//交換 pList
+		//交換 view id
+		int tmp = moveView.getId();
+		moveView.setId(currentView.getId());
+		currentView.setId(tmp);
+		currentPhoto = currentPhoto + flag;		
+	}
+	// 加入特效事件
+	public void addEffect(View view) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("加入特效");
+		builder.setIcon(android.R.drawable.ic_dialog_info);
+		builder.setSingleChoiceItems(new String[] { "無", "淡入淡出" }, pList.get(currentPhoto).getEffect(),new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				pList.get(currentPhoto).setEffect(which);
+				Log.i("SET-EFFECT", which + "");
+				dialog.dismiss();
+			}
+		});
+		builder.setNegativeButton("取消", null).show();		
+	}
 	/**
 	 * Gets the corresponding path to a file from the given content:// URI
 	 * 

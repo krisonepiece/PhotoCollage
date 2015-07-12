@@ -17,7 +17,7 @@
     <TableRow
         android:id="@+id/widget151"
         android:layout_width="match_parent"
-        android:layout_height="120sp"
+        android:layout_height="140sp"
         android:layout_margin="2sp" >
 
         <HorizontalScrollView
@@ -36,16 +36,104 @@
         </HorizontalScrollView>
     </TableRow>
 
-    <ImageButton
-        android:id="@+id/btn_play"
-        android:layout_width="12pt"
-        android:layout_height="12pt"
-        android:background="@null"
-        android:onClick="onPlay"
-        android:scaleType="centerInside"
-        android:src="@drawable/speaker_black" >
-    </ImageButton>
+    <TableRow
+        android:id="@+id/widget152"
+        android:layout_width="match_parent"
+        android:layout_height="15pt"
+        android:layout_marginLeft="5sp"
+        android:layout_marginRight="5sp" >
 
+        <ImageButton
+            android:id="@+id/btn_play"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginBottom="3sp"
+            android:layout_marginLeft="2sp"
+            android:layout_marginRight="4sp"
+            android:layout_marginTop="1sp"
+            android:padding="3sp"
+            android:background="@color/green_1"            
+            android:scaleType="centerInside"
+            android:onClick="onPlay"
+            android:src="@drawable/speaker_filled_audio_tool_32" />
+      
+        
+        <ImageButton
+            android:id="@+id/btn_setSec"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginBottom="3sp"
+            android:layout_marginLeft="4sp"
+            android:layout_marginRight="4sp"
+            android:layout_marginTop="1sp"
+            android:padding="3sp"
+            android:background="@color/green_1"
+            android:scaleType="centerInside"
+            android:onClick="setSecond"
+            android:src="@drawable/passage_of_time_32" />
+        
+        <ImageButton
+            android:id="@+id/btn_turnLeft"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginBottom="3sp"
+            android:layout_marginLeft="4sp"
+            android:layout_marginRight="4sp"
+            android:layout_marginTop="1sp"
+            android:padding="3sp"
+            android:background="@color/green_1"
+            android:scaleType="centerInside"
+            android:onClick="turn"
+            android:src="@drawable/left_arrow_32" />
+        
+        <ImageButton
+            android:id="@+id/btn_turnRight"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginBottom="3sp"
+            android:layout_marginLeft="4sp"
+            android:layout_marginRight="4sp"
+            android:layout_marginTop="1sp"
+            android:padding="3sp"
+            android:background="@color/green_1"
+            android:scaleType="centerInside"
+            android:onClick="turn"
+            android:src="@drawable/right_arrow_32" />
+        <ImageButton
+            android:id="@+id/btn_moveLeft"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginBottom="3sp"
+            android:layout_marginLeft="4sp"
+            android:layout_marginRight="4sp"
+            android:layout_marginTop="1sp"
+            android:padding="3sp"
+            android:background="@color/green_1"
+            android:scaleType="centerInside"
+            android:onClick="move"
+            android:src="@drawable/move_left_arrow_32" />
+        <ImageButton
+            android:id="@+id/btn_moveRight"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginBottom="3sp"
+            android:layout_marginLeft="4sp"
+            android:layout_marginRight="2sp"
+            android:layout_marginTop="1sp"
+            android:padding="3sp"
+            android:background="@color/green_1"
+            android:scaleType="centerInside"
+            android:onClick="move"
+            android:src="@drawable/move_right_arrow_32" />
+        
+    </TableRow>
+<!-- 
     <TextView
         android:id="@+id/text_sec"
         android:layout_width="wrap_content"
@@ -61,116 +149,116 @@
         android:enabled="false"
         android:max="9"
         android:visibility="gone" />
-
+-->
     <TableRow
         android:id="@+id/widget153"
         android:layout_width="match_parent"
         android:layout_height="120sp"
-        android:layout_marginRight="5sp"
-        android:layout_marginLeft="5sp" >
+        android:layout_marginLeft="5sp"
+        android:layout_marginRight="5sp" >
 
         <Button
             android:id="@+id/btn_addPic"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginBottom="3sp"
             android:layout_marginLeft="2sp"
             android:layout_marginRight="4sp"
             android:layout_marginTop="2sp"
-            android:layout_marginBottom="3sp"
             android:layout_weight="1"
-            android:drawableTop="@drawable/images_64"
-            android:paddingTop="18sp"
-            android:paddingBottom="6sp"
             android:background="@color/white"
+            android:drawableTop="@drawable/images_32"
+            android:paddingBottom="20sp"
+            android:paddingTop="30sp"
+            android:text="@string/btn_addPic"
             android:textColor="@color/green_1"
-            android:textSize="15sp"
-            android:text="@string/btn_addPic" />
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/btn_addMus"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginBottom="3sp"
             android:layout_marginLeft="4sp"
             android:layout_marginRight="2sp"
             android:layout_marginTop="2sp"
-            android:layout_marginBottom="3sp"
             android:layout_weight="1"
-            android:drawableTop="@drawable/note_beam_64"
-            android:paddingTop="18sp"
-            android:paddingBottom="6sp"
             android:background="@color/white"
+            android:drawableTop="@drawable/note_beam_32"
+            android:paddingBottom="20sp"
+            android:paddingTop="30sp"
+            android:text="@string/btn_addMus"
             android:textColor="@color/green_1"
-            android:textSize="15sp"
-            android:text="@string/btn_addMus" />
+            android:textSize="15sp" />
     </TableRow>
 
     <TableRow
         android:id="@+id/widget154"
         android:layout_width="match_parent"
         android:layout_height="120sp"
-        android:layout_marginRight="5sp"
-        android:layout_marginLeft="5sp" >
+        android:layout_marginLeft="5sp"
+        android:layout_marginRight="5sp" >
 
         <Button
             android:id="@+id/btn_addSpe"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginBottom="3sp"
             android:layout_marginLeft="2sp"
             android:layout_marginRight="4sp"
             android:layout_marginTop="2sp"
-            android:layout_marginBottom="3sp"
-            android:layout_weight="1"            
-            android:enabled="false"
-            android:drawableTop="@drawable/recorder_microphone_64"
-            android:paddingTop="18sp"
-            android:paddingBottom="6sp"
+            android:layout_weight="1"
             android:background="@color/white"
+            android:drawableTop="@drawable/recorder_microphone_32"
+            android:paddingBottom="20sp"
+            android:paddingTop="30sp"
+            android:text="@string/btn_addRec"
             android:textColor="@color/green_1"
-            android:textSize="15sp"
-            android:text="@string/btn_addRec" />
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/btn_addEff"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginBottom="3sp"
             android:layout_marginLeft="4sp"
             android:layout_marginRight="2sp"
             android:layout_marginTop="2sp"
-            android:layout_marginBottom="3sp"
             android:layout_weight="1"
-            android:drawableTop="@drawable/camera_effects_magic_wand_64"
-            android:paddingTop="18sp"
-            android:paddingBottom="6sp"
             android:background="@color/white"
+            android:drawableTop="@drawable/camera_effects_magic_wand_32"
+            android:paddingBottom="20sp"
+            android:paddingTop="30sp"
+            android:text="@string/btn_addEff"
             android:textColor="@color/green_1"
             android:textSize="15sp"
-            android:text="@string/btn_addEff" />
+            android:onClick="addEffect" />
     </TableRow>
 
     <TableRow
         android:id="@+id/widget156"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginRight="5sp"
-        android:layout_marginLeft="5sp" >
+        android:layout_marginLeft="5sp"
+        android:layout_marginRight="5sp" >
 
         <Button
             android:id="@+id/btn_generate"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginBottom="5sp"
             android:layout_marginLeft="2sp"
             android:layout_marginRight="2sp"
             android:layout_marginTop="3sp"
-            android:layout_marginBottom="5sp"            
+            android:background="@color/green_1"
             android:drawableLeft="@drawable/movie_film_32"
+            android:paddingBottom="6sp"
             android:paddingLeft="110sp"
             android:paddingRight="80sp"
-            android:paddingTop="12sp"
-            android:paddingBottom="6sp"
-            android:background="@color/green_1"
+            android:paddingTop="10sp"
+            android:text="@string/btn_generate"
             android:textColor="@color/white"
-            android:textSize="15sp"
-            android:text="@string/btn_generate" />
+            android:textSize="15sp" />
     </TableRow>
 
 </LinearLayout>
