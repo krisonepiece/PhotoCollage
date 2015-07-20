@@ -1,6 +1,8 @@
 package com.fcu.photocollage;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,9 +14,15 @@ import com.fcu.speechtag.MyRecoder;
 import com.fcu.R;
 import com.fcu.imagepicker.*;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,11 +31,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Bitmap.CompressFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.ExifInterface;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.DragEvent;
@@ -39,6 +49,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageSwitcher;
@@ -63,6 +74,7 @@ public class MainActivity extends Activity implements ViewFactory {
 	private Button btnAddMus; // 增加音樂按鈕
 	private Button btnAddSpe; // 增加語音按鈕
 	private Button btnAddEff; // 增加特效按鈕
+	private ImageButton btnDelete; // 刪除照片
 	//private SeekBar seekBarSec; // 秒數滑動桿
 	private LinearLayout linelay; // 圖片縮圖線性布局
 	//private ImageSwitcher imgSwi2; // 圖片選擇器
@@ -70,6 +82,7 @@ public class MainActivity extends Activity implements ViewFactory {
 	private final static int MUSIC = 11;
 	private int photoCount = 0;
 	private View lastView;
+	Cursor cursor;
 	// 上傳圖片
 	// private HttpPhotoUpload photoUpload = new
 	// HttpPhotoUpload("http://192.168.0.100/php/UploadPhoto.php", user);
@@ -98,6 +111,7 @@ public class MainActivity extends Activity implements ViewFactory {
 		btnAddMus = (Button) findViewById(R.id.btn_addMus);
 		btnAddSpe = (Button) findViewById(R.id.btn_addSpe);
 		btnAddEff = (Button) findViewById(R.id.btn_addEff);
+		btnDelete = (ImageButton) findViewById(R.id.btn_delete);
 		//seekBarSec = (SeekBar) findViewById(R.id.seekBar_sec);
 		musicPath = null;
 
@@ -156,10 +170,13 @@ public class MainActivity extends Activity implements ViewFactory {
 		btnAddMus.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				
+				
 				Intent intent = new Intent();
 				intent.setType("audio/*");
 				intent.setAction(Intent.ACTION_GET_CONTENT);
 				startActivityForResult(intent, MUSIC);
+				
 			}
 		});
 		// 加入語音
@@ -171,6 +188,7 @@ public class MainActivity extends Activity implements ViewFactory {
 			@Override
 			public void onClick(View v) {
 				if (btnAddSpe.getText().equals("加入語音")) {
+					fileName = currentPhoto + ".3gp";
 					dialog.show();
 					// pList.get( currentPhoto ).setRecPath("/sdcard/" +
 					// fileName); //儲存語音路徑
@@ -204,20 +222,31 @@ public class MainActivity extends Activity implements ViewFactory {
 		// 產生電影
 		btnGenerate.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(View v) {
+			public void onClick(View v) {	
+				
+				ViewGroup viewGroup = linelay;
+				String tempPath = "/sdcard/PCtemp";
+				for(int i = 0 ; i < viewGroup.getChildCount() ; i++){
+					ImageView imageView = (ImageView)viewGroup.getChildAt(i);
+					//先把Drawable轉成Bitmap
+					Bitmap bmp = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
+					//建立資料夾
+					createNewFolder(tempPath);
+					//壓縮並建立圖片
+					compressAndCreatePhoto(tempPath + "/" + i + ".jpg", bmp,
+							Bitmap.CompressFormat.JPEG, 70);
+					pList.get(i).setpPath(tempPath + "/" + i + ".jpg");
+				}
+				//上傳
 				photoUpload.upload(pList, musicPath);
-				/*
-				 * RunPhp ffmpegShell = new RunPhp(); String urlFCU =
-				 * "http://140.134.26.13/PhotoCollage/php/ffmpegShell.php";
-				 * String urlHOME = "http://192.168.0.100/php/ffmpegShell.php";
-				 * String msg = ffmpegShell.stringQuery(urlHOME);
-				 * Toast.makeText(MainActivity.this, msg,
-				 * Toast.LENGTH_SHORT).show();
-				 */
+				
+				//清空暫存檔案
+				deleteFolder(tempPath); 
+				
+				//切換預覽頁面
 				Intent it = new Intent();
 				it.setClass(MainActivity.this, MovieView.class);
 				startActivity(it);
-
 			}
 		});
 		/*
@@ -256,6 +285,9 @@ public class MainActivity extends Activity implements ViewFactory {
 		ImageView img = new ImageView(this);
 		img.setBackgroundColor(Color.BLACK); // 設定 ImageView 背景顏色
 		img.setPadding(5, 2, 5, 2); // 設定 ImageView 內縮
+		img.setAdjustViewBounds(true); //打開才可設定最大寬度和高度
+		img.setMaxHeight(500);	//設定 ImageView 最大高度
+		img.setMaxWidth(500);	//設定 ImageView 最大寬度
 		// 將 ImageView 置中
 		LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
 				LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -268,7 +300,7 @@ public class MainActivity extends Activity implements ViewFactory {
 		// Bitmap myBitmap =
 		// BitmapFactory.decodeFile(imgFile.getAbsolutePath());
 		// Bitmap sBitmap = ScalePic(myBitmap, 1.3f, 1.4f);
-
+		
 		img.setImageBitmap(myBitmap);
 		img.setId(pCount);
 		img.setOnClickListener(new View.OnClickListener() {
@@ -336,6 +368,7 @@ public class MainActivity extends Activity implements ViewFactory {
 			public boolean onDrag(final View view, DragEvent event) {
 				ViewGroup viewGroup = (ViewGroup) view.getParent();
 				DragState dragState = (DragState) event.getLocalState();
+				setupDragDelete(btnDelete,viewGroup);
 				switch (event.getAction()) {
 				//開始拖動事件
 				case DragEvent.ACTION_DRAG_STARTED:	
@@ -351,10 +384,16 @@ public class MainActivity extends Activity implements ViewFactory {
 						break;
 					}
 					int index = viewGroup.indexOfChild(view);
-					if ((index > dragState.index && event.getY() > view
-							.getHeight() / 2)
-							|| (index < dragState.index && event.getY() < view
-									.getHeight() / 2)) {
+					if ((index > dragState.index && event.getX() > view
+							.getWidth() / 2)
+							|| (index < dragState.index && event.getX() < view
+									.getWidth() / 2)) {
+						//更新CurrentPhoto
+						if(currentPhoto == view.getId())
+							currentPhoto = dragState.view.getId();
+						else if(currentPhoto == dragState.view.getId())
+							currentPhoto = view.getId();
+						Log.i("CurrentPhoto",currentPhoto + "");
 						swapViews(viewGroup, view, index, dragState);
 						Collections.swap(pList,view.getId(),dragState.view.getId());	//交換 pList
 						//交換 view id
@@ -380,6 +419,7 @@ public class MainActivity extends Activity implements ViewFactory {
 				return true;
 			}
 		});
+		
 		img.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -503,7 +543,57 @@ public class MainActivity extends Activity implements ViewFactory {
 			return upperBound;
 		}
 	}
-
+	/**
+	 * 壓縮並產生圖片
+	 */
+	protected boolean compressAndCreatePhoto(String path, Bitmap bmp,
+			CompressFormat format, int quality){
+		//壓縮圖片
+		FileOutputStream fop ;
+		try {		
+			//實例化FileOutputStream，參數是生成路徑
+			fop = new FileOutputStream( path ) ;
+			//壓縮bitmap寫進outputStream參數：輸出格式輸出質量目標OutputStream
+			//格式可以為jpg,png,jpg不能存儲透明
+			bmp.compress( format , quality , fop ) ;
+			//關閉流
+			fop.close();
+			return true;
+		} catch ( FileNotFoundException e ) {
+			e. printStackTrace ( ) ;
+			return false;
+		} catch ( IOException e ) {
+			e. printStackTrace ( ) ;
+			return false;
+		} 		
+	}
+	/**
+	 * 建立新資料夾
+	 * @param path
+	 */
+	protected void createNewFolder(String path){
+		//建立資料夾
+		File sdFile = android.os.Environment.getExternalStorageDirectory();
+		File dirFile = new File(path);
+		if(!dirFile.exists()){//如果資料夾不存在
+			dirFile.mkdir();//建立資料夾
+			Log.i("Create-File",path+"");
+		}		
+	}
+	/**
+	 * 清空資料夾
+	 * @param path
+	 */
+	protected void deleteFolder(String path){		
+		File delFile = new File(path);
+		for(File i :delFile.listFiles()){
+			if( i.exists() ){
+    			i.delete();
+    			Log.i("DELETE-File",i.getName() + "");
+    		}        			
+		} 		
+	}
+	
 	/**
 	 * 取得路徑
 	 */
@@ -562,8 +652,23 @@ public class MainActivity extends Activity implements ViewFactory {
 		if (requestCode == MUSIC && data != null) {
 			// 取得音樂路徑uri
 			Uri uri = data.getData();
-
-			musicPath = uri.getPath();
+			musicPath = MagicFileChooser.getAbsolutePathFromUri(this, uri);
+			/*final String[] projection = { MediaStore.MediaColumns.DATA };
+            
+			try {
+				cursor = this.getContentResolver().query(uri, projection, null, null, null);
+				if (cursor != null && cursor.moveToFirst()) {
+					final int index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+					musicPath = cursor.getString(index);
+				}
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				if (cursor != null) {
+					cursor.close();
+				}
+			}*/
+		    
+			//musicPath = path;
 			Log.i("Music - Path", musicPath);
 
 		}
@@ -706,6 +811,17 @@ public class MainActivity extends Activity implements ViewFactory {
 		currentView.setId(tmp);
 		currentPhoto = currentPhoto + flag;		
 	}
+	//刪除事件
+	public void delete(View view) {	
+		ViewGroup viewGroup = linelay;
+		View currentView = viewGroup.getChildAt(currentPhoto);
+		for ( int i = currentPhoto + 1 ; i < viewGroup.getChildCount() ; i++){
+			viewGroup.getChildAt(i).setId(i-1);			
+		}
+		pList.remove(currentPhoto);
+		viewGroup.removeView(currentView);
+		photoCount--;
+	}
 	// 加入特效事件
 	public void addEffect(View view) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -764,36 +880,38 @@ public class MainActivity extends Activity implements ViewFactory {
 		return super.onOptionsItemSelected(item);
 	}
 
-	/*
-	public static void setupDragDelete(View view, final ViewGroup viewGroup,
-			final OnDragDeletedListener listener) {
-		view.setOnDragListener(new View.OnDragListener() {
-			@Override
-			public boolean onDrag(View view, DragEvent event) {
-				switch (event.getAction()) {
-				case DragEvent.ACTION_DRAG_ENTERED:
-					view.setActivated(true);
-					break;
-				case DragEvent.ACTION_DRAG_EXITED:
-					view.setActivated(false);
-					break;
-				case DragEvent.ACTION_DROP:
-					DragState dragState = (DragState) event.getLocalState();
-					removeView(viewGroup, dragState);
-					listener.onDragDeleted();
-					break;
-				case DragEvent.ACTION_DRAG_ENDED:
-					// NOTE: Needed because ACTION_DRAG_EXITED may not be sent
-					// when the drag
-					// ends within the view.
-					view.setActivated(false);
-					break;
-				}
-				return true;
-			}
-		});
+	
+	public void setupDragDelete(View view, final ViewGroup viewGroup) {
+	    view.setOnDragListener(new View.OnDragListener() {
+	        @Override
+	        public boolean onDrag(View view, DragEvent event) {
+	            switch (event.getAction()) {
+	                case DragEvent.ACTION_DRAG_ENTERED:
+	                    view.setActivated(true);
+	                    break;
+	                case DragEvent.ACTION_DRAG_EXITED:
+	                    view.setActivated(false);
+	                    break;
+	                case DragEvent.ACTION_DROP:
+	                    DragState dragState = (DragState)event.getLocalState();
+	                    for ( int i = dragState.view.getId() + 1 ; i < viewGroup.getChildCount() ; i++){
+	            			viewGroup.getChildAt(i).setId(i-1);			
+	            		}
+	            		pList.remove(dragState.view.getId());
+	            		photoCount--;
+	                    removeView(viewGroup, dragState);
+	                    break;
+	                case DragEvent.ACTION_DRAG_ENDED:
+	                    // NOTE: Needed because ACTION_DRAG_EXITED may not be sent when the drag
+	                    // ends within the view.
+	                    view.setActivated(false);
+	                    break;
+	            }
+	            return true;
+	        }
+	    });
 	}
-*/
+
 	private static void swapViewsBetweenIfNeeded(ViewGroup viewGroup,
 			int index, DragState dragState) {
 		if (index - dragState.index > 1) {
@@ -810,18 +928,18 @@ public class MainActivity extends Activity implements ViewFactory {
 	private static void swapViews(ViewGroup viewGroup, final View view,
 			int index, DragState dragState) {
 		swapViewsBetweenIfNeeded(viewGroup, index, dragState);
-		final float viewY = view.getY();
+		final float viewX = view.getX();
 		AppUtils.swapViewGroupChildren(viewGroup, view, dragState.view);
 		dragState.index = index;
 		AppUtils.postOnPreDraw(view, new Runnable() {
 			@Override
 			public void run() {
-				ObjectAnimator.ofFloat(view, View.Y, viewY, view.getTop())
+				ObjectAnimator.ofFloat(view, View.X, viewX, view.getLeft())
 						.setDuration(getDuration(view)).start();
 			}
 		});
 	}
-/*
+
 	private static void removeView(final ViewGroup viewGroup,
 			DragState dragState) {
 
@@ -841,7 +959,8 @@ public class MainActivity extends Activity implements ViewFactory {
 				}
 			});
 		}
-
+	}
+/*
 		final int newViewGroupHeight = measureViewGroupHeight(viewGroup);
 		if (viewGroup.getChildCount() > 0) {
 			// Prevent the flash of the new height before the start of our
@@ -865,8 +984,8 @@ public class MainActivity extends Activity implements ViewFactory {
 			animateViewGroupHeight(viewGroup, oldViewGroupLayoutParamsHeight,
 					oldViewGroupHeight, newViewGroupHeight);
 		}
-	}
-
+	}*/
+/*
 	private static int measureViewGroupHeight(ViewGroup viewGroup) {
 		View parent = (View) viewGroup.getParent();
 		int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(

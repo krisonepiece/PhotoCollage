@@ -36,9 +36,9 @@ public class AppUtils {
         });
     }
  
-    public static void setViewLayoutParamsHeight(View view, int height) {
+    public static void setViewLayoutParamsHeight(View view, int width) {
         ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
-        layoutParams.height = height;
+        layoutParams.width = width;
         view.setLayoutParams(layoutParams);
     }
  

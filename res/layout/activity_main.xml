@@ -124,13 +124,27 @@
             android:layout_weight="1"
             android:layout_marginBottom="3sp"
             android:layout_marginLeft="4sp"
-            android:layout_marginRight="2sp"
+            android:layout_marginRight="4sp"
             android:layout_marginTop="1sp"
             android:padding="3sp"
             android:background="@color/green_1"
             android:scaleType="centerInside"
             android:onClick="move"
             android:src="@drawable/move_right_arrow_32" />
+        <ImageButton
+            android:id="@+id/btn_delete"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginBottom="3sp"
+            android:layout_marginLeft="4sp"
+            android:layout_marginRight="2sp"
+            android:layout_marginTop="1sp"
+            android:padding="3sp"
+            android:background="@color/green_1"
+            android:scaleType="centerInside"
+            android:onClick="delete"
+            android:src="@drawable/rubbish_bin_32" />
         
     </TableRow>
 <!-- 
@@ -153,7 +167,7 @@
     <TableRow
         android:id="@+id/widget153"
         android:layout_width="match_parent"
-        android:layout_height="120sp"
+        android:layout_height="110sp"
         android:layout_marginLeft="5sp"
         android:layout_marginRight="5sp" >
 
@@ -195,7 +209,7 @@
     <TableRow
         android:id="@+id/widget154"
         android:layout_width="match_parent"
-        android:layout_height="120sp"
+        android:layout_height="110sp"
         android:layout_marginLeft="5sp"
         android:layout_marginRight="5sp" >
 

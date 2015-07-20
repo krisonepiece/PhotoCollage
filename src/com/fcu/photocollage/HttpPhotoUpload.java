@@ -20,6 +20,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
+import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
@@ -130,7 +131,8 @@ public class HttpPhotoUpload{
 			commend += " " + 1;	//命令[音樂]
 			FileUpload fileUpload = new FileUpload() ;	
 			String musRootPlus = musicPath + pList.get(0).getPid() + ".mp3";
-			File musFile = new File( music );
+			Uri musicUri = Uri.parse(music);
+			File musFile = new File( musicUri.getPath() );
 			String musFileResponse = fileUpload.executeMultiPartRequest(uploadUrl, musFile, musRootPlus ) ;
 			Log.i("FILE - music",musFileResponse);
 		}

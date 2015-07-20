@@ -14,22 +14,36 @@ import android.widget.MediaController;
 import android.widget.VideoView;
 
 public class MovieView extends Activity {
-
+	private Button btnFinish;
+	private Button btnRefresh;
+	private VideoView videoMovie;
+	String urlFCU = "http://140.134.26.13/PhotoCollage/final/final.mp4";
+	String urlHOME = "http://192.168.0.100/pictures/Kris/movie_tmp/out.mp4";
+	String src = "http://192.168.0.100/pictures/Kris/movie_tmp/out.mp4";
+	
+	private void initializeVariables() {
+		btnFinish = (Button)findViewById(R.id.btn_fin);
+		btnRefresh = (Button)findViewById(R.id.btn_refresh);
+		videoMovie = (VideoView)findViewById(R.id.video_movie);
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.movie_view);
 		
-		Button btnFinish = (Button)findViewById(R.id.btn_fin);
-		VideoView videoMovie = (VideoView)findViewById(R.id.video_movie);
-		String urlFCU = "http://140.134.26.13/PhotoCollage/final/final.mp4";
-		String urlHOME = "http://192.168.0.100/pictures/Kris/movie_tmp/out.mp4";
-		String src = "http://192.168.0.100/pictures/Kris/movie_tmp/out.mp4";
-		videoMovie.setVideoURI(Uri.parse(urlFCU));
-		videoMovie.setMediaController(new MediaController(this));
-		videoMovie.requestFocus();
-		videoMovie.start();
+		initializeVariables();	
 		
+		videoPlay(Uri.parse(urlFCU));
+		
+		//重新整理事件
+		btnRefresh.setOnClickListener(new OnClickListener() {			
+			@Override
+			public void onClick(View v) {
+				videoPlay(Uri.parse(urlFCU));		
+			}
+		});
+		//完成事件
 		btnFinish.setOnClickListener(new OnClickListener() {			
 			@Override
 			public void onClick(View v) {
@@ -38,6 +52,14 @@ public class MovieView extends Activity {
 		});
 	}
 
+	public void videoPlay(Uri uri){
+		videoMovie.setVideoURI(Uri.parse(urlFCU));
+		videoMovie.setMediaController(new MediaController(this));
+		videoMovie.requestFocus();
+		videoMovie.start();
+		
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.

@@ -4,12 +4,13 @@
     <string name="app_name">PhotoCollage</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    
+    <!-- 相片電影 -->
     <string name="btn_addPic">加入圖片</string>
     <string name="btn_addMus">加入音樂</string>
     <string name="btn_addRec">加入語音</string>
     <string name="btn_addEff">加入特效</string>
     <string name="btn_generate">產生電影</string>
     <string name="text_sec">秒數：1</string>
-
+	<string name="finishText">恭喜您！完成了獨一無二的相片電影</string>
+	<string name="refresh">重新整理</string>
 </resources>

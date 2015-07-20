@@ -56,7 +56,7 @@ public class MyRecoder {
             // 清除錄音資源
             recorder.release();
             recorder = null;
-            Log.i("TEST","MyRecord 3");
+            Log.i("MyRecord", output);
         }
     }
 
