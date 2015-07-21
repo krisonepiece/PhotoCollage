@@ -9,20 +9,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-
 import com.fcu.speechtag.MyRecoder;
 import com.fcu.R;
 import com.fcu.imagepicker.*;
-
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -37,7 +29,6 @@ import android.media.ExifInterface;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.DragEvent;
@@ -49,17 +40,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.ViewSwitcher.ViewFactory;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity implements ViewFactory {
@@ -79,6 +66,7 @@ public class MainActivity extends Activity implements ViewFactory {
 	private LinearLayout linelay; // 圖片縮圖線性布局
 	//private ImageSwitcher imgSwi2; // 圖片選擇器
 	private int currentPhoto; // 當前選擇的照片編號
+	private int pid = 0;
 	private final static int MUSIC = 11;
 	private int photoCount = 0;
 	private View lastView;
@@ -188,16 +176,16 @@ public class MainActivity extends Activity implements ViewFactory {
 			@Override
 			public void onClick(View v) {
 				if (btnAddSpe.getText().equals("加入語音")) {
-					fileName = currentPhoto + ".3gp";
+					fileName = pList.get(currentPhoto).getPid() + ".3gp";
 					dialog.show();
 					// pList.get( currentPhoto ).setRecPath("/sdcard/" +
 					// fileName); //儲存語音路徑
 					// btnPlay.setVisibility(View.VISIBLE);
 					// btnAddSpe.setText("移除語音");
 				} else {
-					fileName = currentPhoto + ".3gp";
+					fileName = pList.get(currentPhoto).getPid() + ".3gp";
 					Log.i("DEL", fileName);
-					File gpFile = new File("/sdcard/" + fileName);
+					File gpFile = new File("/sdcard/PCtemp/" + fileName);
 					if (gpFile.delete()) {
 						pList.get(currentPhoto).setRecPath(null); // 移除語音路徑
 						Toast.makeText(MainActivity.this, "移除成功",
@@ -609,7 +597,7 @@ public class MainActivity extends Activity implements ViewFactory {
 		paths = bundle.getStringArrayList("paths1");
 		Log.i("PHOTO - URI", paths.get(0));
 		for (int i = 0; i < paths.size(); i++) {
-			Photo tmpP = new Photo(paths.get(i), null, 1, 3, 0, 1);
+			Photo tmpP = new Photo(pid, paths.get(i), null, 1, 3, 0, 1);
 			// 取得拍攝日期
 			try {
 				ExifInterface exifInterface = new ExifInterface(tmpP.getpPath());
@@ -640,7 +628,8 @@ public class MainActivity extends Activity implements ViewFactory {
 			pList.add(tmpP); // 將相片加入相片群
 			linelay.addView(getImageView(i, photoCount));
 			Log.i("ADD-PHOTO", Integer.toString(photoCount));
-			photoCount++;
+			photoCount++;			
+			pid++;
 		}
 
 	}
@@ -687,7 +676,7 @@ public class MainActivity extends Activity implements ViewFactory {
 			 * String titleText = title_text.getText().toString(); String
 			 * contentText = content_text.getText().toString();
 			 */
-			pList.get(currentPhoto).setRecPath("/sdcard/" + fileName); // 儲存語音路徑
+			pList.get(currentPhoto).setRecPath("/sdcard/PCtemp/" + fileName); // 儲存語音路徑
 			btnPlay.setEnabled(true);
 			btnPlay.setAlpha(1f);
 			btnAddSpe.setText("移除語音");
@@ -728,7 +717,7 @@ public class MainActivity extends Activity implements ViewFactory {
 			// 設定按鈕圖示為錄音中
 			record_button.setImageResource(R.drawable.record_red_icon);
 			// 建立錄音物件
-			myRecoder = new MyRecoder(fileName);
+			myRecoder = new MyRecoder("/PCtemp/" + fileName);
 			// 開始錄音
 			myRecoder.start();
 			// 建立並執行顯示麥克風音量的AsyncTask物件
@@ -760,7 +749,7 @@ public class MainActivity extends Activity implements ViewFactory {
 
 	// 播放語音事件
 	public void onPlay(View view) {
-		Uri uri = Uri.parse("/sdcard/" + fileName);
+		Uri uri = Uri.parse("/sdcard/PCtemp/" + pList.get(currentPhoto).getPid() + ".3gp");
 		mediaPlayer = MediaPlayer.create(this, uri);
 		mediaPlayer.start();
 	}

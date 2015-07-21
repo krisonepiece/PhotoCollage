@@ -10,12 +10,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
 public class MovieView extends Activity {
 	private Button btnFinish;
-	private Button btnRefresh;
+	private ImageButton btnRefresh;
 	private VideoView videoMovie;
 	String urlFCU = "http://140.134.26.13/PhotoCollage/final/final.mp4";
 	String urlHOME = "http://192.168.0.100/pictures/Kris/movie_tmp/out.mp4";
@@ -23,7 +24,7 @@ public class MovieView extends Activity {
 	
 	private void initializeVariables() {
 		btnFinish = (Button)findViewById(R.id.btn_fin);
-		btnRefresh = (Button)findViewById(R.id.btn_refresh);
+		btnRefresh = (ImageButton)findViewById(R.id.btn_refresh);
 		videoMovie = (VideoView)findViewById(R.id.video_movie);
 	}
 	

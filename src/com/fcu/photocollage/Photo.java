@@ -14,8 +14,9 @@ public class Photo {
 	private int turn;			//翻轉 ( 1 為翻轉, 0 為不翻 )
 	private int effect;			//特效 ( 1 為加特效, 0 為不加 )
 	
-	public Photo(String pPath, String recPath, int albumID,
+	public Photo(int pid, String pPath, String recPath, int albumID,
 			 int sec, int turn, int effect) {
+		this.pid = pid;
 		this.pPath = pPath;
 		this.recPath = recPath;
 		this.albumID = albumID;

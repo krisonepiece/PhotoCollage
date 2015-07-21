@@ -13,4 +13,5 @@
     <string name="text_sec">秒數：1</string>
 	<string name="finishText">恭喜您！完成了獨一無二的相片電影</string>
 	<string name="refresh">重新整理</string>
+	<string name="finish">完成</string>
 </resources>
