@@ -76,6 +76,7 @@ public class MainActivity extends Activity implements ViewFactory {
 	// HttpPhotoUpload("http://192.168.0.100/php/UploadPhoto.php", user);
 	private HttpPhotoUpload photoUpload = new HttpPhotoUpload(
 			"http://140.134.26.13/PhotoCollage/php/UploadPhoto.php", user);
+	private String tempPath = "/sdcard/PCtemp";	//暫存資料夾路徑
 	// 增加語音
 	private AlertDialog dialog;
 	private ImageButton record_button;
@@ -127,7 +128,10 @@ public class MainActivity extends Activity implements ViewFactory {
 		btnAddSpe.setEnabled(false);
 		btnAddSpe.setAlpha(0.8f);
 		btnAddEff.setEnabled(false);
-		btnAddEff.setAlpha(0.8f);
+		btnAddEff.setAlpha(0.8f);		
+
+		//建立暫存資料夾
+		createNewFolder(tempPath);
 
 		// 圖片畫廊
 		linelay = (LinearLayout) findViewById(R.id.anogallery);
@@ -213,13 +217,10 @@ public class MainActivity extends Activity implements ViewFactory {
 			public void onClick(View v) {	
 				
 				ViewGroup viewGroup = linelay;
-				String tempPath = "/sdcard/PCtemp";
 				for(int i = 0 ; i < viewGroup.getChildCount() ; i++){
 					ImageView imageView = (ImageView)viewGroup.getChildAt(i);
 					//先把Drawable轉成Bitmap
 					Bitmap bmp = ((BitmapDrawable)imageView.getDrawable()).getBitmap();
-					//建立資料夾
-					createNewFolder(tempPath);
 					//壓縮並建立圖片
 					compressAndCreatePhoto(tempPath + "/" + i + ".jpg", bmp,
 							Bitmap.CompressFormat.JPEG, 70);
