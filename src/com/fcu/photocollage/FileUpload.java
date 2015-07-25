@@ -87,13 +87,14 @@ public class FileUpload {
      * @param fileDescription some description for the file, just to show how to add the usual form parameters
      * @return server response as <code>String</code>
      */
-    public String executeMultiPartRequest(String urlString, File file, String root) {
+    public String executeMultiPartRequest(String urlString, File file, String path, String root) {
  
         HttpPost postRequest = new HttpPost (urlString) ;
         try{
             MultipartEntity multiPartEntity = new MultipartEntity () ;
             
             //The usual form parameters can be added this way 
+            multiPartEntity.addPart("path", new StringBody(path)); 
          	multiPartEntity.addPart("root", new StringBody(root));  
  
             /*Need to construct a FileBody with the file that needs to be attached and specify the mime type of the file. Add the fileBody to the request as an another part.

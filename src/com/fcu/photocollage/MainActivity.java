@@ -598,7 +598,7 @@ public class MainActivity extends Activity implements ViewFactory {
 		paths = bundle.getStringArrayList("paths1");
 		Log.i("PHOTO - URI", paths.get(0));
 		for (int i = 0; i < paths.size(); i++) {
-			Photo tmpP = new Photo(pid, paths.get(i), null, 1, 3, 0, 1);
+			Photo tmpP = new Photo(pid, paths.get(i), null, 2, 3, 0, 1);
 			// 取得拍攝日期
 			try {
 				ExifInterface exifInterface = new ExifInterface(tmpP.getpPath());
