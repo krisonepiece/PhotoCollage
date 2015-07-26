@@ -14,4 +14,12 @@
 	<string name="finishText">恭喜您！完成了獨一無二的相片電影</string>
 	<string name="refresh">重新整理</string>
 	<string name="finish">完成</string>
+	<!-- 相片選擇器 -->
+	<string name="select_album">選擇相簿</string>
+    <string name="select_image">選擇圖片</string>
+    <string name="latest_image">最近照片</string>
+    <string name="photo_album">相簿</string>
+    <string name="main_confirm">確定</string>
+    <string name="main_cancel">取消</string>
+    <string name="main_back">返回</string>
 </resources>

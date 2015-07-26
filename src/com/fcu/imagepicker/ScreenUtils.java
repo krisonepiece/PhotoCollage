@@ -31,12 +31,12 @@ public class ScreenUtils {
         return screenDensity;
     }
 
-    /** 根据手机的分辨率从 dp 的单位 转成为 px(像素) */
+    /** 根據手機的分辨率從 dp 的單位 轉成為 px(像素) */
     public static int dp2px(float dpValue) {
         return (int) (dpValue * getScreenDensity() + 0.5f);
     }
 
-    /** 根据手机的分辨率从 px(像素) 的单位 转成为 dp */
+    /** 根據手機的分辨率從 px(像素) 的單位 轉成為 dp */
     public static int px2dp(float pxValue) {
         return (int) (pxValue / getScreenDensity() + 0.5f);
     }

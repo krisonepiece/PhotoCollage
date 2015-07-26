@@ -7,7 +7,6 @@ import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -19,16 +18,12 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-
 import android.net.Uri;
-import android.os.Environment;
 import android.util.Log;
-import android.widget.Toast;
 
 public class HttpPhotoUpload{
 	private String url;
 	private String user;
-	private String uploadDate;
 	private String pAbPath;
 	private String recAbPath;
 	private String musicAbPath = "C:\\\\inetpub\\\\wwwroot\\\\PhotoCollage\\\\temp";	//音樂上傳絕對路徑
@@ -99,7 +94,12 @@ public class HttpPhotoUpload{
 				if (entity != null) {
 					msg = EntityUtils.toString(entity, "utf-8");// 如果成功將網頁內容存入key
 					pList.get(i).setPid( Integer.parseInt(msg) ); 
-					commend += " " + msg + " " + pList.get(i).getSec() + " " + pList.get(i).getTurn();	//命令[Pid][秒數][翻轉][語音][特效]
+					commend += " " + msg;						//命令[Pid]
+					if(pList.get(i).getRecSec() > pList.get(i).getSec())	//當語音秒數比照片秒數長，則使用語音秒數
+						commend += " " + pList.get(i).getRecSec();	//命令[秒數]
+					else
+						commend += " " + pList.get(i).getSec();		//命令[秒數]
+					commend += " " + pList.get(i).getTurn();	//命令[翻轉]
 					commend += " " + pList.get(i).getEffect();	//命令[特效]
 					if( pList.get(i).getRecPath() != null ){
 						commend += " " + 1;	//命令[語音]

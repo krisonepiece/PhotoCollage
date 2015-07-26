@@ -1,14 +1,12 @@
 package com.fcu.photocollage;
 
-import java.io.File;
-import java.util.Date;
-
 public class Photo {
 	private int pid;			//相片編號
 	private String pname;		//相片名稱
 	private String takeDate;	//拍攝日期
 	private String pPath;		//相片路徑
 	private String recPath;		//語音路徑
+	private int recSec;			//語音秒數
 	private int albumID;		//相簿編號
 	private int sec;			//秒數
 	private int turn;			//翻轉 ( 1 為翻轉, 0 為不翻 )
@@ -19,6 +17,7 @@ public class Photo {
 		this.pid = pid;
 		this.pPath = pPath;
 		this.recPath = recPath;
+		this.recSec = 0;
 		this.albumID = albumID;
 		this.sec = sec;
 		this.turn = turn;
@@ -96,6 +95,15 @@ public class Photo {
 	public void setEffect(int effect) {
 		this.effect = effect;
 	}
+
+	public int getRecSec() {
+		return recSec;
+	}
+
+	public void setRecSec(int recSec) {
+		this.recSec = recSec;
+	}
+	
 /*
 	@Override
 	public String toString() {

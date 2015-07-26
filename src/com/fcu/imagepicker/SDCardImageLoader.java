@@ -2,12 +2,7 @@ package com.fcu.imagepicker;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-
-
-
 import com.fcu.R;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
@@ -16,12 +11,12 @@ import android.widget.ImageView;
 
 
 /**
- * 從SD卡載入圖片
+ * 從SDCard異步加載圖片
  */
 public class SDCardImageLoader {
-    //缓存
+    //緩存
     private LruCache<String, Bitmap> imageCache;
-    // 固定2个线程来执行任务
+    // 固定2個線程來執行任務
     private ExecutorService executorService = Executors.newFixedThreadPool(2);
     private Handler handler = new Handler();
 
@@ -31,11 +26,11 @@ public class SDCardImageLoader {
         this.screenW = screenW;
         this.screenH = screenH;
 
-        // 获取应用程序最大可用内存
+        // 獲取應用程序最大可用內存
         int maxMemory = (int) Runtime.getRuntime().maxMemory();
         int cacheSize = maxMemory / 8;
 
-        // 设置图片缓存大小为程序最大可用内存的1/8
+        // 設置圖片緩存大小為程序最大可用內存的1/8
         imageCache = new LruCache<String, Bitmap>(cacheSize) {
             @Override
             protected int sizeOf(String key, Bitmap value) {
@@ -46,12 +41,12 @@ public class SDCardImageLoader {
 
     private Bitmap loadDrawable(final int smallRate, final String filePath,
                                 final ImageCallback callback) {
-        // 如果缓存过就从缓存中取出数据
+        // 如果緩存過就從緩存中取出數據
         if (imageCache.get(filePath) != null) {
             return imageCache.get(filePath);
         }
 
-        // 如果缓存没有则读取SD卡
+        // 如果緩存沒有則讀取SD卡
         executorService.submit(new Runnable() {
             public void run() {
                 try {
@@ -59,18 +54,18 @@ public class SDCardImageLoader {
                     opt.inJustDecodeBounds = true;
                     BitmapFactory.decodeFile(filePath, opt);
 
-                    // 获取到这个图片的原始宽度和高度
+                    // 獲取到這個圖片的原始寬度和高度
                     int picWidth = opt.outWidth;
                     int picHeight = opt.outHeight;
 
-                    //读取图片失败时直接返回
+                    //讀取圖片失敗時直接返回
                     if (picWidth == 0 || picHeight == 0) {
                         return;
                     }
 
-                    //初始压缩比例
+                    //初始壓縮比例
                     opt.inSampleSize = smallRate;
-                    // 根据屏的大小和图片大小计算出缩放比例
+                    // 根據屏的大小和圖片大小計算出縮放比例
                     if (picWidth > picHeight) {
                         if (picWidth > screenW)
                             opt.inSampleSize *= picWidth / screenW;
@@ -79,7 +74,7 @@ public class SDCardImageLoader {
                             opt.inSampleSize *= picHeight / screenH;
                     }
 
-                    //这次再真正地生成一个有像素的，经过缩放了的bitmap
+                    //這次再真正地生成一個有像素的，經過縮放了的bitmap
                     opt.inJustDecodeBounds = false;
                     final Bitmap bmp = BitmapFactory.decodeFile(filePath, opt);
                     //存入map
@@ -100,11 +95,11 @@ public class SDCardImageLoader {
     }
 
     /**
-     * 异步读取SD卡图片，并按指定的比例进行压缩（最大不超过屏幕像素数）
+     * 異步讀取SD卡圖片，並按指定的比例進行壓縮（最大不超過屏幕像素數）
      *
-     * @param smallRate 压缩比例，不压缩时输入1，此时将按屏幕像素数进行输出
-     * @param filePath  图片在SD卡的全路径
-     * @param imageView 组件
+     * @param smallRate 壓縮比例，不壓縮時輸入1，此時將按屏幕像素數進行輸出
+     * @param filePath  圖片在SD卡的全路徑
+     * @param imageView 組件
      */
     public void loadImage(int smallRate, final String filePath, final ImageView imageView) {
 
@@ -116,7 +111,7 @@ public class SDCardImageLoader {
                     if (bmp != null) {
                         imageView.setImageBitmap(bmp);
                     } else {
-                        imageView.setImageResource(R.drawable.ic_launcher);
+                        imageView.setImageResource(R.drawable.empty_photo);
                     }
                 }
             }
@@ -127,15 +122,15 @@ public class SDCardImageLoader {
                 imageView.setImageBitmap(bmp);
             }
         } else {
-            imageView.setImageResource(R.drawable.ic_launcher);
+            imageView.setImageResource(R.drawable.empty_photo);
         }
 
     }
 
 
-    // 对外界开放的回调接口
+    // 對外界開放的回調接口
     public interface ImageCallback {
-        // 注意 此方法是用来设置目标对象的图像资源
+        // 注意 此方法是用來設置目標對象的圖像資源
         public void imageLoaded(Bitmap imageDrawable);
     }
 }

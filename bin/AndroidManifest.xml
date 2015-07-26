@@ -10,6 +10,7 @@
 	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 	<uses-permission android:name="android.permission.RECORD_AUDIO"/>
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -25,7 +26,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".imagepicker.PhotoWallActivity" />
+        <activity
+            android:name=".imagepicker.PhotoAlbumActivity"
+            android:label="@string/select_album"/>
+
+        <activity
+            android:name=".imagepicker.PhotoWallActivity"
+            android:label="@string/select_image"/>
         <activity android:name=".photocollage.MovieView" android:label="MovieView"></activity>
         
     </application>

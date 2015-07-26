@@ -9,15 +9,11 @@ import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-
 import java.util.ArrayList;
-
 import com.fcu.R;
 
 /**
- * PhotoWall中GridView的适配器
- *
- * @author hanj
+ * PhotoWall中GridView的適配器
  */
 
 public class PhotoWallAdapter extends BaseAdapter {
@@ -26,7 +22,7 @@ public class PhotoWallAdapter extends BaseAdapter {
 
     private SDCardImageLoader loader;
 
-    //记录是否被选择
+    //記錄是否被選擇
     private SparseBooleanArray selectionMap;
 
     public PhotoWallAdapter(Context context, ArrayList<String> imagePathList) {
@@ -61,14 +57,14 @@ public class PhotoWallAdapter extends BaseAdapter {
             convertView = LayoutInflater.from(context).inflate(R.layout.photo_wall_item, null);
             holder = new ViewHolder();
 
-            holder.imageView = (ImageView) convertView.findViewById(R.id.image_item);
-            holder.checkBox = (CheckBox) convertView.findViewById(R.id.check_item);
+            holder.imageView = (ImageView) convertView.findViewById(R.id.photo_wall_item_photo);
+            holder.checkBox = (CheckBox) convertView.findViewById(R.id.photo_wall_item_cb);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        //tag的key必须使用id的方式定义以保证唯一，否则会出现IllegalArgumentException.
+        //tag的key必須使用id的方式定義以保證唯一，否則會出現IllegalArgumentException.
         holder.checkBox.setTag(R.id.tag_first, position);
         holder.checkBox.setTag(R.id.tag_second, holder.imageView);
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
