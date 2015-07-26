@@ -16,9 +16,10 @@
     
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
+    <color name="grey">#F5F5F5</color>
     <color name="green_1">#4CAF50</color>
-    <color name="green_2">#CCFFCC</color>
-    <color name="green_3">#98d98e</color>
-    <color name="green_4">#3eb370</color>
-    <color name="green_5">#028760</color>
+    <color name="green_2">#C8E6C9</color>
+    <color name="green_3">#388E3C</color>
+    <color name="green_4">#8BC34A</color>
+    <color name="green_5">#81C784</color>
 </resources>

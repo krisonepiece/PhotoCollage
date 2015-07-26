@@ -10,9 +10,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+
 import com.fcu.speechtag.MyRecoder;
 import com.fcu.R;
 import com.fcu.imagepicker.*;
+
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -41,6 +43,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageSwitcher;
@@ -58,17 +63,24 @@ public class MainActivity extends Activity implements ViewFactory {
 	// private DisplayMetrics mPhone; // 手機解析度
 	// private TextView textSec; // 秒數文字
 	private Button btnGenerate; // 產生按鈕
-	private Button btnAddPic; // 增加圖片按鈕
-	private Button btnAddMus; // 增加音樂按鈕
-	private Button btnAddSpe; // 增加語音按鈕
-	private Button btnAddEff; // 增加特效按鈕
-	private ImageButton btnDelete; // 刪除照片
+	private Button btnAddPic; 			// 增加圖片按鈕
+	private Button btnAddMus; 			// 增加音樂按鈕
+	private Button btnAddSpe; 			// 增加語音按鈕
+	private Button btnAddEff; 			// 增加特效按鈕
+	private ImageButton btnPlay;		// 播放語音	
+	private ImageButton btnTime;		// 設定時間
+	private ImageButton btnTurnLeft;	// 往左翻轉
+	private ImageButton btnTurnRight;	// 往右翻轉
+	private ImageButton btnMoveLeft;	// 往左移動
+	private ImageButton btnMoveRight;	// 往右移動
+	private ImageButton btnDelete;		// 刪除照片
 	// private SeekBar seekBarSec; // 秒數滑動桿
 	private LinearLayout linelay; // 圖片縮圖線性布局
 	// private ImageSwitcher imgSwi2; // 圖片選擇器
 	private int currentPhoto; // 當前選擇的照片編號
 	private int pid = 0;
 	private final static int MUSIC = 11;
+	private boolean hasMusic = false;
 	private int photoCount = 0;
 	private View lastView;
 	Cursor cursor;
@@ -88,21 +100,24 @@ public class MainActivity extends Activity implements ViewFactory {
 	private MyRecoder myRecoder;
 	private String fileName = null;
 	private View login_view;
-	private MediaPlayer mediaPlayer;
-	private ImageButton btnPlay;
+	private MediaPlayer mediaPlayer;	
 	// private Intent recognizerIntent;
 	// private SpeechRecognizer sr;
 	private LayoutInflater inflater;
 
 	private void initializeVariables() {
-		// textSec = (TextView) findViewById(R.id.text_sec);
 		btnGenerate = (Button) findViewById(R.id.btn_generate);
 		btnAddPic = (Button) findViewById(R.id.btn_addPic);
 		btnAddMus = (Button) findViewById(R.id.btn_addMus);
 		btnAddSpe = (Button) findViewById(R.id.btn_addSpe);
 		btnAddEff = (Button) findViewById(R.id.btn_addEff);
+		btnPlay = (ImageButton) findViewById(R.id.btn_play);
+		btnTime = (ImageButton) findViewById(R.id.btn_setSec);
+		btnTurnLeft = (ImageButton) findViewById(R.id.btn_turnLeft);
+		btnTurnRight = (ImageButton) findViewById(R.id.btn_turnRight);
+		btnMoveLeft = (ImageButton) findViewById(R.id.btn_moveLeft);
+		btnMoveRight = (ImageButton) findViewById(R.id.btn_moveRight);
 		btnDelete = (ImageButton) findViewById(R.id.btn_delete);
-		// seekBarSec = (SeekBar) findViewById(R.id.seekBar_sec);
 		musicPath = null;
 
 		inflater = LayoutInflater.from(MainActivity.this);
@@ -112,8 +127,30 @@ public class MainActivity extends Activity implements ViewFactory {
 		record_volumn = (ProgressBar) login_view
 				.findViewById(R.id.record_volumn);
 		record_ok = (Button) login_view.findViewById(R.id.record_ok);
-		record_cancel = (Button) login_view.findViewById(R.id.record_cancel);
-		btnPlay = (ImageButton) findViewById(R.id.btn_play);
+		record_cancel = (Button) login_view.findViewById(R.id.record_cancel);		
+	}
+	private void initializeBtn() {
+		// 按鈕狀態初始化
+				btnPlay.setEnabled(false);
+				btnPlay.setBackgroundColor(getResources().getColor(R.color.green_5));
+				btnTime.setEnabled(false);
+				btnTime.setBackgroundColor(getResources().getColor(R.color.green_5));
+				btnTurnLeft.setEnabled(false);
+				btnTurnLeft.setBackgroundColor(getResources().getColor(R.color.green_5));
+				btnTurnRight.setEnabled(false);
+				btnTurnRight.setBackgroundColor(getResources().getColor(R.color.green_5));
+				btnMoveLeft.setEnabled(false);
+				btnMoveLeft.setBackgroundColor(getResources().getColor(R.color.green_5));
+				btnMoveRight.setEnabled(false);
+				btnMoveRight.setBackgroundColor(getResources().getColor(R.color.green_5));
+				btnDelete.setEnabled(false);
+				btnDelete.setBackgroundColor(getResources().getColor(R.color.green_5));
+				btnAddSpe.setEnabled(false);
+				btnAddSpe.setBackgroundColor(getResources().getColor(R.color.grey));
+				btnAddEff.setEnabled(false);
+				btnAddEff.setBackgroundColor(getResources().getColor(R.color.grey));
+				btnGenerate.setEnabled(false);
+				btnGenerate.setBackgroundColor(getResources().getColor(R.color.green_5));
 	}
 
 	@Override
@@ -121,15 +158,10 @@ public class MainActivity extends Activity implements ViewFactory {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		ScreenUtils.initScreen(this);
-		// titleTV = (TextView) findViewById(R.id.text_bar);
+		//變數初始化
 		initializeVariables();
-		// 按鈕狀態初始化
-		btnPlay.setEnabled(false);
-		btnPlay.setAlpha(0.8f);
-		btnAddSpe.setEnabled(false);
-		btnAddSpe.setAlpha(0.8f);
-		btnAddEff.setEnabled(false);
-		btnAddEff.setAlpha(0.8f);
+		//按鈕狀態初始化
+		initializeBtn();
 
 		// 建立暫存資料夾
 		createNewFolder(tempPath);
@@ -163,11 +195,18 @@ public class MainActivity extends Activity implements ViewFactory {
 		btnAddMus.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-
-				Intent intent = new Intent();
-				intent.setType("audio/*");
-				intent.setAction(Intent.ACTION_GET_CONTENT);
-				startActivityForResult(intent, MUSIC);
+				hasMusic = !hasMusic;
+				if(hasMusic){
+					Intent intent = new Intent();
+					intent.setType("audio/*");
+					intent.setAction(Intent.ACTION_GET_CONTENT);
+					startActivityForResult(intent, MUSIC);
+				}
+				else{					
+					musicPath = null;
+					btnAddMus.setText("加入音樂");
+				}
+				
 
 			}
 		});
@@ -269,7 +308,7 @@ public class MainActivity extends Activity implements ViewFactory {
 
 		ImageView img = new ImageView(this);
 		img.setBackgroundColor(Color.BLACK); // 設定 ImageView 背景顏色
-		img.setPadding(5, 2, 5, 2); // 設定 ImageView 內縮
+		img.setPadding(5, 3, 5, 3); // 設定 ImageView 內縮
 		img.setAdjustViewBounds(true); // 打開才可設定最大寬度和高度
 		img.setMaxHeight(500); // 設定 ImageView 最大高度
 		img.setMaxWidth(500); // 設定 ImageView 最大寬度
@@ -288,66 +327,7 @@ public class MainActivity extends Activity implements ViewFactory {
 
 		img.setImageBitmap(myBitmap);
 		img.setId(pCount);
-		img.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				// 將上個選中的特效還原初始狀態
-				if (lastView != null) {
-					lastView.setBackgroundColor(Color.BLACK);
-					lastView.setAlpha(1);
-					lastView.setPadding(5, 2, 5, 2);
-				}
-
-				// 點選圖片時的特效
-				v.setBackgroundColor(Color.parseColor("#009900"));
-				v.setAlpha(0.8f);
-				v.setPadding(6, 6, 6, 6);
-				lastView = v;
-				currentPhoto = v.getId(); // 設定當前選擇的照片編號
-				btnAddSpe.setEnabled(true);
-				btnAddSpe.setAlpha(1f);
-				btnAddEff.setEnabled(true);
-				btnAddEff.setAlpha(1f);
-				// seekBarSec.setEnabled(true);
-				// imgSwi2.setImageResource(imgArr[v.getId()]);
-				// File sFile = new File(paths.get(currentPhoto));
-				// fileName = currentPhoto + ".3gp";
-				// File gpFile = new File("/sdcard/" + fileName);
-				Log.i("onClickView", Integer.toString(currentPhoto));
-				// seekBarSec.setProgress(pList.get(currentPhoto).getSec() - 1);
-				// // 設定SeekBar秒數
-				record_ok.setEnabled(false);// 隱藏確定按鈕
-				// 判斷加入語音
-				if (pList.get(currentPhoto).getRecPath() == null) {
-					// 隱藏播放圖示
-					btnPlay.setEnabled(false);
-					btnPlay.setAlpha(0.8f);
-					Log.i("TEST", "File not exist");
-					// 加入語音
-					btnAddSpe.setText("加入語音");
-				} else {
-					btnPlay.setEnabled(true);
-					btnPlay.setAlpha(1f);
-					Log.i("TEST", "File exist");
-					// 移除語音
-					btnAddSpe.setText("移除語音");
-				}
-				// btnAddSpe.setId(v.getId());
-				// Bitmap sBitmap = ScalePicEx(sFile.getAbsolutePath(), 800f,
-				// 500f);
-
-				/*
-				 * Bitmap sBitmap =
-				 * ScalePic(BitmapFactory.decodeFile(sFile.getAbsolutePath()),
-				 * 12, 17); Drawable sDrawable = new
-				 * BitmapDrawable(getResources(), sBitmap);
-				 * imgSwi2.setImageDrawable(sDrawable);
-				 */
-				Toast.makeText(v.getContext(), "您選擇了" + (currentPhoto + 1),
-						Toast.LENGTH_SHORT).show();
-			}
-		});
-		// linelay.setOnDragListener(new DragListener());
-
+		img.setOnClickListener(imgOnClickListener);
 		img.setOnDragListener(new View.OnDragListener() {
 			// DragListener listener;
 			@Override
@@ -362,6 +342,13 @@ public class MainActivity extends Activity implements ViewFactory {
 						view.setVisibility(View.INVISIBLE);
 						Log.i("Drag-start", view.getId() + "");
 						// listener.onDragStarted();
+						btnDelete.setBackgroundColor(getResources().getColor(R.color.green_4));
+						RotateAnimation rotateAnimation = new RotateAnimation(-3.0f, 3.0f, 50.0f, 50.0f);  
+						rotateAnimation.setDuration(100);  
+						rotateAnimation.setRepeatCount(Animation.INFINITE);  
+						rotateAnimation.setRepeatMode(Animation.REVERSE);  
+						btnDelete.setAnimation(rotateAnimation);  
+						rotateAnimation.start();
 					}
 					return true;
 					// 拖動中改變位置事件
@@ -402,6 +389,7 @@ public class MainActivity extends Activity implements ViewFactory {
 						view.setVisibility(View.VISIBLE);
 						// listener.onDragEnded();
 						Log.i("Drag-end", dragState.view.getId() + "");
+						btnDelete.clearAnimation();
 					}
 					break;
 				}
@@ -412,6 +400,7 @@ public class MainActivity extends Activity implements ViewFactory {
 		img.setOnLongClickListener(new View.OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View view) {
+				imgOnClickListener.onClick(view);
 				view.startDrag(null, new View.DragShadowBuilder(view),
 						new DragState(view), 0);
 				return true;
@@ -419,7 +408,59 @@ public class MainActivity extends Activity implements ViewFactory {
 		});
 		return img;
 	}
+	/**
+	 * ImageView 點擊事件
+	 */
+	private View.OnClickListener imgOnClickListener = new View.OnClickListener() {
+		public void onClick(View v) {
+			//啟用按鈕
+			setBtnEnable();
+			// 將上個選中的特效還原初始狀態
+			if (lastView != null) {
+				lastView.setBackgroundColor(Color.BLACK);
+				lastView.setAlpha(1f);
+				lastView.setPadding(5, 3, 5, 3);
+			}
 
+			// 點選圖片時的特效
+			v.setBackgroundColor(getResources().getColor(R.color.green_3));
+			v.setAlpha(0.8f);
+			v.setPadding(6, 6, 6, 6);
+			lastView = v;
+			currentPhoto = v.getId(); // 設定當前選擇的照片編號
+			btnAddSpe.setEnabled(true);
+			btnAddSpe.setAlpha(1f);
+			btnAddEff.setEnabled(true);
+			btnAddEff.setAlpha(1f);
+			// seekBarSec.setEnabled(true);
+			// imgSwi2.setImageResource(imgArr[v.getId()]);
+			// File sFile = new File(paths.get(currentPhoto));
+			// fileName = currentPhoto + ".3gp";
+			// File gpFile = new File("/sdcard/" + fileName);
+			Log.i("onClickView", Integer.toString(currentPhoto));
+			// seekBarSec.setProgress(pList.get(currentPhoto).getSec() - 1);
+			// // 設定SeekBar秒數
+			record_ok.setEnabled(false);// 隱藏確定按鈕
+			// 判斷加入語音
+			if (pList.get(currentPhoto).getRecPath() == null) {
+				// 隱藏播放圖示
+				btnPlay.setEnabled(false);
+				btnPlay.setAlpha(0.8f);
+				Log.i("TEST", "File not exist");
+				// 加入語音
+				btnAddSpe.setText("加入語音");
+			} else {
+				btnPlay.setEnabled(true);
+				btnPlay.setAlpha(1f);
+				Log.i("TEST", "File exist");
+				// 移除語音
+				btnAddSpe.setText("移除語音");
+			}
+			Toast.makeText(v.getContext(), "您選擇了" + (currentPhoto + 1),
+					Toast.LENGTH_SHORT).show();
+		}
+	};
+	
 	public View makeView() {
 		ImageView v1 = new ImageView(this);
 		v1.setBackgroundColor(0xFF000000); // 設定背景顏色
@@ -637,6 +678,9 @@ public class MainActivity extends Activity implements ViewFactory {
 			Log.i("ADD-PHOTO", Integer.toString(photoCount));
 			photoCount++;
 			pid++;
+			//啟用產生電影按鈕
+			btnGenerate.setEnabled(true);
+			btnGenerate.setBackgroundColor(getResources().getColor(R.color.green_1));
 		}
 
 	}
@@ -649,20 +693,8 @@ public class MainActivity extends Activity implements ViewFactory {
 			// 取得音樂路徑uri
 			Uri uri = data.getData();
 			musicPath = MagicFileChooser.getAbsolutePathFromUri(this, uri);
-			/*
-			 * final String[] projection = { MediaStore.MediaColumns.DATA };
-			 * 
-			 * try { cursor = this.getContentResolver().query(uri, projection,
-			 * null, null, null); if (cursor != null && cursor.moveToFirst()) {
-			 * final int index =
-			 * cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-			 * musicPath = cursor.getString(index); } } catch (Exception ex) {
-			 * ex.printStackTrace(); if (cursor != null) { cursor.close(); } }
-			 */
-
-			// musicPath = path;
+			btnAddMus.setText("移除音樂");
 			Log.i("Music - Path", musicPath);
-
 		}
 	}
 
@@ -857,6 +889,17 @@ public class MainActivity extends Activity implements ViewFactory {
 		pList.remove(currentPhoto);
 		viewGroup.removeView(currentView);
 		photoCount--;
+		//判斷選擇的照片
+		if( viewGroup.getChildAt(currentPhoto) != null ){
+			imgOnClickListener.onClick(viewGroup.getChildAt(currentPhoto));
+		}
+		else if( viewGroup.getChildAt(currentPhoto - 1) != null ){
+			imgOnClickListener.onClick(viewGroup.getChildAt(currentPhoto - 1));
+		}
+		else{
+			initializeBtn();
+		}
+		
 	}
 
 	// 加入特效事件
@@ -940,6 +983,16 @@ public class MainActivity extends Activity implements ViewFactory {
 					pList.remove(dragState.view.getId());
 					photoCount--;
 					removeView(viewGroup, dragState);
+					//判斷選擇的照片
+					if( viewGroup.getChildAt(currentPhoto) != null ){
+						imgOnClickListener.onClick(viewGroup.getChildAt(currentPhoto));
+					}
+					else if( viewGroup.getChildAt(currentPhoto - 1) != null ){
+						imgOnClickListener.onClick(viewGroup.getChildAt(currentPhoto - 1));
+					}
+					else{
+						initializeBtn();
+					}
 					break;
 				case DragEvent.ACTION_DRAG_ENDED:
 					// NOTE: Needed because ACTION_DRAG_EXITED may not be sent
@@ -1001,7 +1054,27 @@ public class MainActivity extends Activity implements ViewFactory {
 			});
 		}
 	}
-
+	/**
+	 * 啟用按鈕
+	 */
+	private void setBtnEnable() {
+				btnTime.setEnabled(true);
+				btnTime.setBackgroundColor(getResources().getColor(R.color.green_1));
+				btnTurnLeft.setEnabled(true);
+				btnTurnLeft.setBackgroundColor(getResources().getColor(R.color.green_1));
+				btnTurnRight.setEnabled(true);
+				btnTurnRight.setBackgroundColor(getResources().getColor(R.color.green_1));
+				btnMoveLeft.setEnabled(true);
+				btnMoveLeft.setBackgroundColor(getResources().getColor(R.color.green_1));
+				btnMoveRight.setEnabled(true);
+				btnMoveRight.setBackgroundColor(getResources().getColor(R.color.green_1));
+				btnDelete.setEnabled(true);
+				btnDelete.setBackgroundColor(getResources().getColor(R.color.green_1));
+				btnAddSpe.setEnabled(true);
+				btnAddSpe.setBackgroundColor(getResources().getColor(R.color.white));
+				btnAddEff.setEnabled(true);
+				btnAddEff.setBackgroundColor(getResources().getColor(R.color.white));
+	}
 	/*
 	 * final int newViewGroupHeight = measureViewGroupHeight(viewGroup); if
 	 * (viewGroup.getChildCount() > 0) { // Prevent the flash of the new height
