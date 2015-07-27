@@ -44,7 +44,9 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
 import android.view.animation.RotateAnimation;
+import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -343,12 +345,7 @@ public class MainActivity extends Activity implements ViewFactory {
 						Log.i("Drag-start", view.getId() + "");
 						// listener.onDragStarted();
 						btnDelete.setBackgroundColor(getResources().getColor(R.color.green_4));
-						RotateAnimation rotateAnimation = new RotateAnimation(-3.0f, 3.0f, 50.0f, 50.0f);  
-						rotateAnimation.setDuration(100);  
-						rotateAnimation.setRepeatCount(Animation.INFINITE);  
-						rotateAnimation.setRepeatMode(Animation.REVERSE);  
-						btnDelete.setAnimation(rotateAnimation);  
-						rotateAnimation.start();
+						shakeAnimation(btnDelete);
 					}
 					return true;
 					// 拖動中改變位置事件
@@ -438,13 +435,13 @@ public class MainActivity extends Activity implements ViewFactory {
 			if (pList.get(currentPhoto).getRecPath() == null) {
 				// 隱藏播放圖示
 				btnPlay.setEnabled(false);
-				btnPlay.setAlpha(0.8f);
+				btnPlay.setBackgroundColor(getResources().getColor(R.color.green_5));
 				Log.i("TEST", "File not exist");
 				// 加入語音
 				btnAddSpe.setText("加入語音");
 			} else {
 				btnPlay.setEnabled(true);
-				btnPlay.setAlpha(1f);
+				btnPlay.setBackgroundColor(getResources().getColor(R.color.green_1));
 				Log.i("TEST", "File exist");
 				// 移除語音
 				btnAddSpe.setText("移除語音");
@@ -453,7 +450,26 @@ public class MainActivity extends Activity implements ViewFactory {
 					Toast.LENGTH_SHORT).show();
 		}
 	};
-	
+	private void shakeAnimation(View v){
+		//創建動畫集
+		AnimationSet animSet = new AnimationSet(true);
+		//加入大小動畫
+		ScaleAnimation scaleAnimation = new ScaleAnimation(1.0f, 1.1f, 1.0f, 1.1f);  
+		scaleAnimation.setDuration(100);
+		animSet.addAnimation(scaleAnimation);
+		//加入角度動畫
+		RotateAnimation rotateAnimation = new RotateAnimation(-4.0f, 4.0f, 60.0f, 50.0f);  
+		rotateAnimation.setDuration(100);  
+		rotateAnimation.setRepeatCount(Animation.INFINITE);  
+		rotateAnimation.setRepeatMode(Animation.REVERSE);  
+		animSet.addAnimation(rotateAnimation);
+		//加入位置動畫
+		TranslateAnimation translateAnimation = new TranslateAnimation(0.0f, -13.0f, 0.0f, -5.0f);  
+		translateAnimation.setDuration(100);
+		animSet.addAnimation(translateAnimation);
+		v.setAnimation(animSet);  
+		v.startAnimation(animSet);
+	}
 	public View makeView() {
 		ImageView v1 = new ImageView(this);
 		v1.setBackgroundColor(0xFF000000); // 設定背景顏色
@@ -707,7 +723,7 @@ public class MainActivity extends Activity implements ViewFactory {
 			pList.get(currentPhoto).setRecSec(getRecTime("/sdcard/PCtemp/" + fileName));
 			pList.get(currentPhoto).setRecPath("/sdcard/PCtemp/" + fileName); // 儲存語音路徑
 			btnPlay.setEnabled(true);
-			btnPlay.setAlpha(1f);
+			btnPlay.setBackgroundColor(getResources().getColor(R.color.green_1));
 			btnAddSpe.setText("移除語音");
 			record_ok.setEnabled(false);// 隱藏確定按鈕
 			// 取得回傳資料用的Intent物件

@@ -168,7 +168,8 @@ public class PhotoAlbumActivity extends Activity {
         		MediaStore.Images.Media.DATA,
         		MediaStore.Images.Media.BUCKET_DISPLAY_NAME
         };
-        String groupby =  "1=1) group by (" + MediaStore.Images.Media.BUCKET_DISPLAY_NAME; 
+        String key_MIME_TYPE = MediaStore.Images.Media.MIME_TYPE;
+        String groupby =  "1=1 or " + key_MIME_TYPE + "=? or " + key_MIME_TYPE + "=? or " + key_MIME_TYPE + "=? ) group by (" + MediaStore.Images.Media.BUCKET_DISPLAY_NAME; 
         // Get the base URI for the People table in the Contacts content provider.
         Uri mImageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         
@@ -177,7 +178,7 @@ public class PhotoAlbumActivity extends Activity {
         Cursor cursor = mContentResolver.query(mImageUri,
                 projection, // Which columns to return
                 groupby,         // Which rows to return (all rows)
-                null,       // Selection arguments (none)
+                new String[]{"image/jpg", "image/jpeg", "image/png"},       // Selection arguments (none)
                 null          // Ordering
                 );
         

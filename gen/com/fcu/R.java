@@ -29,6 +29,7 @@ public final class R {
         public static final int green_3=0x7f05000c;
         public static final int green_4=0x7f05000d;
         public static final int green_5=0x7f05000e;
+        public static final int green_6=0x7f05000f;
         public static final int grey=0x7f050009;
         public static final int image_checked_bg=0x7f050003;
         /** 主題顏色
@@ -76,53 +77,54 @@ public final class R {
         public static final int add_music=0x7f020000;
         public static final int add_pic=0x7f020001;
         public static final int add_picture_64=0x7f020002;
-        public static final int arrow_right=0x7f020003;
-        public static final int back_arrow=0x7f020004;
-        public static final int back_arrow_press=0x7f020005;
-        public static final int bg_photomovie=0x7f020006;
-        public static final int camera_effects_magic_wand_32=0x7f020007;
-        public static final int cancel_music_32=0x7f020008;
-        public static final int check_green=0x7f020009;
-        public static final int check_null=0x7f02000a;
-        public static final int check_yes=0x7f02000b;
-        public static final int checkbox_checked=0x7f02000c;
-        public static final int checkbox_normal=0x7f02000d;
-        public static final int checkbox_selector=0x7f02000e;
-        public static final int create_movie=0x7f02000f;
-        public static final int download_tray_32=0x7f020010;
-        public static final int empty_photo=0x7f020011;
-        public static final int ic_launcher=0x7f020012;
-        public static final int images_32=0x7f020013;
-        public static final int left_arrow_32=0x7f020014;
-        public static final int move_left_arrow_32=0x7f020015;
-        public static final int move_right_arrow_32=0x7f020016;
-        public static final int movie_film_32=0x7f020017;
-        public static final int movie_film_64=0x7f020018;
-        public static final int no=0x7f020019;
-        public static final int note_beam_32=0x7f02001a;
-        public static final int passage_of_time_32=0x7f02001b;
-        public static final int pause_icon=0x7f02001c;
-        public static final int play=0x7f02001d;
-        public static final int play_icon=0x7f02001e;
-        public static final int record=0x7f02001f;
-        public static final int record_dark_icon=0x7f020020;
-        public static final int record_red_icon=0x7f020021;
-        public static final int record_sound_icon=0x7f020022;
-        public static final int recorder_microphone_32=0x7f020023;
-        public static final int refresh_button_32=0x7f020024;
-        public static final int retangle_drawable=0x7f020025;
-        public static final int right_arrow_32=0x7f020026;
-        public static final int rubbish_bin_32=0x7f020027;
-        public static final int selector_back_arrow=0x7f020028;
-        public static final int selector_checkbox=0x7f020029;
-        public static final int share_32=0x7f02002a;
-        public static final int speaker_black=0x7f02002b;
-        public static final int speaker_blue=0x7f02002c;
-        public static final int speaker_filled_audio_tool_32=0x7f02002d;
-        public static final int speaker_muted_mode_32=0x7f02002e;
-        public static final int stop_icon=0x7f02002f;
-        public static final int uncheck=0x7f020030;
-        public static final int xml_back_textcolor=0x7f020031;
+        public static final int app_icon=0x7f020003;
+        public static final int arrow_right=0x7f020004;
+        public static final int back_arrow=0x7f020005;
+        public static final int back_arrow_press=0x7f020006;
+        public static final int bg_photomovie=0x7f020007;
+        public static final int camera_effects_magic_wand_32=0x7f020008;
+        public static final int cancel_music_32=0x7f020009;
+        public static final int check_green=0x7f02000a;
+        public static final int check_null=0x7f02000b;
+        public static final int check_yes=0x7f02000c;
+        public static final int checkbox_checked=0x7f02000d;
+        public static final int checkbox_normal=0x7f02000e;
+        public static final int checkbox_selector=0x7f02000f;
+        public static final int create_movie=0x7f020010;
+        public static final int download_tray_32=0x7f020011;
+        public static final int empty_photo=0x7f020012;
+        public static final int ic_launcher=0x7f020013;
+        public static final int images_32=0x7f020014;
+        public static final int left_arrow_32=0x7f020015;
+        public static final int move_left_arrow_32=0x7f020016;
+        public static final int move_right_arrow_32=0x7f020017;
+        public static final int movie_film_32=0x7f020018;
+        public static final int movie_film_64=0x7f020019;
+        public static final int no=0x7f02001a;
+        public static final int note_beam_32=0x7f02001b;
+        public static final int passage_of_time_32=0x7f02001c;
+        public static final int pause_icon=0x7f02001d;
+        public static final int play=0x7f02001e;
+        public static final int play_icon=0x7f02001f;
+        public static final int record=0x7f020020;
+        public static final int record_dark_icon=0x7f020021;
+        public static final int record_red_icon=0x7f020022;
+        public static final int record_sound_icon=0x7f020023;
+        public static final int recorder_microphone_32=0x7f020024;
+        public static final int refresh_button_32=0x7f020025;
+        public static final int retangle_drawable=0x7f020026;
+        public static final int right_arrow_32=0x7f020027;
+        public static final int rubbish_bin_32=0x7f020028;
+        public static final int selector_back_arrow=0x7f020029;
+        public static final int selector_checkbox=0x7f02002a;
+        public static final int share_32=0x7f02002b;
+        public static final int speaker_black=0x7f02002c;
+        public static final int speaker_blue=0x7f02002d;
+        public static final int speaker_filled_audio_tool_32=0x7f02002e;
+        public static final int speaker_muted_mode_32=0x7f02002f;
+        public static final int stop_icon=0x7f020030;
+        public static final int uncheck=0x7f020031;
+        public static final int xml_back_textcolor=0x7f020032;
     }
     public static final class id {
         public static final int action_settings=0x7f07002b;
@@ -214,11 +216,13 @@ public final class R {
         /** 
         Base application theme, dependent on API level. This theme is replaced
         by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+
     
 
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
             backward-compatibility can go here.
+
         
 
         Base application theme for API 11+. This theme completely replaces
@@ -233,8 +237,7 @@ public final class R {
  API 14 theme customizations can go here. 
          */
         public static final int AppBaseTheme=0x7f090000;
-        /**  Application theme. 
- All customizations that are NOT specific to a particular API-level can go here. 
+        /**  inherit from the material theme 
          */
         public static final int AppTheme=0x7f090001;
         public static final int MyCheckBox=0x7f090002;
@@ -243,6 +246,7 @@ public final class R {
         <item name="android:shadowColor">@color/gray</item>
         <item name="android:shadowDy">0.5</item>
         <item name="android:shadowRadius">1</item>
+
         
          */
         public static final int topbarTittleTheme=0x7f090003;
