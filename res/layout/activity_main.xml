@@ -18,7 +18,7 @@
         android:id="@+id/widget151"
         android:layout_width="match_parent"
         android:layout_height="140sp"
-        android:layout_margin="2sp" >
+        android:layout_marginBottom="2sp" >
 
         <HorizontalScrollView
             android:id="@+id/honScview"
@@ -28,7 +28,8 @@
             <LinearLayout
                 android:id="@+id/anogallery"
                 android:layout_width="wrap_content"
-                android:layout_height="140sp"
+                android:layout_height="138sp"
+                android:paddingTop="2sp"
                 android:layout_marginBottom="2sp"
                 android:layout_gravity="center_vertical"
                 android:background="@color/black"

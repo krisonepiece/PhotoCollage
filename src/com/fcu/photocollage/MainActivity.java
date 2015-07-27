@@ -389,6 +389,8 @@ public class MainActivity extends Activity implements ViewFactory {
 						view.setVisibility(View.VISIBLE);
 						// listener.onDragEnded();
 						Log.i("Drag-end", dragState.view.getId() + "");
+						if(btnDelete.isEnabled())
+							btnDelete.setBackgroundColor(getResources().getColor(R.color.green_1));
 						btnDelete.clearAnimation();
 					}
 					break;
@@ -428,18 +430,9 @@ public class MainActivity extends Activity implements ViewFactory {
 			v.setPadding(6, 6, 6, 6);
 			lastView = v;
 			currentPhoto = v.getId(); // 設定當前選擇的照片編號
-			btnAddSpe.setEnabled(true);
-			btnAddSpe.setAlpha(1f);
-			btnAddEff.setEnabled(true);
-			btnAddEff.setAlpha(1f);
-			// seekBarSec.setEnabled(true);
-			// imgSwi2.setImageResource(imgArr[v.getId()]);
-			// File sFile = new File(paths.get(currentPhoto));
-			// fileName = currentPhoto + ".3gp";
-			// File gpFile = new File("/sdcard/" + fileName);
+
 			Log.i("onClickView", Integer.toString(currentPhoto));
-			// seekBarSec.setProgress(pList.get(currentPhoto).getSec() - 1);
-			// // 設定SeekBar秒數
+
 			record_ok.setEnabled(false);// 隱藏確定按鈕
 			// 判斷加入語音
 			if (pList.get(currentPhoto).getRecPath() == null) {
