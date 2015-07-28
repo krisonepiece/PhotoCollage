@@ -18,6 +18,7 @@ import com.fcu.imagepicker.*;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -28,10 +29,13 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.RippleDrawable;
 import android.media.ExifInterface;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.DragEvent;
@@ -65,17 +69,17 @@ public class MainActivity extends Activity implements ViewFactory {
 	// private DisplayMetrics mPhone; // 手機解析度
 	// private TextView textSec; // 秒數文字
 	private Button btnGenerate; // 產生按鈕
-	private Button btnAddPic; 			// 增加圖片按鈕
-	private Button btnAddMus; 			// 增加音樂按鈕
-	private Button btnAddSpe; 			// 增加語音按鈕
-	private Button btnAddEff; 			// 增加特效按鈕
-	private ImageButton btnPlay;		// 播放語音	
-	private ImageButton btnTime;		// 設定時間
-	private ImageButton btnTurnLeft;	// 往左翻轉
-	private ImageButton btnTurnRight;	// 往右翻轉
-	private ImageButton btnMoveLeft;	// 往左移動
-	private ImageButton btnMoveRight;	// 往右移動
-	private ImageButton btnDelete;		// 刪除照片
+	private Button btnAddPic; // 增加圖片按鈕
+	private Button btnAddMus; // 增加音樂按鈕
+	private Button btnAddSpe; // 增加語音按鈕
+	private Button btnAddEff; // 增加特效按鈕
+	private ImageButton btnPlay; // 播放語音
+	private ImageButton btnTime; // 設定時間
+	private ImageButton btnTurnLeft; // 往左翻轉
+	private ImageButton btnTurnRight; // 往右翻轉
+	private ImageButton btnMoveLeft; // 往左移動
+	private ImageButton btnMoveRight; // 往右移動
+	private ImageButton btnDelete; // 刪除照片
 	// private SeekBar seekBarSec; // 秒數滑動桿
 	private LinearLayout linelay; // 圖片縮圖線性布局
 	// private ImageSwitcher imgSwi2; // 圖片選擇器
@@ -86,12 +90,9 @@ public class MainActivity extends Activity implements ViewFactory {
 	private int photoCount = 0;
 	private View lastView;
 	Cursor cursor;
-	// 上傳圖片
-	// private HttpPhotoUpload photoUpload = new
-	// HttpPhotoUpload("http://192.168.0.100/php/UploadPhoto.php", user);
-	private HttpPhotoUpload photoUpload = new HttpPhotoUpload(
-			"http://140.134.26.13/PhotoCollage/php/UploadPhoto.php", user);
+	private HttpPhotoUpload photoUpload;
 	private String tempPath = "/sdcard/PCtemp"; // 暫存資料夾路徑
+	private ProgressDialog progressDialog;
 	// 增加語音
 	private AlertDialog dialog;
 	private ImageButton record_button;
@@ -102,7 +103,7 @@ public class MainActivity extends Activity implements ViewFactory {
 	private MyRecoder myRecoder;
 	private String fileName = null;
 	private View login_view;
-	private MediaPlayer mediaPlayer;	
+	private MediaPlayer mediaPlayer;
 	// private Intent recognizerIntent;
 	// private SpeechRecognizer sr;
 	private LayoutInflater inflater;
@@ -129,30 +130,36 @@ public class MainActivity extends Activity implements ViewFactory {
 		record_volumn = (ProgressBar) login_view
 				.findViewById(R.id.record_volumn);
 		record_ok = (Button) login_view.findViewById(R.id.record_ok);
-		record_cancel = (Button) login_view.findViewById(R.id.record_cancel);		
+		record_cancel = (Button) login_view.findViewById(R.id.record_cancel);
 	}
+
 	private void initializeBtn() {
 		// 按鈕狀態初始化
-				btnPlay.setEnabled(false);
-				btnPlay.setBackgroundColor(getResources().getColor(R.color.green_5));
-				btnTime.setEnabled(false);
-				btnTime.setBackgroundColor(getResources().getColor(R.color.green_5));
-				btnTurnLeft.setEnabled(false);
-				btnTurnLeft.setBackgroundColor(getResources().getColor(R.color.green_5));
-				btnTurnRight.setEnabled(false);
-				btnTurnRight.setBackgroundColor(getResources().getColor(R.color.green_5));
-				btnMoveLeft.setEnabled(false);
-				btnMoveLeft.setBackgroundColor(getResources().getColor(R.color.green_5));
-				btnMoveRight.setEnabled(false);
-				btnMoveRight.setBackgroundColor(getResources().getColor(R.color.green_5));
-				btnDelete.setEnabled(false);
-				btnDelete.setBackgroundColor(getResources().getColor(R.color.green_5));
-				btnAddSpe.setEnabled(false);
-				btnAddSpe.setBackgroundColor(getResources().getColor(R.color.grey));
-				btnAddEff.setEnabled(false);
-				btnAddEff.setBackgroundColor(getResources().getColor(R.color.grey));
-				btnGenerate.setEnabled(false);
-				btnGenerate.setBackgroundColor(getResources().getColor(R.color.green_5));
+		btnPlay.setEnabled(false);
+		btnPlay.setBackgroundColor(getResources().getColor(R.color.green_5));
+		btnTime.setEnabled(false);
+		btnTime.setBackgroundColor(getResources().getColor(R.color.green_5));
+		btnTurnLeft.setEnabled(false);
+		btnTurnLeft
+				.setBackgroundColor(getResources().getColor(R.color.green_5));
+		btnTurnRight.setEnabled(false);
+		btnTurnRight.setBackgroundColor(getResources()
+				.getColor(R.color.green_5));
+		btnMoveLeft.setEnabled(false);
+		btnMoveLeft
+				.setBackgroundColor(getResources().getColor(R.color.green_5));
+		btnMoveRight.setEnabled(false);
+		btnMoveRight.setBackgroundColor(getResources()
+				.getColor(R.color.green_5));
+		btnDelete.setEnabled(false);
+		btnDelete.setBackgroundColor(getResources().getColor(R.color.green_5));
+		btnAddSpe.setEnabled(false);
+		btnAddSpe.setBackgroundColor(getResources().getColor(R.color.grey));
+		btnAddEff.setEnabled(false);
+		btnAddEff.setBackgroundColor(getResources().getColor(R.color.grey));
+		btnGenerate.setEnabled(false);
+		btnGenerate
+				.setBackgroundColor(getResources().getColor(R.color.green_5));
 	}
 
 	@Override
@@ -160,9 +167,9 @@ public class MainActivity extends Activity implements ViewFactory {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		ScreenUtils.initScreen(this);
-		//變數初始化
+		// 變數初始化
 		initializeVariables();
-		//按鈕狀態初始化
+		// 按鈕狀態初始化
 		initializeBtn();
 
 		// 建立暫存資料夾
@@ -198,17 +205,15 @@ public class MainActivity extends Activity implements ViewFactory {
 			@Override
 			public void onClick(View v) {
 				hasMusic = !hasMusic;
-				if(hasMusic){
+				if (hasMusic) {
 					Intent intent = new Intent();
 					intent.setType("audio/*");
 					intent.setAction(Intent.ACTION_GET_CONTENT);
 					startActivityForResult(intent, MUSIC);
-				}
-				else{					
+				} else {
 					musicPath = null;
 					btnAddMus.setText("加入音樂");
 				}
-				
 
 			}
 		});
@@ -269,36 +274,44 @@ public class MainActivity extends Activity implements ViewFactory {
 					pList.get(i).setpPath(tempPath + "/" + i + ".jpg");
 				}
 				// 上傳
-				photoUpload.upload(pList, musicPath);
+				photoUpload = new HttpPhotoUpload(handler, user);
+				photoUpload.setUploadFile(pList, musicPath);
+				Thread createMovieThread = new Thread(photoUpload);
+				createMovieThread.start();
 
+				progressDialog = new ProgressDialog(MainActivity.this);
+				progressDialog.setTitle("建立電影");
+				progressDialog.setMessage("請稍後...");
+				progressDialog.setCanceledOnTouchOutside(false);
+				progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+				progressDialog.show();
+
+				
+
+			}
+		});
+	}
+	/**
+	 * 接收上傳檔案進度
+	 */
+	private Handler handler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			Bundle data = msg.getData();
+	        String value = data.getString("value");
+			progressDialog.setMessage(value);
+			
+			if (value.equals("完成")) {
+				progressDialog.dismiss();
 				// 清空暫存檔案
 				deleteFolder(tempPath);
-
 				// 切換預覽頁面
 				Intent it = new Intent();
 				it.setClass(MainActivity.this, MovieView.class);
 				startActivity(it);
 			}
-		});
-		/*
-		 * // SeekBar秒數限制 seekBarSec.setOnSeekBarChangeListener(new
-		 * OnSeekBarChangeListener() {
-		 * 
-		 * @Override public void onStopTrackingTouch(SeekBar seekBar) {
-		 * 
-		 * }
-		 * 
-		 * @Override public void onStartTrackingTouch(SeekBar seekBar) {
-		 * 
-		 * }
-		 * 
-		 * @Override public void onProgressChanged(SeekBar seekBar, int
-		 * progress, boolean fromUser) { textSec.setText("秒數：" + (progress +
-		 * 1)); pList.get(currentPhoto).setSec(progress + 1);
-		 * 
-		 * } });
-		 */
-	}
+		}
+	};
 
 	/**
 	 * 點選縮圖事件
@@ -344,7 +357,8 @@ public class MainActivity extends Activity implements ViewFactory {
 						view.setVisibility(View.INVISIBLE);
 						Log.i("Drag-start", view.getId() + "");
 						// listener.onDragStarted();
-						btnDelete.setBackgroundColor(getResources().getColor(R.color.green_4));
+						btnDelete.setBackgroundColor(getResources().getColor(
+								R.color.green_4));
 						shakeAnimation(btnDelete);
 					}
 					return true;
@@ -386,8 +400,9 @@ public class MainActivity extends Activity implements ViewFactory {
 						view.setVisibility(View.VISIBLE);
 						// listener.onDragEnded();
 						Log.i("Drag-end", dragState.view.getId() + "");
-						if(btnDelete.isEnabled())
-							btnDelete.setBackgroundColor(getResources().getColor(R.color.green_1));
+						if (btnDelete.isEnabled())
+							btnDelete.setBackgroundColor(getResources()
+									.getColor(R.color.green_1));
 						btnDelete.clearAnimation();
 					}
 					break;
@@ -407,12 +422,13 @@ public class MainActivity extends Activity implements ViewFactory {
 		});
 		return img;
 	}
+
 	/**
 	 * ImageView 點擊事件
 	 */
 	private View.OnClickListener imgOnClickListener = new View.OnClickListener() {
 		public void onClick(View v) {
-			//啟用按鈕
+			// 啟用按鈕
 			setBtnEnable();
 			// 將上個選中的特效還原初始狀態
 			if (lastView != null) {
@@ -435,13 +451,15 @@ public class MainActivity extends Activity implements ViewFactory {
 			if (pList.get(currentPhoto).getRecPath() == null) {
 				// 隱藏播放圖示
 				btnPlay.setEnabled(false);
-				btnPlay.setBackgroundColor(getResources().getColor(R.color.green_5));
+				btnPlay.setBackgroundColor(getResources().getColor(
+						R.color.green_5));
 				Log.i("TEST", "File not exist");
 				// 加入語音
 				btnAddSpe.setText("加入語音");
 			} else {
 				btnPlay.setEnabled(true);
-				btnPlay.setBackgroundColor(getResources().getColor(R.color.green_1));
+				btnPlay.setBackgroundColor(getResources().getColor(
+						R.color.green_1));
 				Log.i("TEST", "File exist");
 				// 移除語音
 				btnAddSpe.setText("移除語音");
@@ -450,26 +468,31 @@ public class MainActivity extends Activity implements ViewFactory {
 					Toast.LENGTH_SHORT).show();
 		}
 	};
-	private void shakeAnimation(View v){
-		//創建動畫集
+
+	private void shakeAnimation(View v) {
+		// 創建動畫集
 		AnimationSet animSet = new AnimationSet(true);
-		//加入大小動畫
-		ScaleAnimation scaleAnimation = new ScaleAnimation(1.0f, 1.1f, 1.0f, 1.1f);  
+		// 加入大小動畫
+		ScaleAnimation scaleAnimation = new ScaleAnimation(1.0f, 1.1f, 1.0f,
+				1.1f);
 		scaleAnimation.setDuration(100);
 		animSet.addAnimation(scaleAnimation);
-		//加入角度動畫
-		RotateAnimation rotateAnimation = new RotateAnimation(-4.0f, 4.0f, 60.0f, 50.0f);  
-		rotateAnimation.setDuration(100);  
-		rotateAnimation.setRepeatCount(Animation.INFINITE);  
-		rotateAnimation.setRepeatMode(Animation.REVERSE);  
+		// 加入角度動畫
+		RotateAnimation rotateAnimation = new RotateAnimation(-4.0f, 4.0f,
+				60.0f, 50.0f);
+		rotateAnimation.setDuration(100);
+		rotateAnimation.setRepeatCount(Animation.INFINITE);
+		rotateAnimation.setRepeatMode(Animation.REVERSE);
 		animSet.addAnimation(rotateAnimation);
-		//加入位置動畫
-		TranslateAnimation translateAnimation = new TranslateAnimation(0.0f, -13.0f, 0.0f, -5.0f);  
+		// 加入位置動畫
+		TranslateAnimation translateAnimation = new TranslateAnimation(0.0f,
+				-13.0f, 0.0f, -5.0f);
 		translateAnimation.setDuration(100);
 		animSet.addAnimation(translateAnimation);
-		v.setAnimation(animSet);  
+		v.setAnimation(animSet);
 		v.startAnimation(animSet);
 	}
+
 	public View makeView() {
 		ImageView v1 = new ImageView(this);
 		v1.setBackgroundColor(0xFF000000); // 設定背景顏色
@@ -687,9 +710,10 @@ public class MainActivity extends Activity implements ViewFactory {
 			Log.i("ADD-PHOTO", Integer.toString(photoCount));
 			photoCount++;
 			pid++;
-			//啟用產生電影按鈕
+			// 啟用產生電影按鈕
 			btnGenerate.setEnabled(true);
-			btnGenerate.setBackgroundColor(getResources().getColor(R.color.green_1));
+			btnGenerate.setBackgroundColor(getResources().getColor(
+					R.color.green_1));
 		}
 
 	}
@@ -720,7 +744,8 @@ public class MainActivity extends Activity implements ViewFactory {
 			 * String titleText = title_text.getText().toString(); String
 			 * contentText = content_text.getText().toString();
 			 */
-			pList.get(currentPhoto).setRecSec(getRecTime("/sdcard/PCtemp/" + fileName));
+			pList.get(currentPhoto).setRecSec(
+					getRecTime("/sdcard/PCtemp/" + fileName));
 			pList.get(currentPhoto).setRecPath("/sdcard/PCtemp/" + fileName); // 儲存語音路徑
 			btnPlay.setEnabled(true);
 			btnPlay.setBackgroundColor(getResources().getColor(R.color.green_1));
@@ -791,6 +816,7 @@ public class MainActivity extends Activity implements ViewFactory {
 			// sr.cancel();
 		}
 	}
+
 	/**
 	 * 取得語音長度
 	 */
@@ -804,10 +830,10 @@ public class MainActivity extends Activity implements ViewFactory {
 			stream.close();
 			mp.prepare();
 			duration = mp.getDuration();
-			Log.i("Rec-Time",recName + ":" + duration);
+			Log.i("Rec-Time", recName + ":" + duration);
 			mp.release();
 			return duration;
-			
+
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -838,7 +864,7 @@ public class MainActivity extends Activity implements ViewFactory {
 		builder.setTitle("設定照片秒數");
 		builder.setIcon(android.R.drawable.ic_dialog_info);
 		builder.setSingleChoiceItems(new String[] { "3", "4", "5", "6", "7",
-				"8", "9", "10" }, pList.get(currentPhoto).getSec()/1000 - 3,
+				"8", "9", "10" }, pList.get(currentPhoto).getSec() / 1000 - 3,
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
 						pList.get(currentPhoto).setSec((which + 3) * 1000);
@@ -898,17 +924,15 @@ public class MainActivity extends Activity implements ViewFactory {
 		pList.remove(currentPhoto);
 		viewGroup.removeView(currentView);
 		photoCount--;
-		//判斷選擇的照片
-		if( viewGroup.getChildAt(currentPhoto) != null ){
+		// 判斷選擇的照片
+		if (viewGroup.getChildAt(currentPhoto) != null) {
 			imgOnClickListener.onClick(viewGroup.getChildAt(currentPhoto));
-		}
-		else if( viewGroup.getChildAt(currentPhoto - 1) != null ){
+		} else if (viewGroup.getChildAt(currentPhoto - 1) != null) {
 			imgOnClickListener.onClick(viewGroup.getChildAt(currentPhoto - 1));
-		}
-		else{
+		} else {
 			initializeBtn();
 		}
-		
+
 	}
 
 	// 加入特效事件
@@ -992,14 +1016,14 @@ public class MainActivity extends Activity implements ViewFactory {
 					pList.remove(dragState.view.getId());
 					photoCount--;
 					removeView(viewGroup, dragState);
-					//判斷選擇的照片
-					if( viewGroup.getChildAt(currentPhoto) != null ){
-						imgOnClickListener.onClick(viewGroup.getChildAt(currentPhoto));
-					}
-					else if( viewGroup.getChildAt(currentPhoto - 1) != null ){
-						imgOnClickListener.onClick(viewGroup.getChildAt(currentPhoto - 1));
-					}
-					else{
+					// 判斷選擇的照片
+					if (viewGroup.getChildAt(currentPhoto) != null) {
+						imgOnClickListener.onClick(viewGroup
+								.getChildAt(currentPhoto));
+					} else if (viewGroup.getChildAt(currentPhoto - 1) != null) {
+						imgOnClickListener.onClick(viewGroup
+								.getChildAt(currentPhoto - 1));
+					} else {
 						initializeBtn();
 					}
 					break;
@@ -1063,27 +1087,33 @@ public class MainActivity extends Activity implements ViewFactory {
 			});
 		}
 	}
+
 	/**
 	 * 啟用按鈕
 	 */
 	private void setBtnEnable() {
-				btnTime.setEnabled(true);
-				btnTime.setBackgroundColor(getResources().getColor(R.color.green_1));
-				btnTurnLeft.setEnabled(true);
-				btnTurnLeft.setBackgroundColor(getResources().getColor(R.color.green_1));
-				btnTurnRight.setEnabled(true);
-				btnTurnRight.setBackgroundColor(getResources().getColor(R.color.green_1));
-				btnMoveLeft.setEnabled(true);
-				btnMoveLeft.setBackgroundColor(getResources().getColor(R.color.green_1));
-				btnMoveRight.setEnabled(true);
-				btnMoveRight.setBackgroundColor(getResources().getColor(R.color.green_1));
-				btnDelete.setEnabled(true);
-				btnDelete.setBackgroundColor(getResources().getColor(R.color.green_1));
-				btnAddSpe.setEnabled(true);
-				btnAddSpe.setBackgroundColor(getResources().getColor(R.color.white));
-				btnAddEff.setEnabled(true);
-				btnAddEff.setBackgroundColor(getResources().getColor(R.color.white));
+		btnTime.setEnabled(true);
+		btnTime.setBackgroundColor(getResources().getColor(R.color.green_1));
+		btnTurnLeft.setEnabled(true);
+		btnTurnLeft
+				.setBackgroundColor(getResources().getColor(R.color.green_1));
+		btnTurnRight.setEnabled(true);
+		btnTurnRight.setBackgroundColor(getResources()
+				.getColor(R.color.green_1));
+		btnMoveLeft.setEnabled(true);
+		btnMoveLeft
+				.setBackgroundColor(getResources().getColor(R.color.green_1));
+		btnMoveRight.setEnabled(true);
+		btnMoveRight.setBackgroundColor(getResources()
+				.getColor(R.color.green_1));
+		btnDelete.setEnabled(true);
+		btnDelete.setBackgroundColor(getResources().getColor(R.color.green_1));
+		btnAddSpe.setEnabled(true);
+		btnAddSpe.setBackgroundColor(getResources().getColor(R.color.white));
+		btnAddEff.setEnabled(true);
+		btnAddEff.setBackgroundColor(getResources().getColor(R.color.white));
 	}
+
 	/*
 	 * final int newViewGroupHeight = measureViewGroupHeight(viewGroup); if
 	 * (viewGroup.getChildCount() > 0) { // Prevent the flash of the new height

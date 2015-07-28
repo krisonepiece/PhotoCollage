@@ -195,19 +195,21 @@ public class PhotoAlbumActivity extends Activity {
 
                     File parentFile = new File(imagePath).getParentFile();
                     String parentPath = null;
-                    if(parentFile != null)
-                    	parentPath = parentFile.getAbsolutePath();
-                    	if(parentPath != null){
-	                    	//不掃瞄重複路徑
-	                    	if (!cachePath.contains(parentPath)) {
-	                            list.add(new PhotoAlbumLVItem(parentPath, getImageCount(parentFile),
-	                                    getFirstImagePath(parentFile)));
-	                            cachePath.add(parentPath);
-	                        }
-                    	}
-                    else
-                        Log.i("ALBUM", "Put in cache failed");                    
-                    
+                    try{
+		                if(parentFile != null){
+		                	parentPath = parentFile.getAbsolutePath();
+		                	if(parentPath != null){
+		                    	//不掃瞄重複路徑
+		                    	if (!cachePath.contains(parentPath)) {
+		                            list.add(new PhotoAlbumLVItem(parentPath, getImageCount(parentFile),
+		                                    getFirstImagePath(parentFile)));
+		                            cachePath.add(parentPath);
+		                        }
+		                	}
+		                }
+                    }catch(Exception e){
+                    	Log.i("ALBUM", "Put in cache failed");
+                    }
 
                     if (!cursor.moveToPrevious()) {
                         break;

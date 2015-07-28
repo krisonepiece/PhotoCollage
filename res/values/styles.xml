@@ -22,6 +22,7 @@
         <item name="android:colorPrimaryDark">@color/green_6</item>
         <!-- theme UI controls like checkboxes and text fields -->
         <item name="android:colorAccent">@color/green_1</item>
+        <item name="android:colorControlHighlight">@color/green_6</item>
     </style>
 
     <style name="MyCheckBox" parent="@android:style/Widget.CompoundButton.CheckBox">
