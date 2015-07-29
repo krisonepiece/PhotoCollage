@@ -166,7 +166,7 @@ public class MainActivity extends Activity implements ViewFactory {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		ScreenUtils.initScreen(this);
+//		ScreenUtils.initScreen(this);
 		// 變數初始化
 		initializeVariables();
 		// 按鈕狀態初始化
