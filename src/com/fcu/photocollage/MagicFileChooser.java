@@ -3,7 +3,7 @@ package com.fcu.photocollage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
- 
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ClipData;
@@ -18,6 +18,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.util.Log;
  
 @SuppressLint("NewApi")
 public class MagicFileChooser {
@@ -176,6 +177,21 @@ public class MagicFileChooser {
 				if ("primary".equals(type)) {
 					String path = Environment.getExternalStorageDirectory() + "/" + divide[1];
 					return createFileObjFromPath(path, mustCanRead);
+				}
+				else {
+				     String sdpath=null;
+
+				     if(new File("/storage/extSdCard/").exists()){
+				          sdpath="/storage/extSdCard/";
+				          Log.i("Sd Cardext Path",sdpath);
+				     }
+				     if(new File("/storage/sdcard1/").exists()){
+				          sdpath="/storage/sdcard1/";
+				          Log.i("Sd Card1 Path",sdpath);
+				     }
+
+				     Log.i ("EXT", sdpath + divide[1]);
+				     return createFileObjFromPath(sdpath + divide[1], mustCanRead);
 				}
 			} else if ("com.android.providers.downloads.documents".equals(authority)) {
 				// 下載目錄

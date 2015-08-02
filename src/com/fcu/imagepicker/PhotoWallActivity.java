@@ -65,7 +65,7 @@ public class PhotoWallActivity extends Activity {
                 //選擇圖片完成,回到起始頁面
                 ArrayList<String> paths = getSelectImagePaths();
 
-                Intent intent = new Intent(PhotoWallActivity.this, com.fcu.photocollage.MainActivity.class);
+                Intent intent = new Intent(PhotoWallActivity.this, com.fcu.menu.MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.putExtra("code", paths != null ? 100 : 101);
                 Bundle bundle = new Bundle();

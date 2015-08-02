@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/green_2" >
+    android:background="@color/green_100" >
 
     <VideoView
         android:id="@+id/video_movie"
@@ -27,7 +27,7 @@
             android:layout_marginEnd="4dp"
             android:layout_marginTop="2dp"
             android:padding="3dp"
-            android:background="@color/green_1"            
+            android:background="@color/green_500"            
             android:scaleType="centerInside"
             android:src="@drawable/share_32"
             android:elevation="3dp" />
@@ -42,7 +42,7 @@
             android:layout_marginEnd="4dp"
             android:layout_marginTop="2dp"
             android:padding="3dp"
-            android:background="@color/green_1"            
+            android:background="@color/green_500"            
             android:scaleType="centerInside"
             android:src="@drawable/download_tray_32"
             android:elevation="3dp" />
@@ -57,7 +57,7 @@
             android:layout_marginEnd="4dp"
             android:layout_marginTop="2dp"
             android:padding="3dp"
-            android:background="@color/green_1"            
+            android:background="@color/green_500"            
             android:scaleType="centerInside"
             android:src="@drawable/refresh_button_32"
             android:elevation="3dp" />

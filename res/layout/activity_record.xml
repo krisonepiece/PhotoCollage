@@ -16,8 +16,7 @@
             android:id="@+id/record_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/record_sound_icon"
-            android:onClick="clickRecord" />
+            android:src="@drawable/ic_mic_none_white_24dp" />
  
         <ProgressBar
             android:id="@+id/record_volumn"
@@ -39,14 +38,12 @@
  
             <Button
                 android:id="@+id/record_cancel"
-                android:text="@android:string/cancel"
-                android:onClick="onSubmit" />
+                android:text="@android:string/cancel" />
  
             <Button
                 android:id="@+id/record_ok"
                 android:text="@android:string/ok"
-                android:enabled="false"
-                android:onClick="onSubmit" />
+                android:enabled="false"/>
         </TableRow>
     </TableLayout>
  

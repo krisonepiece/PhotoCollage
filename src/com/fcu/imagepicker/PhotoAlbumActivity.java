@@ -16,7 +16,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import com.fcu.R;
-import com.fcu.photocollage.MainActivity;
+import com.fcu.photocollage.PhotoMovieMain;
 import static com.fcu.imagepicker.Utility.isImage;
 import java.io.File;
 import java.util.ArrayList;
@@ -98,7 +98,7 @@ public class PhotoAlbumActivity extends Activity {
      * 點擊返回時，回到相冊頁面
      */
     private void backAction() {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, PhotoMovieMain.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
