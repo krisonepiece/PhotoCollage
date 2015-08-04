@@ -9,10 +9,9 @@ import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-
+import android.widget.TextView;
 import java.io.File;
 import java.util.ArrayList;
-
 import com.fcu.R;
 import com.squareup.picasso.Picasso;
 
@@ -54,8 +53,8 @@ public class PhotoWallAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        String filePath = (String) getItem(position);
-                
+        String filePath = (String) getItem(position); 
+        
         final ViewHolder holder;
         if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(R.layout.photo_wall_item, null);
@@ -63,6 +62,7 @@ public class PhotoWallAdapter extends BaseAdapter {
 
             holder.imageView = (ImageView) convertView.findViewById(R.id.photo_wall_item_photo);
             holder.checkBox = (CheckBox) convertView.findViewById(R.id.photo_wall_item_cb);
+            holder.textView = (TextView) convertView.findViewById(R.id.photo_wall_item_text);
             convertView.setTag(holder);            
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -71,6 +71,7 @@ public class PhotoWallAdapter extends BaseAdapter {
         //tag的key必須使用id的方式定義以保證唯一，否則會出現IllegalArgumentException.
         holder.checkBox.setTag(R.id.tag_first, position);
         holder.checkBox.setTag(R.id.tag_second, holder.imageView);
+    
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -95,6 +96,9 @@ public class PhotoWallAdapter extends BaseAdapter {
         .error(R.drawable.empty_photo)
         .into(holder.imageView);
         holder.imageView.setTag(filePath);
+        //取得拍攝日期
+        holder.textView.setText( Utility.getTakeDate(filePath, "M月d日") );
+
 //        loader.loadImage(4, filePath, holder.imageView);
         return convertView;
     }
@@ -102,6 +106,7 @@ public class PhotoWallAdapter extends BaseAdapter {
     private class ViewHolder {
         ImageView imageView;
         CheckBox checkBox;
+        TextView textView;
     }
 
     public SparseBooleanArray getSelectionMap() {

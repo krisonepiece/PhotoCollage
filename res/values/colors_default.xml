@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Toolbar -->
+    <color name="color_primary">@color/md_green_500</color>
+    <color name="color_primaryDark">@color/md_green_700</color>
+    <color name="color_accent">@color/md_red_500</color>
+    <color name="color_primaryText">@android:color/white</color>
+    <color name="color_NavigationBar">@color/md_green_700</color>
+    
+    <!-- Member -->
+	<color name="bg_login">#26ae90</color>
+    <color name="bg_register">#2e3237</color>
+    <color name="bg_main">#428bca</color>
+    <color name="input_login">#222222</color>
+    <color name="input_login_hint">#999999</color>
+    <color name="input_register">#888888</color>
+    <color name="input_register_bg">#3b4148</color>
+    <color name="input_register_hint">#5e6266</color>
+    <color name="btn_login">#26ae90</color>
+    <color name="btn_login_bg">#eceef1</color>
+    <color name="lbl_name">#333333</color>
+    <color name="btn_logut_bg">#ff6861</color>
+</resources>

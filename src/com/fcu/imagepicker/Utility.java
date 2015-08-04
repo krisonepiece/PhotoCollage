@@ -1,7 +1,14 @@
 package com.fcu.imagepicker;
 
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import android.content.Context;
+import android.media.ExifInterface;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
 
 public class Utility {
@@ -50,5 +57,27 @@ public class Utility {
         return fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png")
         		|| fileName.endsWith(".JPG") || fileName.endsWith(".JPEG") || fileName.endsWith(".PNG");
     }
+    
+    /**取得拍攝日期*/
+    public static String getTakeDate(String filePath, String dateFormat){
+    	try {
+			ExifInterface exifInterface = new ExifInterface(filePath);
+			String FDateTime = exifInterface.getAttribute(ExifInterface.TAG_DATETIME);
+			if (FDateTime != null) {
+				// 先行定義時間格式
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
 
+				// 轉換時間格式
+				Date date = (Date) sdf.parse(FDateTime);
+				sdf = new SimpleDateFormat(dateFormat);
+				// 加入拍攝時間
+				return sdf.format(date);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return null;
+    }
 }

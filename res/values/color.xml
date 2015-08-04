@@ -14,6 +14,7 @@
     <color name="back_color_noclick">#ffff</color>
     <color name="back_color_click">#8fff</color>
     
+    <color name="alpha">#00000000</color>
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
     <color name="grey">#F5F5F5</color>
@@ -28,19 +29,7 @@
     <!-- Material Design Light Green -->
     <color name="light_green_500">#8BC34A</color>
     
-    <!-- 會員介面 -->
-	<color name="bg_login">#26ae90</color>
-    <color name="bg_register">#2e3237</color>
-    <color name="bg_main">#428bca</color>
-    <color name="input_login">#222222</color>
-    <color name="input_login_hint">#999999</color>
-    <color name="input_register">#888888</color>
-    <color name="input_register_bg">#3b4148</color>
-    <color name="input_register_hint">#5e6266</color>
-    <color name="btn_login">#26ae90</color>
-    <color name="btn_login_bg">#eceef1</color>
-    <color name="lbl_name">#333333</color>
-    <color name="btn_logut_bg">#ff6861</color>
+
     
    
 </resources>

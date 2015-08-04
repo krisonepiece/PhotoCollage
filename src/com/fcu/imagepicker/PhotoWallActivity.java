@@ -8,26 +8,43 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.SparseBooleanArray;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
+
 import java.io.File;
+import java.nio.channels.GatheringByteChannel;
 import java.util.ArrayList;
+
 import com.fcu.R;
+
 import static com.fcu.imagepicker.Utility.isImage;
 
 /**
  * 選擇照片頁面
  * Created by hanj on 14-10-15.
  */
-public class PhotoWallActivity extends Activity {
-    private TextView titleTV;
+public class PhotoWallActivity extends Fragment {
+//    private TextView titleTV;
+//    private Button backBtn;
+//    private Button confirmBtn;
     private ArrayList<String> list;
     private GridView mPhotoWall;
     private PhotoWallAdapter adapter;
+    private View thisView;
 
     /**
      * 當前文件夾路徑
@@ -36,53 +53,59 @@ public class PhotoWallActivity extends Activity {
     /**
      * 當前展示的是否為最近照片
      */
-    private boolean isLatest = true;
+    private boolean isLatest = true;   
+    
+    public void init() {    	
+//    	titleTV = (TextView) thisView.findViewById(R.id.topbar_title_tv);
+//        backBtn = (Button) thisView.findViewById(R.id.topbar_left_btn);
+//        confirmBtn = (Button) findViewById(R.id.action_check);
+        mPhotoWall = (GridView) thisView.findViewById(R.id.photo_wall_grid);
+	}
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.photo_wall);
-
-        titleTV = (TextView) findViewById(R.id.topbar_title_tv);
-        titleTV.setText(R.string.latest_image);
-
-        Button backBtn = (Button) findViewById(R.id.topbar_left_btn);
-        Button confirmBtn = (Button) findViewById(R.id.topbar_right_btn);
-        backBtn.setText(R.string.photo_album);
-        backBtn.setVisibility(View.VISIBLE);
-        confirmBtn.setText(R.string.main_confirm);
-        confirmBtn.setVisibility(View.VISIBLE);
-
-        mPhotoWall = (GridView) findViewById(R.id.photo_wall_grid);
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+    	super.onCreateView(inflater, container, savedInstanceState);
+    	thisView = inflater.inflate(R.layout.photo_wall, container, false);
+    	
+    	init();
+    	((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.latest_image);
+//    	titleTV.setText(R.string.latest_image);
+//    	backBtn.setText(R.string.photo_album);
+//        backBtn.setVisibility(View.VISIBLE);
+        //confirmBtn.setText(R.string.main_confirm);
+        //confirmBtn.setVisibility(View.VISIBLE);
         list = getLatestImagePaths(100);
-        adapter = new PhotoWallAdapter(this, list);
+        adapter = new PhotoWallAdapter(getActivity(), list);
         mPhotoWall.setAdapter(adapter);
+        
+//        //選擇照片完成
+//        confirmBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                //選擇圖片完成,回到起始頁面
+//                ArrayList<String> paths = getSelectImagePaths();
+//
+//                Intent intent = new Intent(getActivity(), com.fcu.menu.MainActivity.class);
+//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                intent.putExtra("code", paths != null ? 100 : 101);
+//                Bundle bundle = new Bundle();
+//                bundle.putStringArrayList("paths", paths);
+//                intent.putExtras(bundle);
+//                startActivity(intent);
+//            }
+//        });
 
-        //選擇照片完成
-        confirmBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //選擇圖片完成,回到起始頁面
-                ArrayList<String> paths = getSelectImagePaths();
-
-                Intent intent = new Intent(PhotoWallActivity.this, com.fcu.menu.MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.putExtra("code", paths != null ? 100 : 101);
-                Bundle bundle = new Bundle();
-                bundle.putStringArrayList("paths", paths);
-                intent.putExtras(bundle);
-                startActivity(intent);
-            }
-        });
-
-        //點擊返回，回到選擇相冊頁面
-        backBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                backAction();
-            }
-        });
-    }
+//        //點擊返回，回到選擇相冊頁面
+//        backBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                //backAction();
+//            }
+//        });
+    	
+		return thisView;
+	}
 
     /**
      * 第一次跳轉至相冊頁面時，傳遞最新照片信息
@@ -93,32 +116,30 @@ public class PhotoWallActivity extends Activity {
      * 點擊返回時，跳轉至相冊頁面
      */
     private void backAction() {
-        Intent intent = new Intent(this, PhotoAlbumActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-
+//        Intent intent = new Intent(this, PhotoAlbumActivity.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        Fragment phoneAlbumFg = new PhotoAlbumActivity();
+		FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         //傳遞「最近照片」分類信息
+		Bundle bundle = new Bundle();
         if (firstIn) {
             if (list != null && list.size() > 0) {
-                intent.putExtra("latest_count", list.size());
-                intent.putExtra("latest_first_img", list.get(0));
+            	bundle.putInt("latest_count", list.size());
+            	bundle.putString("latest_first_img", list.get(0));
+            	phoneAlbumFg.setArguments(bundle);
+//                intent.putExtra("latest_count", list.size());
+//                intent.putExtra("latest_first_img", list.get(0));
             }
             firstIn = false;
         }
-
-        startActivity(intent);
+        fragmentManager.beginTransaction()
+				        .replace(R.id.phone_frame, phoneAlbumFg)
+				        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
+						.addToBackStack(null)
+						.commit();
+        //startActivity(intent);
         //動畫
-        overridePendingTransition(R.anim.in_from_left, R.anim.out_from_right);
-    }
-
-    //重寫返回鍵
-    @Override
-    public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            backAction();
-            return true;
-        } else {
-            return super.onKeyDown(keyCode, event);
-        }
+        //getActivity().overridePendingTransition(R.anim.in_from_left, R.anim.out_from_right);
     }
 
     /**
@@ -132,10 +153,10 @@ public class PhotoWallActivity extends Activity {
         if (code == 100) {   //某個相冊
             int lastSeparator = folderPath.lastIndexOf(File.separator);
             String folderName = folderPath.substring(lastSeparator + 1);
-            titleTV.setText(folderName);
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(folderName);
             list.addAll(getAllImagePathsByFolder(folderPath));
         } else if (code == 200) {  //最近照片
-            titleTV.setText(R.string.latest_image);
+        	((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.latest_image);
             list.addAll(getLatestImagePaths(100));
         }
 
@@ -176,7 +197,7 @@ public class PhotoWallActivity extends Activity {
         String key_MIME_TYPE = MediaStore.Images.Media.MIME_TYPE;
         String key_DATA = MediaStore.Images.Media.DATA;
 
-        ContentResolver mContentResolver = getContentResolver();
+        ContentResolver mContentResolver = getActivity().getContentResolver();
 
         // 只查詢jpg和png的圖片,按最新修改排序
         Cursor cursor = mContentResolver.query(mImageUri, new String[]{key_DATA},
@@ -221,33 +242,71 @@ public class PhotoWallActivity extends Activity {
                 selectedImageList.add(list.get(i));
             }
         }
-
         return selectedImageList;
     }
 
     //從相冊頁面跳轉至此頁
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
+	@Override
+	public void onResume() {
+		super.onResume();
+		//動畫
+        getActivity().overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
+        if(getArguments() != null){
+	        int code = getArguments().getInt("code", -1);
+	        if (code == 100) {
+	            //某個相冊
+	            String folderPath = getArguments().getString("folderPath");
+	            if (isLatest || (folderPath != null && !folderPath.equals(currentFolder))) {
+	                currentFolder = folderPath;
+	                updateView(100, currentFolder);
+	                isLatest = false;
+	            }
+	        } else if (code == 200) {
+	            //「最近照片」
+	            if (!isLatest) {
+	                updateView(200, null);
+	                isLatest = true;
+	            }
+	        }
+	        getArguments().remove("code");
+        }        
+	}
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+	    super.onCreate(savedInstanceState);
+	    setHasOptionsMenu(true);
+	}
+	
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		super.onCreateOptionsMenu(menu, inflater);
+//		MenuItem photoMenu;
+//		photoMenu = menu.add(Menu.NONE, 0, 0, "back");
+//		photoMenu.setIcon(R.drawable.selector_back_arrow);
+	}
 
-        //動畫
-        overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
-
-        int code = intent.getIntExtra("code", -1);
-        if (code == 100) {
-            //某個相冊
-            String folderPath = intent.getStringExtra("folderPath");
-            if (isLatest || (folderPath != null && !folderPath.equals(currentFolder))) {
-                currentFolder = folderPath;
-                updateView(100, currentFolder);
-                isLatest = false;
-            }
-        } else if (code == 200) {
-            //「最近照片」
-            if (!isLatest) {
-                updateView(200, null);
-                isLatest = true;
-            }
-        }
-    }
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		//super.onOptionsItemSelected(item);
+		switch(item.getItemId()){
+			case R.id.action_check:
+				//選擇圖片完成,回到起始頁面
+				ArrayList<String> paths = getSelectImagePaths();
+				Intent intent = new Intent(getActivity(), com.fcu.menu.MainActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				intent.putExtra("code", paths != null ? 100 : 101);
+				Bundle bundle = new Bundle();
+				bundle.putStringArrayList("paths", paths);
+				intent.putExtras(bundle);
+				startActivity(intent);
+				return true;
+			
+			case android.R.id.home:
+				backAction();
+				return true;
+		}
+		return false;
+	}
+	
 }

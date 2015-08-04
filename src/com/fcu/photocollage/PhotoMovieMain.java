@@ -175,7 +175,7 @@ public class PhotoMovieMain extends Fragment {
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(getActivity(),
-						com.fcu.imagepicker.PhotoWallActivity.class);
+						com.fcu.imagepicker.AlbumMainActivity.class);
 				startActivityForResult(intent,PHOTO);
 
 			}
@@ -705,33 +705,16 @@ public class PhotoMovieMain extends Fragment {
 		Log.i("PHOTO - URI", paths.get(0));
 		for (int i = 0; i < paths.size(); i++) {
 			Photo tmpP = new Photo(pid, paths.get(i), null, 2, 3000, 0, 1);
+			
 			// 取得拍攝日期
-			try {
-				ExifInterface exifInterface = new ExifInterface(tmpP.getpPath());
-				String FDateTime = exifInterface
-						.getAttribute(ExifInterface.TAG_DATETIME);
-				if (FDateTime != null) {
-					// 先行定義時間格式
-					SimpleDateFormat sdf = new SimpleDateFormat(
-							"yyyy:MM:dd HH:mm:ss");
-
-					// 轉換時間格式
-					Date date = (Date) sdf.parse(FDateTime);
-					Log.i("GET1", date.toString());
-					sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-					String date2 = sdf.format(date);
-					Log.i("GET2", date2);
-					// 加入拍攝時間
-					tmpP.setTakeDate(date2);
-				} else {
-					tmpP.setTakeDate("0000-00-00 00:00:00");
-				}
-			} catch (IOException e) {
-				Log.i("GET", "TakeDate Error");
-				e.printStackTrace();
-			} catch (ParseException e) {
-				e.printStackTrace();
+			String takeDate = Utility.getTakeDate(tmpP.getpPath(),"yyyy/MM/dd HH:mm:ss");
+			if(takeDate != null){
+				tmpP.setTakeDate(takeDate);
 			}
+			else{
+				tmpP.setTakeDate("0000-00-00 00:00:00");
+			}
+
 			pList.add(tmpP); // 將相片加入相片群
 			linelay.addView(getImageView(i, photoCount));
 			Log.i("ADD-PHOTO", Integer.toString(photoCount));
