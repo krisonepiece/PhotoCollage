@@ -23,13 +23,13 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 	private static final int DATABASE_VERSION = 1;
 
 	// Database Name
-	private static final String DATABASE_NAME = "android_api";
+	private static final String DATABASE_NAME = "photoCollage.db";
 
 	// Login table name
 	private static final String TABLE_LOGIN = "login";
 
 	// Login Table Columns names
-	private static final String KEY_ID = "id";
+	private static final String KEY_ID = "_id";
 	private static final String KEY_NAME = "name";
 	private static final String KEY_EMAIL = "email";
 	private static final String KEY_UID = "uid";

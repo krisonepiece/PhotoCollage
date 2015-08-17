@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -36,7 +37,8 @@ import java.util.HashSet;
 /**
  * 分相冊查看SD卡所有圖片。
  */
-public class PhotoAlbumActivity extends Fragment {
+public class PhotoAlbumFragment extends Fragment {
+	private static final String TAG = "PhotoAlbumFragment";
 	private View thisView;
 //	private TextView titleTV;
 //	private Button cancelBtn;
@@ -52,10 +54,12 @@ public class PhotoAlbumActivity extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
-		thisView = inflater.inflate(R.layout.photo_album, container, false);
+		thisView = inflater.inflate(R.layout.fragment_photo_album, container, false);
 		
-		init();
+		init();	
 		
+		((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
 		if (!Utility.isSDcardOK()) {
 			Utility.showToast(getActivity(), "SD卡不可用。");
 			backAction();
@@ -97,7 +101,7 @@ public class PhotoAlbumActivity extends Fragment {
 //				Intent intent = new Intent(PhotoAlbumActivity.this,
 //						PhotoWallActivity.class);
 //				intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-				Fragment phonePhotoFg = new PhotoWallActivity();
+				Fragment phonePhotoFg = new PhotoWallFragment();
 				FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 	            
 				// 第一行為「最近照片」
@@ -332,7 +336,10 @@ public class PhotoAlbumActivity extends Fragment {
 	
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		//super.onCreateOptionsMenu(menu, inflater);		
+		Log.d(TAG,"onCreateOptionsMenu");
+//		MenuItem mi = menu.findItem(R.id.action_check);
+//		mi.setVisible(false);
+		super.onCreateOptionsMenu(menu, inflater);	
 		
 	}
 
@@ -340,14 +347,17 @@ public class PhotoAlbumActivity extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		//super.onOptionsItemSelected(item);
 		switch(item.getItemId()){
-			case R.id.topbar_right_btn:
-				backAction();
-				return true;
-			
 			case android.R.id.home:
 				backAction();
 				return true;
 		}
 		return false;
 	}
+	@Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        Log.d(TAG,"setUserVisibleHint");
+        // 每次切換Fragment調用的方法
+
+    }
 }

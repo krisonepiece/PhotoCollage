@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -37,7 +38,8 @@ import static com.fcu.imagepicker.Utility.isImage;
  * 選擇照片頁面
  * Created by hanj on 14-10-15.
  */
-public class PhotoWallActivity extends Fragment {
+public class PhotoWallFragment extends Fragment {
+	private static final String TAG = "PhotoWallFragment";
 //    private TextView titleTV;
 //    private Button backBtn;
 //    private Button confirmBtn;
@@ -66,9 +68,11 @@ public class PhotoWallActivity extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
     	super.onCreateView(inflater, container, savedInstanceState);
-    	thisView = inflater.inflate(R.layout.photo_wall, container, false);
+    	thisView = inflater.inflate(R.layout.fragment_photo_wall, container, false);
     	
     	init();
+    	((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
     	((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.latest_image);
 //    	titleTV.setText(R.string.latest_image);
 //    	backBtn.setText(R.string.photo_album);
@@ -118,7 +122,7 @@ public class PhotoWallActivity extends Fragment {
     private void backAction() {
 //        Intent intent = new Intent(this, PhotoAlbumActivity.class);
 //        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        Fragment phoneAlbumFg = new PhotoAlbumActivity();
+        Fragment phoneAlbumFg = new PhotoAlbumFragment();
 		FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         //傳遞「最近照片」分類信息
 		Bundle bundle = new Bundle();
@@ -249,9 +253,11 @@ public class PhotoWallActivity extends Fragment {
 	@Override
 	public void onResume() {
 		super.onResume();
+		Log.i("onResume","phone");
 		//動畫
-        getActivity().overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
-        if(getArguments() != null){
+        //getActivity().overridePendingTransition(R.anim.in_from_right, R.anim.out_from_left);
+		
+		if(getArguments() != null){
 	        int code = getArguments().getInt("code", -1);
 	        if (code == 100) {
 	            //某個相冊
@@ -270,7 +276,7 @@ public class PhotoWallActivity extends Fragment {
 	        }
 	        getArguments().remove("code");
         }        
-	}
+	}	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -280,10 +286,10 @@ public class PhotoWallActivity extends Fragment {
 	
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		super.onCreateOptionsMenu(menu, inflater);
-//		MenuItem photoMenu;
-//		photoMenu = menu.add(Menu.NONE, 0, 0, "back");
-//		photoMenu.setIcon(R.drawable.selector_back_arrow);
+		Log.d(TAG,"onCreateOptionsMenu");
+//		MenuItem mi = menu.findItem(R.id.action_check);
+//		mi.setVisible(true);
+		super.onCreateOptionsMenu(menu, inflater);	
 	}
 
 	@Override
@@ -308,5 +314,11 @@ public class PhotoWallActivity extends Fragment {
 		}
 		return false;
 	}
-	
+	@Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        Log.d(TAG,"setUserVisibleHint");
+        // 每次切換Fragment調用的方法
+
+    }
 }

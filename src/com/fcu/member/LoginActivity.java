@@ -40,13 +40,14 @@ public class LoginActivity extends Fragment {
 	private EditText inputEmail;
 	private EditText inputPassword;
 	private ProgressDialog pDialog;
+	private SQLiteHandler db;
 	private SessionManager session;
 	private View thisView;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		thisView = inflater.inflate(R.layout.activity_login, container, false);
+		thisView = inflater.inflate(R.layout.fragment_login, container, false);
 		
 		inputEmail = (EditText) thisView.findViewById(R.id.email);
 		inputPassword = (EditText) thisView.findViewById(R.id.password);
@@ -59,6 +60,9 @@ public class LoginActivity extends Fragment {
 
 		// Session manager
 		session = new SessionManager(getActivity().getApplicationContext());
+		
+		// SQLite database handler
+		db = new SQLiteHandler(getActivity().getApplicationContext());
 
 		// Check if user is already logged in or not
 		if (session.isLoggedIn()) {
@@ -133,15 +137,22 @@ public class LoginActivity extends Fragment {
 
 							// Check for error node in json
 							if (!error) {
+								// User successfully stored in MySQL
+								// Now store the user in sqlite
+								String uid = jObj.getString("uid");
+
+								JSONObject user = jObj.getJSONObject("user");
+								String name = user.getString("name");
+								String email = user.getString("email");
+								String created_at = user.getString("created_at");
+
+								// Inserting row in users table
+								db.addUser(name, email, uid, created_at);
 								// user successfully logged in
 								// Create login session
 								session.setLogin(true);
 
 								// Launch main activity
-//								Intent intent = new Intent(LoginActivity.this,
-//										MemberActivity.class);
-//								startActivity(intent);
-//								finish();
 								Fragment fragment = new MemberActivity();
 					    		FragmentManager fragmentManager = getActivity().getFragmentManager();
 					            fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();

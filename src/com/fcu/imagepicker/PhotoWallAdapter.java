@@ -10,8 +10,11 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import java.io.File;
 import java.util.ArrayList;
+
+import com.bumptech.glide.Glide;
 import com.fcu.R;
 import com.squareup.picasso.Picasso;
 
@@ -88,14 +91,21 @@ public class PhotoWallAdapter extends BaseAdapter {
         });
 
         holder.checkBox.setChecked(selectionMap.get(position));
-        Picasso.with(context)
-        .load(new File(filePath))
-        .resize(150, 150)
-        .centerCrop()
-        .placeholder(R.drawable.empty_photo)
-        .error(R.drawable.empty_photo)
-        .into(holder.imageView);
-        holder.imageView.setTag(filePath);
+//        Picasso.with(context)
+//        .load(new File(filePath))
+//        .resize(150, 150)
+//        .centerCrop()
+//        .placeholder(R.drawable.empty_photo)
+//        .error(R.drawable.empty_photo)
+//        .into(holder.imageView);
+        Glide.with(context)
+	    .load(new File(filePath))
+	    .override(150, 150)
+	    .centerCrop()
+	    .placeholder(R.drawable.empty_photo)
+	    .error(R.drawable.empty_photo)
+	    .into(holder.imageView);
+        //holder.imageView.setTag(filePath);
         //取得拍攝日期
         holder.textView.setText( Utility.getTakeDate(filePath, "M月d日") );
 

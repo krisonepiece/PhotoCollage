@@ -28,7 +28,7 @@ public class MemberActivity extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		thisView = inflater.inflate(R.layout.activity_member, container, false);
+		thisView = inflater.inflate(R.layout.fragment_member, container, false);
 		txtName = (TextView) thisView.findViewById(R.id.name);
 		txtEmail = (TextView) thisView.findViewById(R.id.email);
 		btnLogout = (Button) thisView.findViewById(R.id.btnLogout);

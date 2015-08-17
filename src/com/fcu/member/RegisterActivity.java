@@ -46,7 +46,7 @@ public class RegisterActivity extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		thisView = inflater.inflate(R.layout.activity_register, container, false);
+		thisView = inflater.inflate(R.layout.fragment_register, container, false);
 		inputFullName = (EditText) thisView.findViewById(R.id.name);
 		inputEmail = (EditText) thisView.findViewById(R.id.email);
 		inputPassword = (EditText) thisView.findViewById(R.id.password);

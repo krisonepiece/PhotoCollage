@@ -5,12 +5,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 
+import com.bumptech.glide.Glide;
 import com.fcu.speechtag.MyRecoder;
 import com.fcu.R;
 import com.fcu.imagepicker.*;
@@ -46,6 +48,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -65,7 +68,8 @@ import android.widget.Toast;
 
 public class PhotoMovieMain extends Fragment {
 	private ArrayList<String> paths; // 儲存圖片路徑
-	private ArrayList<Photo> pList; // 照片清單
+	private ArrayList<CloudPhotoItem> cPaths; // 儲存雲端圖片路徑
+	private ArrayList<Photo> pList; // 照片清單	
 	private String musicPath; // 儲存音樂路徑
 	private String user = "Kris"; // 使用者名稱
 	private Button btnGenerate; // 產生按鈕
@@ -238,6 +242,7 @@ public class PhotoMovieMain extends Fragment {
 					// 先把Drawable轉成Bitmap
 					Bitmap bmp = ((BitmapDrawable) imageView.getDrawable())
 							.getBitmap();
+//					Bitmap bmp = convertViewToBitmap(imageView);
 					// 壓縮並建立圖片
 					compressAndCreatePhoto(tempPath + "/" + i + ".jpg", bmp,
 							Bitmap.CompressFormat.JPEG, 70);
@@ -288,6 +293,15 @@ public class PhotoMovieMain extends Fragment {
 
 
 	}
+//	public static Bitmap convertViewToBitmap(View view)  
+//	{  
+//	    view.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));  
+//	    view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());  
+//	    view.buildDrawingCache();  
+//	    Bitmap bitmap = view.getDrawingCache();  
+//	  
+//	    return bitmap;  
+//	}  
 	/**
 	 * 接收上傳檔案進度
 	 */
@@ -336,7 +350,13 @@ public class PhotoMovieMain extends Fragment {
 		// Bitmap myBitmap =
 		// BitmapFactory.decodeFile(imgFile.getAbsolutePath());
 		// Bitmap sBitmap = ScalePic(myBitmap, 1.3f, 1.4f);
-
+//		Glide.with(this)
+//		.load(imgFile)
+//		.override(100, 100)
+//		.centerCrop()
+//		.placeholder(R.drawable.empty_photo)
+//		.error(R.drawable.empty_photo)
+//		.into(img);
 		img.setImageBitmap(myBitmap);
 		img.setId(pCount);
 		img.setOnClickListener(imgOnClickListener);
@@ -697,33 +717,62 @@ public class PhotoMovieMain extends Fragment {
 	    super.onResume();  	    
 	    Log.i("TAG","onResume");
     	int code = getActivity().getIntent().getIntExtra("code", -1);
-		if (code != 100) {
+		if (code != 100 && code != 200) {
 			return;
 		}
-		Bundle bundle = getActivity().getIntent().getExtras();
-		paths = bundle.getStringArrayList("paths");
-		Log.i("PHOTO - URI", paths.get(0));
-		for (int i = 0; i < paths.size(); i++) {
-			Photo tmpP = new Photo(pid, paths.get(i), null, 2, 3000, 0, 1);
-			
-			// 取得拍攝日期
-			String takeDate = Utility.getTakeDate(tmpP.getpPath(),"yyyy/MM/dd HH:mm:ss");
-			if(takeDate != null){
-				tmpP.setTakeDate(takeDate);
+		else if(code == 100){
+			Bundle bundle = getActivity().getIntent().getExtras();
+			paths = bundle.getStringArrayList("paths");
+			Log.i("PHOTO - URI", paths.get(0));
+			for (int i = 0; i < paths.size(); i++) {
+				Photo tmpP = new Photo(pid, paths.get(i), null, 2, 3000, 0, 1);
+				
+				// 取得拍攝日期
+				String takeDate = Utility.getTakeDate(tmpP.getpPath(),"yyyy/MM/dd HH:mm:ss");
+				if(takeDate != null){
+					tmpP.setTakeDate(takeDate);
+				}
+				else{
+					tmpP.setTakeDate("0000-00-00 00:00:00");
+				}
+	
+				pList.add(tmpP); // 將相片加入相片群
+				linelay.addView(getImageView(i, photoCount));
+				Log.i("ADD-PHOTO", Integer.toString(photoCount));
+				photoCount++;
+				pid++;
+				// 啟用產生電影按鈕
+				btnGenerate.setEnabled(true);
+				btnGenerate.setBackgroundColor(getResources().getColor(
+						R.color.green_500));
 			}
-			else{
-				tmpP.setTakeDate("0000-00-00 00:00:00");
+		}
+		else if(code == 200){
+			Bundle bundle = getActivity().getIntent().getExtras();
+			cPaths = (ArrayList<CloudPhotoItem>) bundle.getSerializable("cPaths");
+			Log.i("CLOUD - URI", cPaths.get(0).getpPath());
+			for (int i = 0; i < cPaths.size(); i++) {
+				Photo tmpP = new Photo(cPaths.get(i).getId(), cPaths.get(i).getpPath(), cPaths.get(i).getRecPath(), 0, 3000, 0, 1);
+				
+				// 取得拍攝日期
+				String takeDate = cPaths.get(i).getTakeDate();
+				if(takeDate != null){
+					tmpP.setTakeDate(takeDate);
+				}
+				else{
+					tmpP.setTakeDate("0000-00-00 00:00:00");
+				}
+	
+				pList.add(tmpP); // 將相片加入相片群
+				linelay.addView(getImageView(i, photoCount));
+				Log.i("ADD-Cloud", Integer.toString(photoCount));
+				photoCount++;
+				pid++;
+				// 啟用產生電影按鈕
+				btnGenerate.setEnabled(true);
+				btnGenerate.setBackgroundColor(getResources().getColor(
+						R.color.green_500));
 			}
-
-			pList.add(tmpP); // 將相片加入相片群
-			linelay.addView(getImageView(i, photoCount));
-			Log.i("ADD-PHOTO", Integer.toString(photoCount));
-			photoCount++;
-			pid++;
-			// 啟用產生電影按鈕
-			btnGenerate.setEnabled(true);
-			btnGenerate.setBackgroundColor(getResources().getColor(
-					R.color.green_500));
 		}
 		getActivity().getIntent().removeExtra("code");
 	}

@@ -28,6 +28,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
@@ -57,14 +58,14 @@ public class AlbumMainActivity extends AppCompatActivity {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
         } 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setHomeButtonEnabled(true);
 
 		mViewPager = (ViewPager) findViewById(R.id.viewpager);
 		mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.sliding_tabs);
 		//phoneAlbumFg = new PhotoAlbumActivity();
 		phoneFg = new PhoneFragment();
-		cloudFg = new CloudAlbumActivity();
+		cloudFg = new CloudFragment();
 		fragmentList.add(phoneFg);
 		fragmentList.add(cloudFg);
 		myAdapter = new MyAdapter(this.getSupportFragmentManager(),
@@ -75,6 +76,7 @@ public class AlbumMainActivity extends AppCompatActivity {
 		mSlidingTabLayout.setViewPager(mViewPager);
 	}
 
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -128,7 +130,14 @@ public class AlbumMainActivity extends AppCompatActivity {
 
 		@Override
 		public Fragment getItem(int position) {
-
+//			if( position == 1){
+//				getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+//				getSupportActionBar().setHomeButtonEnabled(false);
+//			}
+//			else{
+//				getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//				getSupportActionBar().setHomeButtonEnabled(true);
+//			}	
 			return fragmentList.get(position);
 		}
 
@@ -153,12 +162,7 @@ public class AlbumMainActivity extends AppCompatActivity {
 		@Override
 		public void destroyItem(ViewGroup container, int position, Object object) {
 			container.removeView((View) object);
-		}
-		
-		@Override
-		public int getItemPosition(Object object) {
-			return POSITION_NONE;//返回这个表示该对象已改变,需要刷新
-			//return POSITION_UNCHANGED;//反之不刷新
-		}
+		}	
+
 	}
 }

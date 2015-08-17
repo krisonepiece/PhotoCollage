@@ -11,6 +11,7 @@ import android.widget.TextView;
 import java.io.File;
 import java.util.ArrayList;
 
+import com.bumptech.glide.Glide;
 import com.fcu.R;
 import com.squareup.picasso.Picasso;
 
@@ -62,14 +63,21 @@ public class PhotoAlbumLVAdapter extends BaseAdapter {
 
         //圖片（縮略圖）
         String filePath = list.get(position).getFirstImagePath();
-        holder.firstImageIV.setTag(filePath);
-        Picasso.with(context)
-        .load(new File(filePath))
-        .resize(100, 100)
-        .centerCrop()
-        .placeholder(R.drawable.empty_photo)
-        .error(R.drawable.empty_photo)
-        .into(holder.firstImageIV);
+        //holder.firstImageIV.setTag(filePath);
+//        Picasso.with(context)
+//        .load(new File(filePath))
+//        .resize(100, 100)
+//        .centerCrop()
+//        .placeholder(R.drawable.empty_photo)
+//        .error(R.drawable.empty_photo)
+//        .into(holder.firstImageIV);
+		Glide.with(context)
+		.load(new File(filePath))
+		.override(100, 100)
+		.centerCrop()
+		.placeholder(R.drawable.empty_photo)
+		.error(R.drawable.empty_photo)
+		.into(holder.firstImageIV);
 //        loader.loadImage(4, filePath, holder.firstImageIV);
         //文字
         holder.pathNameTV.setText(getPathNameToShow(list.get(position)));
