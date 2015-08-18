@@ -6,6 +6,8 @@
     <color name="color_accent">@color/md_red_500</color>
     <color name="color_primaryText">@android:color/white</color>
     <color name="color_NavigationBar">@color/md_green_700</color>
+    <color name="color_color_ControlNormal">@android:color/white</color>
+    <color name="color_color_textPrimary">@android:color/black</color>
     
     <!-- Member -->
 	<color name="bg_login">#26ae90</color>

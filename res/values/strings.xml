@@ -21,12 +21,16 @@
     <string name="photo_album">相簿</string>
     <string name="main_confirm">確定</string>
     <string name="main_cancel">取消</string>
-    <string name="main_back">返回</string>    
+    <string name="main_back">返回</string>
+    <!-- 協作相簿 -->
+    <string name="add_album">新增相簿</string>
+    <string name="share_album">共享相簿</string>
 	<!-- 主選單 -->
     <string-array name="drawer_array">
         <item>主頁</item>
         <item>會員</item>
         <item>相片電影</item>
+        <item>協作相簿</item>
     </string-array>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>

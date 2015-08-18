@@ -12,11 +12,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,9 +32,9 @@ import com.android.volley.toolbox.StringRequest;
 import com.fcu.R;
 import com.fcu.photocollage.PhotoMovieMain;
 
-public class LoginActivity extends Fragment {
+public class LoginFragment extends Fragment {
 	// LogCat tag
-	private static final String TAG = RegisterActivity.class.getSimpleName();
+	private static final String TAG = LoginFragment.class.getSimpleName();
 	private Button btnLogin;
 	private Button btnLinkToRegister;
 	private EditText inputEmail;
@@ -67,8 +67,8 @@ public class LoginActivity extends Fragment {
 		// Check if user is already logged in or not
 		if (session.isLoggedIn()) {
 			// User is already logged in. Take him to main activity
-			Fragment fragment = new MemberActivity();
-    		FragmentManager fragmentManager = getActivity().getFragmentManager();
+			Fragment fragment = new MemberFragment();
+    		FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
 			//Intent intent = new Intent(getActivity(), MemberActivity.class);
 			//startActivity(intent);
@@ -104,8 +104,8 @@ public class LoginActivity extends Fragment {
 //						RegisterActivity.class);
 //				startActivity(i);				
 //				finish();
-				Fragment fragment = new RegisterActivity();
-	    		FragmentManager fragmentManager = getActivity().getFragmentManager();
+				Fragment fragment = new RegisterFragment();
+	    		FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 	            fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
 			}
 		});
@@ -153,8 +153,8 @@ public class LoginActivity extends Fragment {
 								session.setLogin(true);
 
 								// Launch main activity
-								Fragment fragment = new MemberActivity();
-					    		FragmentManager fragmentManager = getActivity().getFragmentManager();
+								Fragment fragment = new MemberFragment();
+					    		FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 					            fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
 							} else {
 								// Error in login. Get the error message

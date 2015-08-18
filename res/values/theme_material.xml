@@ -16,5 +16,8 @@
         <item name="colorAccent">@color/color_accent</item>
         <!-- 其他可用項目 colorControlNormal, colorControlActivated, colorControlHighlight, colorSwitchThumbNormal -->
         <item name="android:navigationBarColor">@color/color_NavigationBar</item>
+        <item name="colorControlNormal">@color/color_color_ControlNormal</item>
+        <item name="android:textColorPrimary">@color/color_color_textPrimary</item>
     </style>
+    
 </resources>

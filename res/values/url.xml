@@ -2,4 +2,5 @@
 <resources>
     <string name="getCloudAlbum">http://140.134.26.13/PhotoCollage/php/CloudAlbum/GetCloudAlbum.php</string>
     <string name="getCloudPhoto">http://140.134.26.13/PhotoCollage/php/CloudAlbum/GetCloudPhoto.php</string>
+    <string name="createCloudAlbum">http://140.134.26.13/PhotoCollage/php/CloudAlbum/CreateCloudAlbum.php</string>
 </resources>

@@ -1,12 +1,9 @@
 package com.fcu.member;
 
 import java.util.HashMap;
-
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +12,7 @@ import android.widget.TextView;
 
 import com.fcu.R;
 
-public class MemberActivity extends Fragment {
+public class MemberFragment extends Fragment {
 
 	private TextView txtName;
 	private TextView txtEmail;
@@ -78,8 +75,8 @@ public class MemberActivity extends Fragment {
 //		Intent intent = new Intent(MemberActivity.this, LoginActivity.class);
 //		startActivity(intent);
 //		finish();
-		Fragment fragment = new LoginActivity();
-		FragmentManager fragmentManager = getActivity().getFragmentManager();
+		Fragment fragment = new LoginFragment();
+		FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
 	}
 }

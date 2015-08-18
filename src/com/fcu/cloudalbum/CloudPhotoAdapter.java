@@ -1,4 +1,4 @@
-package com.fcu.imagepicker;
+package com.fcu.cloudalbum;
 
 import android.content.Context;
 import android.util.SparseBooleanArray;

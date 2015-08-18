@@ -1,37 +1,27 @@
 package com.fcu.imagepicker;
 
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.SparseBooleanArray;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.GridView;
-import android.widget.TextView;
-
 import java.io.File;
-import java.nio.channels.GatheringByteChannel;
 import java.util.ArrayList;
-
 import com.fcu.R;
-
 import static com.fcu.imagepicker.Utility.isImage;
 
 /**
@@ -40,9 +30,6 @@ import static com.fcu.imagepicker.Utility.isImage;
  */
 public class PhotoWallFragment extends Fragment {
 	private static final String TAG = "PhotoWallFragment";
-//    private TextView titleTV;
-//    private Button backBtn;
-//    private Button confirmBtn;
     private ArrayList<String> list;
     private GridView mPhotoWall;
     private PhotoWallAdapter adapter;
@@ -58,9 +45,6 @@ public class PhotoWallFragment extends Fragment {
     private boolean isLatest = true;   
     
     public void init() {    	
-//    	titleTV = (TextView) thisView.findViewById(R.id.topbar_title_tv);
-//        backBtn = (Button) thisView.findViewById(R.id.topbar_left_btn);
-//        confirmBtn = (Button) findViewById(R.id.action_check);
         mPhotoWall = (GridView) thisView.findViewById(R.id.photo_wall_grid);
 	}
 
@@ -74,40 +58,11 @@ public class PhotoWallFragment extends Fragment {
     	((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
     	((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.latest_image);
-//    	titleTV.setText(R.string.latest_image);
-//    	backBtn.setText(R.string.photo_album);
-//        backBtn.setVisibility(View.VISIBLE);
-        //confirmBtn.setText(R.string.main_confirm);
-        //confirmBtn.setVisibility(View.VISIBLE);
-        list = getLatestImagePaths(100);
+
+    	list = getLatestImagePaths(100);
         adapter = new PhotoWallAdapter(getActivity(), list);
         mPhotoWall.setAdapter(adapter);
         
-//        //選擇照片完成
-//        confirmBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                //選擇圖片完成,回到起始頁面
-//                ArrayList<String> paths = getSelectImagePaths();
-//
-//                Intent intent = new Intent(getActivity(), com.fcu.menu.MainActivity.class);
-//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                intent.putExtra("code", paths != null ? 100 : 101);
-//                Bundle bundle = new Bundle();
-//                bundle.putStringArrayList("paths", paths);
-//                intent.putExtras(bundle);
-//                startActivity(intent);
-//            }
-//        });
-
-//        //點擊返回，回到選擇相冊頁面
-//        backBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                //backAction();
-//            }
-//        });
-    	
 		return thisView;
 	}
 
@@ -120,8 +75,6 @@ public class PhotoWallFragment extends Fragment {
      * 點擊返回時，跳轉至相冊頁面
      */
     private void backAction() {
-//        Intent intent = new Intent(this, PhotoAlbumActivity.class);
-//        intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         Fragment phoneAlbumFg = new PhotoAlbumFragment();
 		FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         //傳遞「最近照片」分類信息
@@ -131,19 +84,14 @@ public class PhotoWallFragment extends Fragment {
             	bundle.putInt("latest_count", list.size());
             	bundle.putString("latest_first_img", list.get(0));
             	phoneAlbumFg.setArguments(bundle);
-//                intent.putExtra("latest_count", list.size());
-//                intent.putExtra("latest_first_img", list.get(0));
             }
             firstIn = false;
         }
         fragmentManager.beginTransaction()
-				        .replace(R.id.phone_frame, phoneAlbumFg)
+				        .replace(R.id.imagepick_frame, phoneAlbumFg)
 				        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
 						.addToBackStack(null)
 						.commit();
-        //startActivity(intent);
-        //動畫
-        //getActivity().overridePendingTransition(R.anim.in_from_left, R.anim.out_from_right);
     }
 
     /**
@@ -170,7 +118,6 @@ public class PhotoWallFragment extends Fragment {
             mPhotoWall.smoothScrollToPosition(0);
         }
     }
-
 
     /**
      * 獲取指定路徑下的所有圖片文件。
@@ -287,8 +234,6 @@ public class PhotoWallFragment extends Fragment {
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		Log.d(TAG,"onCreateOptionsMenu");
-//		MenuItem mi = menu.findItem(R.id.action_check);
-//		mi.setVisible(true);
 		super.onCreateOptionsMenu(menu, inflater);	
 	}
 
@@ -319,6 +264,5 @@ public class PhotoWallFragment extends Fragment {
         super.setUserVisibleHint(isVisibleToUser);
         Log.d(TAG,"setUserVisibleHint");
         // 每次切換Fragment調用的方法
-
     }
 }

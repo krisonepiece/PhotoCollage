@@ -1,4 +1,4 @@
-package com.fcu.imagepicker;
+package com.fcu.cloudalbum;
 
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -71,7 +71,7 @@ public class CloudPhotoFragment extends Fragment {
     	init();
     	((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
-    	((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.latest_image);
+    	((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(albumName);
     	list = new ArrayList<CloudPhotoItem>();
         getImagePathsFromAlbumId();        
 
@@ -86,7 +86,7 @@ public class CloudPhotoFragment extends Fragment {
 		FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 
         fragmentManager.beginTransaction()
-				        .replace(R.id.cloud_frame, cloudAlbumFg)
+				        .replace(R.id.content_frame, cloudAlbumFg)
 				        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
 						.addToBackStack(null)
 						.commit();
@@ -214,6 +214,7 @@ public class CloudPhotoFragment extends Fragment {
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		Log.d(TAG,"onCreateOptionsMenu");
+		inflater.inflate(R.menu.album_menu, menu);
 		MenuItem mi = menu.findItem(R.id.action_check);
 		mi.setVisible(true);
 		super.onCreateOptionsMenu(menu, inflater);

@@ -1,4 +1,4 @@
-package com.fcu.imagepicker;
+package com.fcu.cloudalbum;
 
 public class CloudPhotoItem {
 	private int id;

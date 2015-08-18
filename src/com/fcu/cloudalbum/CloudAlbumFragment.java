@@ -1,37 +1,17 @@
-package com.fcu.imagepicker;
+package com.fcu.cloudalbum;
 
-import static com.fcu.imagepicker.Utility.isImage;
-
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.ActionBar;
-import android.content.ContentResolver;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.NetworkOnMainThreadException;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -44,10 +24,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.ListView;
+import android.widget.Toast;
 
-import com.android.volley.Request.Priority;
 import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
@@ -57,11 +37,6 @@ import com.fcu.R;
 import com.fcu.member.AppController;
 import com.fcu.member.SQLiteHandler;
 import com.fcu.member.SessionManager;
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
 
 public class CloudAlbumFragment extends Fragment {
 	private static final String TAG = "CloudAlbumFragment";
@@ -69,7 +44,11 @@ public class CloudAlbumFragment extends Fragment {
 	private GridView gridView;
 	private SQLiteHandler db;
 	private SessionManager session;
-	private ArrayList<CloudAlbumItem> list;
+	private ArrayList<CloudAlbumItem> aList;
+	private CloudAlbumAdapter adapter;
+	private String name;
+	private String email;
+	private EditText dText;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -94,10 +73,9 @@ public class CloudAlbumFragment extends Fragment {
 			// Fetching user details from sqlite
 			HashMap<String, String> user = db.getUserDetails();
 
-			String name = user.get("name");
-			String email = user.get("email");
+			name = user.get("name");
+			email = user.get("email");
 
-			list = new ArrayList<CloudAlbumItem>();
 			getImagePathsByDB(name, email);
 		}
 		return thisView;
@@ -116,11 +94,10 @@ public class CloudAlbumFragment extends Fragment {
 	/**
 	 * 讀取資料庫取得相簿第一張圖片。
 	 */
-	private ArrayList<CloudAlbumItem> getImagePathsByDB(final String name,final String email) {
-		
+	private ArrayList<CloudAlbumItem> getImagePathsByDB(final String name,final String email) {		
 		// Tag used to cancel the request
 		String getAlbum_req = "getAlbum";
-		final ArrayList<CloudAlbumItem> aList = new ArrayList<CloudAlbumItem>();
+		aList = new ArrayList<CloudAlbumItem>();
 		StringRequest strReq = new StringRequest(Method.POST,getString(R.string.getCloudAlbum),new Listener<String>() {
 					@Override
 					public void onResponse(String response) {
@@ -134,17 +111,20 @@ public class CloudAlbumFragment extends Fragment {
 								for(int i = 0 ; i < size ; i++){
 									JSONObject album = jObj.getJSONObject("a"+i);
 									int Pid = album.getInt("Pid");
+									int Aid = album.getInt("Aid");
+									int AlbumSize = album.getInt("AlbumSize");									
+									int Pcode = album.getInt("Pcode");
 									String Ppath = album.getString("Ppath");
 									String Aname = album.getString("Aname");
-									int Aid = album.getInt("Aid");
-									int AlbumSize = album.getInt("AlbumSize");
+									String Uname = album.getString("Uname");
+									
 									Log.d("getAlbum","Response:"+ Pid + "," + Ppath + "," + Aname);
 									aList.add(new CloudAlbumItem(Aid, Aname, AlbumSize, Ppath));
 								}
 								
-								CloudAlbumAdapter adapter = new CloudAlbumAdapter(getActivity(), aList);
+								adapter = new CloudAlbumAdapter(getActivity(), aList);
 								gridView.setAdapter(adapter);
-								
+
 								gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 									@Override
 									public void onItemClick(AdapterView<?> parent, View view,
@@ -162,13 +142,12 @@ public class CloudAlbumFragment extends Fragment {
 										cloudPhotoFg.setArguments(bundle);
 										fragmentManager
 												.beginTransaction()
-												.replace(R.id.cloud_frame, cloudPhotoFg)
+												.replace(R.id.content_frame, cloudPhotoFg)
 												.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 												.addToBackStack(null).commit();
 									}
 								});
 							}
-
 						} catch (JSONException e) {
 							e.printStackTrace();
 						}
@@ -189,10 +168,57 @@ public class CloudAlbumFragment extends Fragment {
 				return params;
 			}
 		};
-
 		// Adding request to request queue
 		AppController.getInstance().addToRequestQueue(strReq, getAlbum_req);
 		return aList;
+	}
+	/**
+	 * 建立相簿
+	 */
+	private void createCloudAlbum(final String name, final String email, final String aName) {
+		// Tag used to cancel the request
+		String createAlbum_req = "createAlbum";		
+		StringRequest strReq = new StringRequest(Method.POST,getString(R.string.createCloudAlbum),new Listener<String>() {
+					@Override
+					public void onResponse(String response) {
+						Log.d("createAlbum", "Response: " + response.toString());
+						JSONObject jObj;
+						try {
+							jObj = new JSONObject(response);
+							if (response != null) {
+								//recive result
+								String result = jObj.getString("result");							
+								
+								if(response.toString().contains("Succeed")){								
+									int Aid = jObj.getInt("Aid");
+									aList.add(new CloudAlbumItem(Aid, aName, 0, Integer.toString(R.drawable.ic_add_white_36dp)));
+									adapter.notifyDataSetChanged();
+								}
+								Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
+							}
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+					}
+				}, new ErrorListener() {
+					@Override
+					public void onErrorResponse(VolleyError error) {
+						Log.e("createAlbum", "Error: " + error.getMessage());
+					}
+				}) {
+
+			@Override
+			protected Map<String, String> getParams() {
+				// Posting params to register url
+				Map<String, String> params = new HashMap<String, String>();
+				params.put("name", name);
+				params.put("email", email);
+				params.put("albumName", aName);
+				return params;
+			}
+		};
+		// Adding request to request queue
+		AppController.getInstance().addToRequestQueue(strReq, createAlbum_req);
 	}
 
 	@Override
@@ -204,8 +230,9 @@ public class CloudAlbumFragment extends Fragment {
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		Log.d(TAG,"onCreateOptionsMenu");
-		MenuItem mi = menu.findItem(R.id.action_check);
-		mi.setVisible(false);
+		inflater.inflate(R.menu.cloud_menu, menu);
+//		MenuItem mi = menu.findItem(R.id.action_check);
+//		mi.setVisible(false);
         super.onCreateOptionsMenu(menu, inflater);
 	}
 
@@ -213,7 +240,21 @@ public class CloudAlbumFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// super.onOptionsItemSelected(item);
 		switch (item.getItemId()) {
-
+		case R.id.action_add_album:
+			dText = new EditText(getActivity());
+			new AlertDialog.Builder(getActivity()).setTitle("給相簿取個名字吧")
+			.setIcon(android.R.drawable.ic_dialog_info)
+			.setView(dText)				
+			.setNegativeButton("取消", null)
+			.setPositiveButton("確定", new OnClickListener() {				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					Log.d(TAG,"AlbumName: " + dText.getText().toString());
+					createCloudAlbum(name, email, dText.getText().toString());						
+				}
+			})
+			.show();
+			return true;
 		case android.R.id.home:
 			backAction();
 			return true;
@@ -225,6 +266,5 @@ public class CloudAlbumFragment extends Fragment {
         super.setUserVisibleHint(isVisibleToUser);
         Log.d(TAG,"setUserVisibleHint");
         // 每次切換Fragment調用的方法
-
     }
 }
