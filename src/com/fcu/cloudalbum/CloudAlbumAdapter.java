@@ -2,14 +2,18 @@ package com.fcu.cloudalbum;
 
 import java.io.File;
 import java.util.ArrayList;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.Target;
 import com.fcu.R;
 
 public class CloudAlbumAdapter extends BaseAdapter{
@@ -49,6 +53,7 @@ public class CloudAlbumAdapter extends BaseAdapter{
 	        holder.firstImageIV = (ImageView) convertView.findViewById(R.id.cloud_album_item_photo);
 	        holder.pathNameTV = (TextView) convertView.findViewById(R.id.cloud_album_item_text);
 	        convertView.setTag(holder);
+
 	    } else {
 	        holder = (ViewHolder) convertView.getTag();
 	    }
@@ -56,8 +61,7 @@ public class CloudAlbumAdapter extends BaseAdapter{
 	    //圖片（縮略圖）
 	    if(list.get(position).getFileCount() == 0){
 	    	Glide.with(context)
-			.load(R.drawable.ic_add_white_36dp)
-			.override(100, 100)
+			.load(R.drawable.ic_add_circle_outline_white_36dp_bg)
 			.centerCrop()
 			.placeholder(R.drawable.empty_photo)
 			.error(R.drawable.empty_photo)

@@ -17,13 +17,17 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnCreateContextMenuListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.Toast;
@@ -49,6 +53,10 @@ public class CloudAlbumFragment extends Fragment {
 	private String name;
 	private String email;
 	private EditText dText;
+	private GridViewMenuListener gvMenuListener;
+	private static final int MENU_ADD_TEAMWORKER = 0;
+    private static final int MENU_RENAME = 1;
+    private static final int MENU_DELETE = 2;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -58,6 +66,8 @@ public class CloudAlbumFragment extends Fragment {
 		thisView = inflater.inflate(R.layout.fragment_cloud_album, container,
 				false);
 		gridView = (GridView) thisView.findViewById(R.id.cloud_album_grid);
+		gvMenuListener = new GridViewMenuListener();
+		gridView.setOnCreateContextMenuListener(gvMenuListener);
 
 		((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -124,7 +134,7 @@ public class CloudAlbumFragment extends Fragment {
 								
 								adapter = new CloudAlbumAdapter(getActivity(), aList);
 								gridView.setAdapter(adapter);
-
+																
 								gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 									@Override
 									public void onItemClick(AdapterView<?> parent, View view,
@@ -220,7 +230,81 @@ public class CloudAlbumFragment extends Fragment {
 		// Adding request to request queue
 		AppController.getInstance().addToRequestQueue(strReq, createAlbum_req);
 	}
+	/**
+	 * 刪除相簿
+	 */
+	private void deleteCloudAlbum(final String name, final String email, final int position) {
+		// Tag used to cancel the request
+		String deleteAlbum_req = "deleteAlbum";		
+		StringRequest strReq = new StringRequest(Method.POST,getString(R.string.deleteCloudAlbum),new Listener<String>() {
+					@Override
+					public void onResponse(String response) {
+						Log.d("deleteAlbum", "Response: " + response.toString());
+						if(response.toString().contains("Success")){
+							aList.remove(aList.get(position));
+							adapter.notifyDataSetChanged();
+							Toast.makeText(getActivity(), "Delete success!", Toast.LENGTH_SHORT).show();
+						}
+					}
+				}, new ErrorListener() {
+					@Override
+					public void onErrorResponse(VolleyError error) {
+						Log.e("deleteAlbum", "Error: " + error.getMessage());
+					}
+				}) {
 
+			@Override
+			protected Map<String, String> getParams() {
+				// Posting params to register url
+				Map<String, String> params = new HashMap<String, String>();
+				params.put("name", name);
+				params.put("email", email);
+				params.put("albumID", Integer.toString(aList.get(position).getAlbumId()));
+				return params;
+			}
+		};
+		// Adding request to request queue
+		AppController.getInstance().addToRequestQueue(strReq, deleteAlbum_req);		
+	}
+	
+	//自建長按選單
+	private class GridViewMenuListener implements OnCreateContextMenuListener{
+		@Override
+	    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+	        menu.add(Menu.NONE, MENU_ADD_TEAMWORKER, Menu.NONE, "新增協作者");
+	        menu.add(Menu.NONE, MENU_RENAME, Menu.NONE, "重新命名");
+	        menu.add(Menu.NONE, MENU_DELETE, Menu.NONE, "刪除");
+	    }
+	}
+	@Override
+    public boolean onContextItemSelected(MenuItem item) {
+    	final AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+    	
+        switch (item.getItemId()) {
+            case MENU_ADD_TEAMWORKER:
+                Log.i("ContextMenu", "MENU_ADD_TEAMWORKER was chosen" + info.position);
+                return true;
+            case MENU_RENAME:
+                Log.i("ContextMenu", "MENU_RENAME was chosen" + info.position);
+                return true;
+            case MENU_DELETE:
+                Log.i("ContextMenu", "MENU_DELETE was chosen" + info.position);
+                //確認刪除視窗
+        		new AlertDialog.Builder(getActivity()).setTitle("確定刪除相簿？")
+        		.setIcon(android.R.drawable.ic_dialog_info)
+        		.setView(dText)				
+        		.setNegativeButton("取消", null)
+        		.setPositiveButton("確定", new OnClickListener() {				
+        			@Override
+        			public void onClick(DialogInterface dialog, int which) {
+        				deleteCloudAlbum(name, email, info.position);					
+        			}
+        		})
+        		.show();                                
+                return true;
+        }
+        return super.onContextItemSelected(item);
+    }
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -242,8 +326,8 @@ public class CloudAlbumFragment extends Fragment {
 		switch (item.getItemId()) {
 		case R.id.action_add_album:
 			dText = new EditText(getActivity());
-			new AlertDialog.Builder(getActivity()).setTitle("給相簿取個名字吧")
-			.setIcon(android.R.drawable.ic_dialog_info)
+			new AlertDialog.Builder(getActivity()).setTitle("幫相簿取個名字吧")
+			.setIcon(R.drawable.ic_collections_white_24dp)
 			.setView(dText)				
 			.setNegativeButton("取消", null)
 			.setPositiveButton("確定", new OnClickListener() {				
