@@ -31,7 +31,7 @@
         android:paddingBottom="5dp"
         android:paddingStart="15dp"
         android:paddingEnd="5dp"
-        android:drawableEnd="@drawable/ic_image_white_24dp"
+        android:drawableEnd="@drawable/ic_cloud_white_24dp"
         android:textColor="@color/white"
         />
 

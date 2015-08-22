@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
 import com.fcu.R;
+import com.fcu.library.DateTool;
 
 public class CloudAlbumAdapter extends BaseAdapter{
 	private Context context;
@@ -79,7 +80,7 @@ public class CloudAlbumAdapter extends BaseAdapter{
 	    }	
 	    
 	    //文字
-	    holder.pathNameTV.setText(getPathNameToShow(list.get(position)));
+	    holder.pathNameTV.setText(getPathNameToShow(list.get(position)) + "\n" + DateTool.dateFormat(list.get(position).getCreateDate(), "yyyy年M月d日"));
 	    
         return convertView;
     }

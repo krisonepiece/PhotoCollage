@@ -2332,54 +2332,59 @@ reds
         public static final int ic_check_white_18dp=0x7f020055;
         public static final int ic_check_white_36dp=0x7f020056;
         public static final int ic_check_white_36dp_bg=0x7f020057;
-        public static final int ic_collections_white_24dp=0x7f020058;
-        public static final int ic_drawer=0x7f020059;
-        public static final int ic_image_white_24dp=0x7f02005a;
-        public static final int ic_image_white_48dp=0x7f02005b;
-        public static final int ic_keyboard_voice_white_24dp=0x7f02005c;
-        public static final int ic_launcher=0x7f02005d;
-        public static final int ic_mic_none_white_24dp=0x7f02005e;
-        public static final int ic_share_white_36dp=0x7f02005f;
-        public static final int ic_stop_white_24dp=0x7f020060;
-        public static final int images_32=0x7f020061;
-        public static final int jupiter=0x7f020062;
-        public static final int left_arrow_32=0x7f020063;
-        public static final int mars=0x7f020064;
-        public static final int mercury=0x7f020065;
-        public static final int move_left_arrow_32=0x7f020066;
-        public static final int move_right_arrow_32=0x7f020067;
-        public static final int movie_film_32=0x7f020068;
-        public static final int movie_film_64=0x7f020069;
-        public static final int neptune=0x7f02006a;
-        public static final int no=0x7f02006b;
-        public static final int note_beam_32=0x7f02006c;
-        public static final int notification_template_icon_bg=0x7f020087;
-        public static final int passage_of_time_32=0x7f02006d;
-        public static final int pause_icon=0x7f02006e;
-        public static final int play=0x7f02006f;
-        public static final int play_icon=0x7f020070;
-        public static final int record=0x7f020071;
-        public static final int record_dark_icon=0x7f020072;
-        public static final int record_red_icon=0x7f020073;
-        public static final int record_sound_icon=0x7f020074;
-        public static final int recorder_microphone_32=0x7f020075;
-        public static final int refresh_button_32=0x7f020076;
-        public static final int retangle_drawable=0x7f020077;
-        public static final int right_arrow_32=0x7f020078;
-        public static final int rubbish_bin_32=0x7f020079;
-        public static final int saturn=0x7f02007a;
-        public static final int selector_back_arrow=0x7f02007b;
-        public static final int selector_checkbox=0x7f02007c;
-        public static final int share_32=0x7f02007d;
-        public static final int speaker_black=0x7f02007e;
-        public static final int speaker_blue=0x7f02007f;
-        public static final int speaker_filled_audio_tool_32=0x7f020080;
-        public static final int speaker_muted_mode_32=0x7f020081;
-        public static final int stop_icon=0x7f020082;
-        public static final int uncheck=0x7f020083;
-        public static final int uranus=0x7f020084;
-        public static final int venus=0x7f020085;
-        public static final int xml_back_textcolor=0x7f020086;
+        public static final int ic_cloud_circle_white_24dp=0x7f020058;
+        public static final int ic_cloud_circle_white_36dp=0x7f020059;
+        public static final int ic_cloud_upload_white_36dp=0x7f02005a;
+        public static final int ic_cloud_white_24dp=0x7f02005b;
+        public static final int ic_cloud_white_36dp=0x7f02005c;
+        public static final int ic_collections_white_24dp=0x7f02005d;
+        public static final int ic_drawer=0x7f02005e;
+        public static final int ic_image_white_24dp=0x7f02005f;
+        public static final int ic_image_white_48dp=0x7f020060;
+        public static final int ic_keyboard_voice_white_24dp=0x7f020061;
+        public static final int ic_launcher=0x7f020062;
+        public static final int ic_mic_none_white_24dp=0x7f020063;
+        public static final int ic_share_white_36dp=0x7f020064;
+        public static final int ic_stop_white_24dp=0x7f020065;
+        public static final int images_32=0x7f020066;
+        public static final int jupiter=0x7f020067;
+        public static final int left_arrow_32=0x7f020068;
+        public static final int mars=0x7f020069;
+        public static final int mercury=0x7f02006a;
+        public static final int move_left_arrow_32=0x7f02006b;
+        public static final int move_right_arrow_32=0x7f02006c;
+        public static final int movie_film_32=0x7f02006d;
+        public static final int movie_film_64=0x7f02006e;
+        public static final int neptune=0x7f02006f;
+        public static final int no=0x7f020070;
+        public static final int note_beam_32=0x7f020071;
+        public static final int notification_template_icon_bg=0x7f02008c;
+        public static final int passage_of_time_32=0x7f020072;
+        public static final int pause_icon=0x7f020073;
+        public static final int play=0x7f020074;
+        public static final int play_icon=0x7f020075;
+        public static final int record=0x7f020076;
+        public static final int record_dark_icon=0x7f020077;
+        public static final int record_red_icon=0x7f020078;
+        public static final int record_sound_icon=0x7f020079;
+        public static final int recorder_microphone_32=0x7f02007a;
+        public static final int refresh_button_32=0x7f02007b;
+        public static final int retangle_drawable=0x7f02007c;
+        public static final int right_arrow_32=0x7f02007d;
+        public static final int rubbish_bin_32=0x7f02007e;
+        public static final int saturn=0x7f02007f;
+        public static final int selector_back_arrow=0x7f020080;
+        public static final int selector_checkbox=0x7f020081;
+        public static final int share_32=0x7f020082;
+        public static final int speaker_black=0x7f020083;
+        public static final int speaker_blue=0x7f020084;
+        public static final int speaker_filled_audio_tool_32=0x7f020085;
+        public static final int speaker_muted_mode_32=0x7f020086;
+        public static final int stop_icon=0x7f020087;
+        public static final int uncheck=0x7f020088;
+        public static final int uranus=0x7f020089;
+        public static final int venus=0x7f02008a;
+        public static final int xml_back_textcolor=0x7f02008b;
     }
     public static final class id {
         public static final int action0=0x7f09008b;
@@ -2399,8 +2404,9 @@ reds
         public static final int action_mode_bar=0x7f09003f;
         public static final int action_mode_bar_stub=0x7f09003e;
         public static final int action_mode_close_button=0x7f090027;
-        public static final int action_settings=0x7f0900a1;
+        public static final int action_settings=0x7f0900a2;
         public static final int action_share_album=0x7f09009f;
+        public static final int action_upload_photo=0x7f0900a1;
         public static final int activity_chooser_view_content=0x7f090028;
         public static final int alertTitle=0x7f090032;
         public static final int always=0x7f09001b;
@@ -2645,9 +2651,10 @@ reds
     }
     public static final class menu {
         public static final int album_menu=0x7f0d0000;
-        public static final int cloud_menu=0x7f0d0001;
-        public static final int main_menu=0x7f0d0002;
-        public static final int null_menu=0x7f0d0003;
+        public static final int cloud_album_menu=0x7f0d0001;
+        public static final int cloud_photo_menu=0x7f0d0002;
+        public static final int main_menu=0x7f0d0003;
+        public static final int null_menu=0x7f0d0004;
     }
     public static final class string {
         /**  Content description for the action bar "home" affordance. [CHAR LIMIT=NONE] 
@@ -2709,14 +2716,14 @@ reds
         /**  Content description for the Toolbar icon used to collapse an expanded action mode. [CHAR LIMIT=NONE] 
          */
         public static final int abc_toolbar_collapse_description=0x7f0a0004;
-        public static final int action_check=0x7f0a002b;
+        public static final int action_check=0x7f0a002c;
         public static final int action_settings=0x7f0a0015;
-        public static final int action_websearch=0x7f0a002a;
+        public static final int action_websearch=0x7f0a002b;
         /**  協作相簿 
          */
         public static final int add_album=0x7f0a0026;
         public static final int app_name=0x7f0a0013;
-        public static final int app_not_available=0x7f0a002c;
+        public static final int app_not_available=0x7f0a002d;
         public static final int btn_addEff=0x7f0a0019;
         public static final int btn_addMus=0x7f0a0017;
         /**  相片電影 
@@ -2724,30 +2731,30 @@ reds
         public static final int btn_addPic=0x7f0a0016;
         public static final int btn_addRec=0x7f0a0018;
         public static final int btn_generate=0x7f0a001a;
-        public static final int btn_link_to_login=0x7f0a0033;
-        public static final int btn_link_to_register=0x7f0a0032;
-        public static final int btn_login=0x7f0a0030;
-        public static final int btn_logout=0x7f0a0035;
-        public static final int btn_register=0x7f0a0031;
-        public static final int createCloudAlbum=0x7f0a0038;
-        public static final int deleteCloudAlbum=0x7f0a0039;
-        public static final int drawer_close=0x7f0a0029;
-        public static final int drawer_open=0x7f0a0028;
+        public static final int btn_link_to_login=0x7f0a0034;
+        public static final int btn_link_to_register=0x7f0a0033;
+        public static final int btn_login=0x7f0a0031;
+        public static final int btn_logout=0x7f0a0036;
+        public static final int btn_register=0x7f0a0032;
+        public static final int createCloudAlbum=0x7f0a0039;
+        public static final int deleteCloudAlbum=0x7f0a003a;
+        public static final int drawer_close=0x7f0a002a;
+        public static final int drawer_open=0x7f0a0029;
         public static final int finish=0x7f0a001e;
         public static final int finishText=0x7f0a001c;
         public static final int getCloudAlbum=0x7f0a0012;
-        public static final int getCloudPhoto=0x7f0a0037;
+        public static final int getCloudPhoto=0x7f0a0038;
         public static final int hello_world=0x7f0a0014;
         /**  會員介面 
          */
-        public static final int hint_email=0x7f0a002d;
-        public static final int hint_name=0x7f0a002f;
-        public static final int hint_password=0x7f0a002e;
+        public static final int hint_email=0x7f0a002e;
+        public static final int hint_name=0x7f0a0030;
+        public static final int hint_password=0x7f0a002f;
         public static final int latest_image=0x7f0a0021;
         public static final int main_back=0x7f0a0025;
         public static final int main_cancel=0x7f0a0024;
         public static final int main_confirm=0x7f0a0023;
-        public static final int name=0x7f0a0036;
+        public static final int name=0x7f0a0037;
         public static final int photo_album=0x7f0a0022;
         public static final int refresh=0x7f0a001d;
         /**  相片選擇器 
@@ -2763,7 +2770,10 @@ reds
          */
         public static final int status_bar_notification_info_overflow=0x7f0a0011;
         public static final int text_sec=0x7f0a001b;
-        public static final int welcome=0x7f0a0034;
+        public static final int uploadFile=0x7f0a003c;
+        public static final int uploadPhoto=0x7f0a003b;
+        public static final int upload_photo=0x7f0a0028;
+        public static final int welcome=0x7f0a0035;
     }
     public static final class style {
         public static final int ActivityTranslateAnim=0x7f0b0129;

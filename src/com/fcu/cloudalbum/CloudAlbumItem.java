@@ -5,14 +5,21 @@ public class CloudAlbumItem {
 	private String pathName;
 	private int fileCount;
 	private String firstImagePath;
+	private String createDate;
+	private String userId;
 
-	public CloudAlbumItem(int albumId, String pathName, int fileCount, String firstImagePath) {
+
+	
+	public CloudAlbumItem(int albumId, String pathName, int fileCount,
+			String firstImagePath, String userId, String createDate) {
 		this.albumId = albumId;
 		this.pathName = pathName;
 		this.fileCount = fileCount;
 		this.firstImagePath = firstImagePath;
+		this.createDate = createDate;
+		this.userId = userId;
 	}
-	
+
 	public int getAlbumId() {
 		return albumId;
 	}
@@ -43,6 +50,22 @@ public class CloudAlbumItem {
 
 	public void setFirstImagePath(String firstImagePath) {
 		this.firstImagePath = firstImagePath;
+	}
+
+	public String getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(String createDate) {
+		this.createDate = createDate;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 	@Override

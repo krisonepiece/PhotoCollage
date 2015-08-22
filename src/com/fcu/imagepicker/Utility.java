@@ -78,6 +78,6 @@ public class Utility {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return "0000-00-00 00:00:00";
     }
 }

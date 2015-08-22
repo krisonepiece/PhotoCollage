@@ -16,6 +16,8 @@ import java.util.ArrayList;
 
 import com.bumptech.glide.Glide;
 import com.fcu.R;
+import com.fcu.library.DateTool;
+import com.fcu.photocollage.Photo;
 
 /**
  * PhotoWall中GridView的適配器
@@ -23,13 +25,13 @@ import com.fcu.R;
 
 public class CloudPhotoAdapter extends BaseAdapter {
     private Context context;
-    private ArrayList<CloudPhotoItem> imagePathList = null;
+    private ArrayList<Photo> imagePathList = null;
 
 
     //記錄是否被選擇
     private SparseBooleanArray selectionMap;
 
-    public CloudPhotoAdapter(Context context, ArrayList<CloudPhotoItem> imagePathList) {
+    public CloudPhotoAdapter(Context context, ArrayList<Photo> imagePathList) {
         this.context = context;
         this.imagePathList = imagePathList;
         selectionMap = new SparseBooleanArray();
@@ -97,7 +99,7 @@ public class CloudPhotoAdapter extends BaseAdapter {
 	    .into(holder.imageView);
         //holder.imageView.setTag(filePath);
         //取得拍攝日期
-        holder.textView.setText( imagePathList.get(position).getTakeDate() );
+        holder.textView.setText( DateTool.dateFormat(imagePathList.get(position).getTakeDate(), "M月d日") );
 
 //	        loader.loadImage(4, filePath, holder.imageView);
         return convertView;

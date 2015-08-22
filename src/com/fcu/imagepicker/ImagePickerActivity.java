@@ -17,6 +17,10 @@
 package com.fcu.imagepicker;
 
 import com.fcu.R;
+import com.fcu.menu.MainActivity;
+import com.fcu.photocollage.MovieView;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -71,7 +75,10 @@ public class ImagePickerActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-        	
+        	// 切換預覽頁面
+			Intent it = new Intent();
+			it.setClass(this, MainActivity.class);
+			startActivity(it);
         	FragmentManager fragmentManager = this.getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.imagepick_frame, phoneAlbumFg).commit();
             return true;

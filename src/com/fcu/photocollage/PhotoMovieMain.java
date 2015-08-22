@@ -7,10 +7,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+
 import com.fcu.speechtag.MyRecoder;
 import com.fcu.R;
 import com.fcu.cloudalbum.CloudPhotoItem;
 import com.fcu.imagepicker.*;
+
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -715,12 +717,9 @@ public class PhotoMovieMain extends Fragment {
 				
 				// 取得拍攝日期
 				String takeDate = Utility.getTakeDate(tmpP.getpPath(),"yyyy/MM/dd HH:mm:ss");
-				if(takeDate != null){
-					tmpP.setTakeDate(takeDate);
-				}
-				else{
-					tmpP.setTakeDate("0000-00-00 00:00:00");
-				}
+
+				tmpP.setTakeDate(takeDate);
+
 	
 				pList.add(tmpP); // 將相片加入相片群
 				linelay.addView(getImageView(i, photoCount));

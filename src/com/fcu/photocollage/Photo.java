@@ -1,13 +1,22 @@
 package com.fcu.photocollage;
 
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+
+import com.fcu.library.DateTool;
+
 public class Photo {
 	private int pid;			//相片編號
 	private String pname;		//相片名稱
 	private String takeDate;	//拍攝日期
+	private String uploadDate;	//上傳日期
 	private String pPath;		//相片路徑
+	private String pServerPath;	//相片Server路徑
 	private String recPath;		//語音路徑
+	private String recServerPath;//語音Server路徑
 	private int recSec;			//語音秒數
 	private int albumID;		//相簿編號
+	private int UserID;		//相簿編號
 	private int sec;			//秒數
 	private int turn;			//翻轉 ( 1 為翻轉, 0 為不翻 )
 	private int effect;			//特效 ( 1 為加特效, 0 為不加 )
@@ -22,6 +31,31 @@ public class Photo {
 		this.sec = sec;
 		this.turn = turn;
 		this.effect = effect;
+	}
+	public Photo(String pPath, int albumID, int userID) {
+		this.pPath = pPath;		
+		this.albumID = albumID;
+		this.UserID = userID;
+	}
+	public Photo(String pPath, String takeDate, int albumID, int userID) {
+		this.pPath = pPath;		
+		this.takeDate = takeDate;
+		this.albumID = albumID;
+		this.UserID = userID;
+		this.pServerPath = "C:\\\\inetpub\\\\wwwroot\\\\PhotoCollage\\\\Data\\\\" + userID + "\\\\picture\\\\" + albumID + "\\\\";
+	}
+	
+	public Photo(int pid, String pname, String takeDate, String uploadDate, String pPath, String recPath) {
+		this.pid = pid;
+		this.pname = pname;
+		this.takeDate = takeDate;
+		this.uploadDate = uploadDate;
+		this.pPath = pPath;
+		this.recPath = recPath;
+	}
+	
+	public void createPname() {
+		pname = UserID + "_" + albumID + "_" + DateTool.getCurrentTime("yyyyMMddHHmmssSS") + ".jpg";
 	}
 
 	public int getPid() {
@@ -104,6 +138,29 @@ public class Photo {
 		this.recSec = recSec;
 	}
 	
+	public int getUserID() {
+		return UserID;
+	}
+	
+	public void setUserID(int userID) {
+		UserID = userID;
+	}
+	
+	public String getpServerPath() {
+		return pServerPath;
+	}
+	
+	public void setpServerPath(String pServerPath) {
+		this.pServerPath = pServerPath;
+	}
+	
+	public String getRecServerPath() {
+		return recServerPath;
+	}
+	
+	public void setRecServerPath(String recServerPath) {
+		this.recServerPath = recServerPath;
+	}
 /*
 	@Override
 	public String toString() {
@@ -113,6 +170,4 @@ public class Photo {
 				+ sec + ", turn=" + turn + ", effect=" + effect + "]";
 	}
 */
-	
-	
 }

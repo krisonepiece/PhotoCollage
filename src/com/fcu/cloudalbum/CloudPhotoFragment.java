@@ -1,11 +1,18 @@
 package com.fcu.cloudalbum;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -27,6 +34,9 @@ import android.widget.GridView;
 import android.widget.TextView;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.channels.GatheringByteChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,7 +51,16 @@ import com.android.volley.Response.ErrorListener;
 import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.StringRequest;
 import com.fcu.R;
+import com.fcu.imagepicker.Utility;
+import com.fcu.library.FileTool;
 import com.fcu.member.AppController;
+import com.fcu.member.SQLiteHandler;
+import com.fcu.member.SessionManager;
+import com.fcu.photocollage.FileUpload;
+import com.fcu.photocollage.HttpPhotoUpload;
+import com.fcu.photocollage.MovieView;
+import com.fcu.photocollage.Photo;
+import com.fcu.library.*;
 
 import static com.fcu.imagepicker.Utility.isImage;
 
@@ -50,12 +69,17 @@ import static com.fcu.imagepicker.Utility.isImage;
  */
 public class CloudPhotoFragment extends Fragment {
 	private static final String TAG = "CloudPhotoFragment";
-    private ArrayList<CloudPhotoItem> list;
+	private final static int PHOTO = 22;
+    private ArrayList<String> paths;
+    private ArrayList<Photo> pList;
     private GridView mPhotoWall;
+	private SQLiteHandler db;
+	private int userID;
     private CloudPhotoAdapter adapter;
     private View thisView;
     private int albumId;
     private String albumName;
+    private ProgressDialog progressDialog;
 
     public void init() {    	
         mPhotoWall = (GridView) thisView.findViewById(R.id.cloud_photo_grid);
@@ -71,9 +95,16 @@ public class CloudPhotoFragment extends Fragment {
     	init();
     	((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
-    	((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(albumName);
-    	list = new ArrayList<CloudPhotoItem>();
-        getImagePathsFromAlbumId();        
+    	((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(albumName);    	
+        getImagePathsFromAlbumId();
+        
+		// SqLite database handler
+		db = new SQLiteHandler(getActivity().getApplicationContext());
+
+		// Fetching user details from sqlite
+		HashMap<String, String> user = db.getUserDetails();
+		userID = Integer.parseInt(user.get("uid"));
+
 
 		return thisView;
 	}
@@ -95,8 +126,8 @@ public class CloudPhotoFragment extends Fragment {
     /**
      * 根據圖片所屬文件夾路徑，刷新頁面
      */
-    private void updateView(int albumId, String albumName) {
-        list.clear();
+    private void updateView() {
+        pList.clear();
         adapter.clearSelectionMap();
         adapter.notifyDataSetChanged();
         
@@ -104,7 +135,7 @@ public class CloudPhotoFragment extends Fragment {
         getImagePathsFromAlbumId();
         
         adapter.notifyDataSetChanged();
-        if (list.size() > 0) {
+        if (pList.size() > 0) {
             //滾動至頂部
             mPhotoWall.smoothScrollToPosition(0);
         }
@@ -113,14 +144,14 @@ public class CloudPhotoFragment extends Fragment {
     /**
      * 讀取指定相簿的圖片。
      */
-    private ArrayList<CloudPhotoItem> getImagePathsFromAlbumId() {
-    	final ArrayList<CloudPhotoItem> pList = new ArrayList<CloudPhotoItem>();
+    private void getImagePathsFromAlbumId() {
     	// Tag used to cancel the request
 		String getPhoto_req = "getCloudPhoto";
+		pList = new ArrayList<Photo>();
 		StringRequest strReq = new StringRequest(Method.POST,getString(R.string.getCloudPhoto),new Listener<String>() {
 			@Override
 			public void onResponse(String response) {
-				Log.d("getCloudPhoto", "Response: " + response.toString());
+				//Log.d("getCloudPhoto", "Response: " + response.toString());
 				try {
 					JSONObject jObj = new JSONObject(response);
 					// boolean error = jObj.getBoolean("error");
@@ -136,11 +167,10 @@ public class CloudPhotoFragment extends Fragment {
 							String uploadDate = photo.getString("UploadDate");
 							String pPath = photo.getString("Ppath");
 							String recPath = photo.getString("RecPath");								
-							Log.d("getCloudPhoto","Response:"+ pid + "," + pName + "," + pPath);
-							pList.add(new CloudPhotoItem(pid, pName, takeDate, uploadDate, pPath, recPath));							
+							//Log.d("getCloudPhoto","Response:"+ pid + "," + pName + "," + pPath);
+							pList.add(new Photo(pid, pName, takeDate, uploadDate, pPath, recPath));							
 						}
-						list = pList;
-						CloudPhotoAdapter adapter = new CloudPhotoAdapter(getActivity(), pList);
+						adapter = new CloudPhotoAdapter(getActivity(), pList);
 						mPhotoWall.setAdapter(adapter);
 					}
 
@@ -164,47 +194,92 @@ public class CloudPhotoFragment extends Fragment {
 				return params;
 			}
 		};
-
 		// Adding request to request queue
 		AppController.getInstance().addToRequestQueue(strReq, getPhoto_req);
-        return pList;
     }
 
-    //獲取已選擇的圖片路徑
-    private ArrayList<CloudPhotoItem> getSelectImage() {
-        SparseBooleanArray map = adapter.getSelectionMap();
-        if (map.size() == 0) {
-            return null;
-        }
+//    //獲取已選擇的圖片路徑
+//    private ArrayList<Photo> getSelectImage() {
+//        SparseBooleanArray map = adapter.getSelectionMap();
+//        if (map.size() == 0) {
+//            return null;
+//        }
+//
+//        ArrayList<Photo> selectedImageList = new ArrayList<Photo>();
+//
+//        for (int i = 0; i < pList.size(); i++) {
+//            if (map.get(i)) {
+//                selectedImageList.add(pList.get(i));
+//            }
+//        }
+//        return selectedImageList;
+//    }
 
-        ArrayList<CloudPhotoItem> selectedImageList = new ArrayList<CloudPhotoItem>();
-
-        for (int i = 0; i < list.size(); i++) {
-            if (map.get(i)) {
-                selectedImageList.add(list.get(i));
-            }
-        }
-        return selectedImageList;
-    }
-
-    //從相冊頁面跳轉至此頁
+    
 	@Override
 	public void onResume() {
-		super.onResume();		
-		
-		if(getArguments() != null){
-	        albumId = getArguments().getInt("AlbumID", -1);
+		super.onResume();	
+		Log.i(TAG, "onResume");
+		//從相冊頁面跳轉至此頁
+		//if(getArguments() != null){	        
+        if (getArguments().getInt("AlbumID", -1) != -1 && getArguments().getString("AlbumName", null) != null) {
+        	albumId = getArguments().getInt("AlbumID", -1);
 	        albumName = getArguments().getString("AlbumName", null);
-	        if (albumId != -1 && albumName != null) {
-	            //某個相冊
-	        	//updateView(albumId, albumName);
-	        }
-	        getArguments().remove("AlbumID");
+        	getArguments().remove("AlbumID");
 	        getArguments().remove("AlbumName");
+        //}
         }
-		Log.i("onResume","phone," + albumId);
-	}	
-	
+        else if (getActivity().getIntent().getIntExtra("code", -1) != -1){
+        	int code = getActivity().getIntent().getIntExtra("code", -1);
+    		if(code == 100){
+    			Bundle bundle = getActivity().getIntent().getExtras();    			
+    			paths = bundle.getStringArrayList("paths");
+    			
+    			ArrayList<Photo> uploadList = new ArrayList<Photo>();    			
+				
+    			for (int i = 0; i < paths.size(); i++) {    				
+    				// 取得拍攝日期
+    				String takeDate = Utility.getTakeDate(paths.get(i),"yyyy/MM/dd HH:mm:ss");
+    				
+    				//建立Photo資訊
+    				Photo tmpP = new Photo(paths.get(i), takeDate, albumId, userID);
+    				uploadList.add(tmpP);
+    			}
+    			//上傳圖片
+    			UploadPhoto uploadPhoto = new UploadPhoto(handler, uploadList, getString(R.string.uploadPhoto), getString(R.string.uploadFile));
+    			Thread uploadThread = new Thread(uploadPhoto);
+   				uploadThread.start();
+   				
+   				//顯示進度條
+    			progressDialog = new ProgressDialog(getActivity());
+				progressDialog.setTitle("上傳照片");
+				progressDialog.setMessage("請稍後...");
+				progressDialog.setCanceledOnTouchOutside(false);
+				progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+				progressDialog.show();
+    		}    		
+    		getActivity().getIntent().removeExtra("code");
+        }
+	}
+	/**
+	 * 接收上傳檔案進度
+	 */
+	private Handler handler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			Bundle data = msg.getData();
+	        String value = data.getString("value");
+			progressDialog.setMessage(value);
+			
+			if (value.equals("完成")) {
+				progressDialog.dismiss();
+				//刪除暫存
+   				FileTool.deleteFolder("/sdcard/PCtemp");
+				// 重新整理頁面
+   				updateView();
+			}
+		}
+	};
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
@@ -214,9 +289,9 @@ public class CloudPhotoFragment extends Fragment {
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		Log.d(TAG,"onCreateOptionsMenu");
-		inflater.inflate(R.menu.album_menu, menu);
-		MenuItem mi = menu.findItem(R.id.action_check);
-		mi.setVisible(true);
+		inflater.inflate(R.menu.cloud_photo_menu, menu);		
+//		MenuItem mi = menu.findItem(R.id.action_check);
+//		mi.setVisible(true);
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
@@ -224,16 +299,11 @@ public class CloudPhotoFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		//super.onOptionsItemSelected(item);
 		switch(item.getItemId()){
-			case R.id.action_check:
-				//選擇圖片完成,回到起始頁面
-				ArrayList<CloudPhotoItem> cPaths = getSelectImage();
-				Intent intent = new Intent(getActivity(), com.fcu.menu.MainActivity.class);
-				intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				intent.putExtra("code", cPaths != null ? 200 : 201);
-				Bundle bundle = new Bundle();
-				bundle.putSerializable("cPaths", cPaths);
-				intent.putExtras(bundle);
-				startActivity(intent);
+			case R.id.action_upload_photo:
+				//上傳照片
+				Intent intent = new Intent(getActivity(),
+						com.fcu.imagepicker.ImagePickerActivity.class);
+				startActivityForResult(intent,PHOTO);
 				return true;
 			
 			case android.R.id.home:

@@ -38,6 +38,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.Request.Method;
 import com.android.volley.toolbox.StringRequest;
 import com.fcu.R;
+import com.fcu.imagepicker.Utility;
+import com.fcu.library.DateTool;
 import com.fcu.member.AppController;
 import com.fcu.member.SQLiteHandler;
 import com.fcu.member.SessionManager;
@@ -63,8 +65,7 @@ public class CloudAlbumFragment extends Fragment {
 			Bundle savedInstanceState) {
 		//super.onCreateView(inflater, container, savedInstanceState);
 		setHasOptionsMenu(true);
-		thisView = inflater.inflate(R.layout.fragment_cloud_album, container,
-				false);
+		thisView = inflater.inflate(R.layout.fragment_cloud_album, container, false);
 		gridView = (GridView) thisView.findViewById(R.id.cloud_album_grid);
 		gvMenuListener = new GridViewMenuListener();
 		gridView.setOnCreateContextMenuListener(gvMenuListener);
@@ -127,9 +128,10 @@ public class CloudAlbumFragment extends Fragment {
 									String Ppath = album.getString("Ppath");
 									String Aname = album.getString("Aname");
 									String Uname = album.getString("Uname");
+									String CreateDate = album.getString("CreateDate");
 									
-									Log.d("getAlbum","Response:"+ Pid + "," + Ppath + "," + Aname);
-									aList.add(new CloudAlbumItem(Aid, Aname, AlbumSize, Ppath));
+									Log.d("getAlbum","Response:"+ Pid + "," + Ppath + "," + Aname+ "," + Uname+ "," + CreateDate);
+									aList.add(new CloudAlbumItem(Aid, Aname, AlbumSize, Ppath, Uname, CreateDate));
 								}
 								
 								adapter = new CloudAlbumAdapter(getActivity(), aList);
@@ -201,7 +203,7 @@ public class CloudAlbumFragment extends Fragment {
 								
 								if(response.toString().contains("Succeed")){								
 									int Aid = jObj.getInt("Aid");
-									aList.add(new CloudAlbumItem(Aid, aName, 0, Integer.toString(R.drawable.ic_add_white_36dp)));
+									aList.add(new CloudAlbumItem(Aid, aName, 0, Integer.toString(R.drawable.ic_add_white_36dp), name, DateTool.getCurrentTime("yyyy-MM-dd HH:mm:ss")));
 									adapter.notifyDataSetChanged();
 								}
 								Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
@@ -241,8 +243,9 @@ public class CloudAlbumFragment extends Fragment {
 					public void onResponse(String response) {
 						Log.d("deleteAlbum", "Response: " + response.toString());
 						if(response.toString().contains("Success")){
-							aList.remove(aList.get(position));
-							adapter.notifyDataSetChanged();
+							
+							aList.remove(position);
+					        adapter.notifyDataSetChanged();
 							Toast.makeText(getActivity(), "Delete success!", Toast.LENGTH_SHORT).show();
 						}
 					}
@@ -276,6 +279,7 @@ public class CloudAlbumFragment extends Fragment {
 	        menu.add(Menu.NONE, MENU_DELETE, Menu.NONE, "刪除");
 	    }
 	}
+	
 	@Override
     public boolean onContextItemSelected(MenuItem item) {
     	final AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
@@ -290,9 +294,8 @@ public class CloudAlbumFragment extends Fragment {
             case MENU_DELETE:
                 Log.i("ContextMenu", "MENU_DELETE was chosen" + info.position);
                 //確認刪除視窗
-        		new AlertDialog.Builder(getActivity()).setTitle("確定刪除相簿？")
-        		.setIcon(android.R.drawable.ic_dialog_info)
-        		.setView(dText)				
+                new AlertDialog.Builder(getActivity()).setTitle("確定刪除相簿？")
+        		.setIcon(android.R.drawable.ic_dialog_info)        					
         		.setNegativeButton("取消", null)
         		.setPositiveButton("確定", new OnClickListener() {				
         			@Override
@@ -305,6 +308,7 @@ public class CloudAlbumFragment extends Fragment {
         }
         return super.onContextItemSelected(item);
     }
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -314,7 +318,7 @@ public class CloudAlbumFragment extends Fragment {
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		Log.d(TAG,"onCreateOptionsMenu");
-		inflater.inflate(R.menu.cloud_menu, menu);
+		inflater.inflate(R.menu.cloud_album_menu, menu);
 //		MenuItem mi = menu.findItem(R.id.action_check);
 //		mi.setVisible(false);
         super.onCreateOptionsMenu(menu, inflater);
@@ -339,12 +343,17 @@ public class CloudAlbumFragment extends Fragment {
 			})
 			.show();
 			return true;
+		case R.id.action_share_album:
+			
+			
+			return true;			
 		case android.R.id.home:
 			backAction();
 			return true;
 		}
 		return false;
 	}
+	
 	@Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);

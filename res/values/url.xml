@@ -4,4 +4,6 @@
     <string name="getCloudPhoto">http://140.134.26.13/PhotoCollage/php/CloudAlbum/GetCloudPhoto.php</string>
     <string name="createCloudAlbum">http://140.134.26.13/PhotoCollage/php/CloudAlbum/CreateCloudAlbum.php</string>
     <string name="deleteCloudAlbum">http://140.134.26.13/PhotoCollage/php/CloudAlbum/DeleteCloudAlbum.php</string>
+    <string name="uploadPhoto">http://140.134.26.13/PhotoCollage/php/CloudAlbum/UploadPhoto.php</string>
+    <string name="uploadFile">http://140.134.26.13/PhotoCollage/php/CloudAlbum/fileUpload.php</string>
 </resources>
