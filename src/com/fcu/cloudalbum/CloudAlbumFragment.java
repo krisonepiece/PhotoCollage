@@ -8,6 +8,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -41,6 +43,7 @@ import com.fcu.R;
 import com.fcu.imagepicker.Utility;
 import com.fcu.library.DateTool;
 import com.fcu.member.AppController;
+import com.fcu.member.LoginFragment;
 import com.fcu.member.SQLiteHandler;
 import com.fcu.member.SessionManager;
 
@@ -56,6 +59,7 @@ public class CloudAlbumFragment extends Fragment {
 	private String email;
 	private EditText dText;
 	private GridViewMenuListener gvMenuListener;
+	private ProgressDialog progressDialog;
 	private static final int MENU_ADD_TEAMWORKER = 0;
     private static final int MENU_RENAME = 1;
     private static final int MENU_DELETE = 2;
@@ -88,6 +92,13 @@ public class CloudAlbumFragment extends Fragment {
 			email = user.get("email");
 
 			getImagePathsByDB(name, email);
+			//顯示進度條
+			progressDialog = new ProgressDialog(getActivity());
+			progressDialog.setTitle("載入相簿");
+			progressDialog.setMessage("請稍後...");
+			progressDialog.setCanceledOnTouchOutside(false);
+			progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			progressDialog.show();
 		}
 		return thisView;
 	}
@@ -159,6 +170,7 @@ public class CloudAlbumFragment extends Fragment {
 												.addToBackStack(null).commit();
 									}
 								});
+								progressDialog.dismiss();
 							}
 						} catch (JSONException e) {
 							e.printStackTrace();

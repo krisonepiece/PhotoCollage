@@ -4,4 +4,5 @@
     android:layout_height="wrap_content" 
     android:layout_width="match_parent"
     android:minHeight="?android:attr/actionBarSize"
-    android:background="?android:attr/colorPrimary" />
+    android:background="?android:attr/colorPrimary"
+    android:elevation="5dp" />

@@ -1,14 +1,24 @@
 package com.fcu.menu;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import android.app.AlertDialog;
 import android.app.SearchManager;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.DialogInterface.OnClickListener;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
@@ -19,41 +29,64 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.Toast;
+
 import com.fcu.R;
 import com.fcu.cloudalbum.CloudAlbumFragment;
 import com.fcu.member.LoginFragment;
+import com.fcu.member.SessionManager;
 import com.fcu.photocollage.PhotoMovieMain;
 
 public class MainActivity extends AppCompatActivity{
+	String NAME = "Akash Bangad";
+    String EMAIL = "akash.bangad@android4devs.com";
+    int PROFILE = R.drawable.ic_person_white_24dp;
+ 
+    private Toolbar toolbar;                              // Declaring the Toolbar Object
 	private DrawerLayout mDrawerLayout;
+	
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
-
+    private SessionManager session;
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     private String[] mMenuTitles;
+    private int[] mMenuIcon = {
+    		R.drawable.ic_home_white_36dp,
+    		R.drawable.ic_person_white_36dp,
+    		R.drawable.ic_movie_creation_white_36dp,
+    		R.drawable.ic_cloud_queue_white_36dp};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // session manager
+    	session = new SessionManager(getApplicationContext());
         //設置 Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
-        }        
-        
+        }
         mTitle = mDrawerTitle = getTitle();
         mMenuTitles = getResources().getStringArray(R.array.drawer_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);  
+        
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, mMenuTitles));
+        //mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mMenuTitles));
+        List<HashMap<String,String>> lstData = new ArrayList<HashMap<String,String>>();
+        for (int i = 0; i < 4; i++) {
+	        HashMap<String, String> mapValue = new HashMap<String, String>();
+	        mapValue.put("icon", Integer.toString(mMenuIcon[i]));
+	        mapValue.put("title", mMenuTitles[i]);
+	        lstData.add(mapValue);
+        }
+        SimpleAdapter adapter = new SimpleAdapter(this, lstData, R.layout.drawer_list_item, new String[]{"icon", "title"}, new int[]{R.id.drawerIcon, R.id.txtItem});
+        mDrawerList.setAdapter(adapter);
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
@@ -146,6 +179,7 @@ public class MainActivity extends AppCompatActivity{
     		fragment = new PhotoMovieMain();
     	}
     	else if(position == 3){
+    		checkLogin();
     		fragment = new CloudAlbumFragment();
     	}
  		FragmentManager fragmentManager = getSupportFragmentManager();
@@ -169,6 +203,19 @@ public class MainActivity extends AppCompatActivity{
 //            mDrawerLayout.closeDrawer(mDrawerList);
 //    	}
         
+    }
+    public void checkLogin(){
+    	if (!session.isLoggedIn()) {
+	    	new AlertDialog.Builder(this).setTitle("要先登入哦！")
+			.setIcon(android.R.drawable.ic_dialog_info)
+			.setPositiveButton("確定", new OnClickListener() {				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					selectItem(1);	//跳轉登入頁		
+				}
+			})
+			.show();
+    	}
     }
 
     @Override

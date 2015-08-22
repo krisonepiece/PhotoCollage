@@ -33,5 +33,7 @@
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="libs/okhttp-2.4.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/okio-1.4.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/android-support-v7-recyclerview.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/android-support-design.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

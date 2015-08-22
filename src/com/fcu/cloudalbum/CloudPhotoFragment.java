@@ -95,7 +95,14 @@ public class CloudPhotoFragment extends Fragment {
     	init();
     	((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
-    	((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(albumName);    	
+    	((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(albumName);
+    	//顯示進度條
+		progressDialog = new ProgressDialog(getActivity());
+		progressDialog.setTitle("載入相片");
+		progressDialog.setMessage("請稍後...");
+		progressDialog.setCanceledOnTouchOutside(false);
+		progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		progressDialog.show();
         getImagePathsFromAlbumId();
         
 		// SqLite database handler
@@ -128,7 +135,6 @@ public class CloudPhotoFragment extends Fragment {
      */
     private void updateView() {
         pList.clear();
-        adapter.clearSelectionMap();
         adapter.notifyDataSetChanged();
         
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(albumName);
@@ -155,7 +161,7 @@ public class CloudPhotoFragment extends Fragment {
 				try {
 					JSONObject jObj = new JSONObject(response);
 					// boolean error = jObj.getBoolean("error");
-					if (response != null) {
+					if (jObj.getBoolean("result")) {
 						// User successfully stored in MySQL
 						// Now store the user in sqlite
 						int size = jObj.getInt("Size");
@@ -172,6 +178,10 @@ public class CloudPhotoFragment extends Fragment {
 						}
 						adapter = new CloudPhotoAdapter(getActivity(), pList);
 						mPhotoWall.setAdapter(adapter);
+						progressDialog.dismiss();
+					}
+					else{
+						updateView();
 					}
 
 				} catch (JSONException e) {

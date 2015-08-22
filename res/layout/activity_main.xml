@@ -33,16 +33,16 @@
          the container. A solid background is used for contrast
          with the content view.
         -->
-
         <ListView
             android:id="@+id/left_drawer"
             android:layout_width="240dp"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            android:background="#111"
+            android:background="@color/md_grey_900"
             android:choiceMode="singleChoice"
             android:divider="@android:color/transparent"
             android:dividerHeight="0dp" />
+
     </android.support.v4.widget.DrawerLayout>
 
 </LinearLayout>
