@@ -29,12 +29,28 @@
     <!-- 頂部標題欄標題文本樣式 -->
     <style name="topbarTittleTheme">
         <item name="android:textColor">@color/topbar_btn_text_color</item>
-        <!--
-        <item name="android:shadowColor">@color/gray</item>
-        <item name="android:shadowDy">0.5</item>
-        <item name="android:shadowRadius">1</item>
+    </style>
 
-        -->
+    <!-- ProgressBar Style -->
+    <style name="Material.Drawable.CircularProgress">
+        <item name="cpd_padding">0dp</item>
+        <item name="cpd_initialAngle">0</item>
+        <item name="cpd_maxSweepAngle">270</item>
+        <item name="cpd_minSweepAngle">1</item>
+        <item name="cpd_strokeSize">4dp</item>
+        <item name="cpd_strokeColor">?attr/colorPrimary</item>
+        <item name="cpd_strokeSecondaryColor">@android:color/transparent</item>
+        <item name="cpd_reverse">false</item>
+        <item name="cpd_rotateDuration">1000</item>
+        <item name="cpd_transformDuration">600</item>
+        <item name="cpd_keepDuration">200</item>
+        <item name="cpd_transformInterpolator">@android:anim/decelerate_interpolator</item>
+        <item name="pv_progressMode">indeterminate</item>
+        <item name="cpd_inAnimDuration">0</item>
+        <item name="cpd_outAnimDuration">@android:integer/config_mediumAnimTime</item>
+    </style>
+    <style name="MyProgressBar" parent="@style/Material.Drawable.CircularProgress">
+        <item name="cpd_strokeColors">@array/progessbar_color</item><!--顏色陣列-->
     </style>
 
 </resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="progessbar_color">
+        <item>@color/md_green_500</item>
+        <item>@color/md_yellow_500</item>
+        <item>@color/md_red_500</item>
+        <item>@color/md_blue_500</item>
+    </array>
+</resources>

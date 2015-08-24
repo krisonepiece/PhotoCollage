@@ -1,8 +1,11 @@
 package com.fcu.photocollage.cloudalbum;
 
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -30,6 +34,8 @@ import com.fcu.photocollage.library.FileTool;
 import com.fcu.photocollage.member.AppController;
 import com.fcu.photocollage.member.SQLiteHandler;
 import com.fcu.photocollage.movie.Photo;
+import com.rey.material.widget.ProgressView;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,6 +60,7 @@ public class CloudPhotoFragment extends Fragment {
     private int albumId;
     private String albumName;
     private ProgressDialog progressDialog;
+	private ProgressView pv_circular;
 
     public void init() {    	
         mPhotoWall = (GridView) thisView.findViewById(R.id.cloud_photo_grid);
@@ -72,11 +79,13 @@ public class CloudPhotoFragment extends Fragment {
     	((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(albumName);
     	//顯示進度條
 		progressDialog = new ProgressDialog(getActivity());
-		progressDialog.setTitle("載入相片");
-		progressDialog.setMessage("請稍後...");
 		progressDialog.setCanceledOnTouchOutside(false);
-		progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		progressDialog.show();
+		/*一定要寫在 show 後面!!*/
+		progressDialog.setContentView(R.layout.material_progressbar);	//自定義Layout
+		((TextView)progressDialog.findViewById(R.id.pg_text)).setText("載入中...");
+		progressDialog.getWindow().setBackgroundDrawableResource(R.color.alpha);	//背景透明
+
         getImagePathsFromAlbumId();
         
 		// SqLite database handler
@@ -104,22 +113,22 @@ public class CloudPhotoFragment extends Fragment {
 						.commit();
     }
 
-    /**
-     * 根據圖片所屬文件夾路徑，刷新頁面
-     */
-    private void updateView() {
-        pList.clear();
-        //adapter.notifyDataSetChanged();
-        
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(albumName);
-        getImagePathsFromAlbumId();
-        
-        adapter.notifyDataSetChanged();
-        if (pList.size() > 0) {
-            //滾動至頂部
-            mPhotoWall.smoothScrollToPosition(0);
-        }
-    }
+//    /**
+//     * 根據圖片所屬文件夾路徑，刷新頁面
+//     */
+//    private void updateView() {
+//        pList.clear();
+//        //adapter.notifyDataSetChanged();
+//
+//        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(albumName);
+//        getImagePathsFromAlbumId();
+//
+//        adapter.notifyDataSetChanged();
+//        if (pList.size() > 0) {
+//            //滾動至頂部
+//            mPhotoWall.smoothScrollToPosition(0);
+//        }
+//    }
 
     /**
      * 讀取指定相簿的圖片。
@@ -239,11 +248,11 @@ public class CloudPhotoFragment extends Fragment {
    				
    				//顯示進度條
     			progressDialog = new ProgressDialog(getActivity());
-				progressDialog.setTitle("上傳照片");
-				progressDialog.setMessage("請稍後...");
 				progressDialog.setCanceledOnTouchOutside(false);
-				progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 				progressDialog.show();
+				progressDialog.setContentView(R.layout.material_progressbar);	//自定義Layout
+				((TextView)progressDialog.findViewById(R.id.pg_text)).setText("請稍後...");
+				progressDialog.getWindow().setBackgroundDrawableResource(R.color.alpha);	//背景透明
     		}    		
     		getActivity().getIntent().removeExtra("code");
         }
@@ -256,14 +265,14 @@ public class CloudPhotoFragment extends Fragment {
 		public void handleMessage(Message msg) {
 			Bundle data = msg.getData();
 	        String value = data.getString("value");
-			progressDialog.setMessage(value);
+			((TextView)progressDialog.findViewById(R.id.pg_text)).setText(value);
 			
 			if (value.equals("完成")) {
 				progressDialog.dismiss();
 				//刪除暫存
    				FileTool.deleteFolder("/sdcard/PCtemp");
 				// 重新整理頁面
-   				updateView();
+				getImagePathsFromAlbumId();
 			}
 		}
 	};

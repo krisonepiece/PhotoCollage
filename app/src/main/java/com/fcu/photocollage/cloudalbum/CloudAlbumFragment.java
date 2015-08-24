@@ -29,6 +29,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -88,11 +89,12 @@ public class CloudAlbumFragment extends Fragment {
 			getImagePathsByDB(name, email);
 			//顯示進度條
 			progressDialog = new ProgressDialog(getActivity());
-			progressDialog.setTitle("載入相簿");
-			progressDialog.setMessage("請稍後...");
 			progressDialog.setCanceledOnTouchOutside(false);
-			progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			progressDialog.show();
+			/*一定要寫在 show 後面!!*/
+			progressDialog.setContentView(R.layout.material_progressbar);	//自定義Layout
+			((TextView)progressDialog.findViewById(R.id.pg_text)).setText("載入中...");
+			progressDialog.getWindow().setBackgroundDrawableResource(R.color.alpha);	//背景透明
 		}
 		return thisView;
 	}
