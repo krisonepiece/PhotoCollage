@@ -1,0 +1,40 @@
+<resources>
+
+    <style name="MyMaterialTheme" parent="MyMaterialTheme.Base">
+    </style>
+
+    <!-- Base application theme. -->
+    <style name="MyMaterialTheme.Base" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <!-- 不需要 ActionBar 了,因為改用Toolbar -->
+        <item name="windowActionBar">false</item>
+        <!-- 主要顏色 -->
+        <item name="colorPrimary">@color/color_primary</item>
+        <!-- 狀態欄背景色 -->
+        <item name="colorPrimaryDark">@color/color_primaryDark</item>
+        <item name="colorAccent">@color/color_accent</item>
+        <!-- 其他可用項目 colorControlNormal, colorControlActivated, colorControlHighlight, colorSwitchThumbNormal -->
+        <item name="android:navigationBarColor">@color/color_NavigationBar</item>
+        <item name="colorControlNormal">@color/color_color_ControlNormal</item>
+        <item name="android:textColorPrimary">@color/color_color_textPrimary</item>
+        <item name="android:windowBackground">@color/color_windowBackground</item>
+    </style>
+
+    <style name="MyCheckBox" parent="@android:style/Widget.CompoundButton.CheckBox">
+        <item name="android:button">@drawable/checkbox_selector</item>
+        <item name="android:paddingLeft">3.0dip</item>
+        <item name="android:maxHeight">10.0dip</item>
+    </style>
+
+    <!-- 頂部標題欄標題文本樣式 -->
+    <style name="topbarTittleTheme">
+        <item name="android:textColor">@color/topbar_btn_text_color</item>
+        <!--
+        <item name="android:shadowColor">@color/gray</item>
+        <item name="android:shadowDy">0.5</item>
+        <item name="android:shadowRadius">1</item>
+
+        -->
+    </style>
+
+</resources>

@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.fcu.imagepicker.AlbumMainActivity" >
+
+    <item
+        android:id="@+id/action_share_album"
+        android:icon="@mipmap/ic_share_white_36dp"
+        android:title="@string/share_album"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_add_album"
+        android:icon="@mipmap/ic_add_white_36dp"
+        android:title="@string/add_album"
+        app:showAsAction="ifRoom"/>
+</menu>

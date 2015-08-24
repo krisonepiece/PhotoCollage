@@ -1,0 +1,38 @@
+<com.fcu.photocollage.imagepicker.SquareRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/photo_wall_item_photo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@null"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/empty_photo"
+        android:layout_centerInParent="true" />
+
+    <CheckBox
+        android:id="@+id/photo_wall_item_cb"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:button="@null"
+        android:layout_margin="10dp"
+        android:background="@drawable/selector_checkbox"
+        />
+    <TextView
+        android:id="@+id/photo_wall_item_text"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"        
+        android:layout_alignParentBottom="true"
+        android:background="@color/black"
+        android:alpha="0.7"
+        android:textSize="14sp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:paddingStart="15dp"
+        android:paddingEnd="5dp"
+        android:drawableEnd="@mipmap/ic_image_white_24dp"
+        android:textColor="@color/white"
+        />
+
+</com.fcu.photocollage.imagepicker.SquareRelativeLayout>

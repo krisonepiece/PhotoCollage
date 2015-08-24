@@ -1,0 +1,51 @@
+<resources>
+    <string name="app_name">PhotoCollage</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <!-- 相片電影 -->
+    <string name="btn_addPic">加入圖片</string>
+    <string name="btn_addMus">加入音樂</string>
+    <string name="btn_addRec">加入語音</string>
+    <string name="btn_addEff">加入特效</string>
+    <string name="btn_generate">產生電影</string>
+    <string name="text_sec">秒數：1</string>
+    <string name="finishText">恭喜您！完成了獨一無二的相片電影</string>
+    <string name="refresh">重新整理</string>
+    <string name="finish">完成</string>
+    <!-- 相片選擇器 -->
+    <string name="select_album">選擇相簿</string>
+    <string name="select_image">選擇圖片</string>
+    <string name="latest_image">最近照片</string>
+    <string name="photo_album">相簿</string>
+    <string name="main_confirm">確定</string>
+    <string name="main_cancel">取消</string>
+    <string name="main_back">返回</string>
+    <!-- 協作相簿 -->
+    <string name="add_album">新增相簿</string>
+    <string name="share_album">共享相簿</string>
+    <string name="upload_photo">上傳照片</string>
+    <!-- 主選單 -->
+    <string-array name="drawer_array">
+        <item>主頁</item>
+        <item>會員</item>
+        <item>相片電影</item>
+        <item>協作相簿</item>
+    </string-array>
+
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="action_websearch">Web search</string>
+    <string name="action_check">確定</string>
+    <string name="app_not_available">Sorry, there\'s no web browser available</string>
+    <!-- 會員介面 -->
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_name">Fullname</string>
+    <string name="btn_login">LOGIN</string>
+    <string name="btn_register">REGISTER</string>
+    <string name="btn_link_to_register">Not a member? Sign up now.</string>
+    <string name="btn_link_to_login">Already registred! Login Me.</string>
+    <string name="welcome">Welcome</string>
+    <string name="btn_logout">LOGOUT</string>
+    <string name="name">Fullname</string>
+</resources>
