@@ -45,10 +45,11 @@ public class UploadPhoto implements Runnable{
 		FileTool.createNewFolder("/sdcard/PCtemp");
 		
 		for(int i = 0 ; i < pList.size() ; i++){
-			updateHandleMessage("value","上傳照片...("+ i + "/" + pList.size() + ")");
+			updateHandleMessage("result","上傳照片...("+ i + "/" + pList.size() + ")");
 			
 			//以當下時間為照片命名
 			pList.get(i).createPname();
+			pList.get(i).createServerPath();
 			
 			//上傳相片資訊到資料庫
 			uploadPhotoToDb(pList.get(i));
@@ -65,7 +66,7 @@ public class UploadPhoto implements Runnable{
 			String response = CloudFileUpload.executeMultiPartRequest(sURL, new File(tmpPath), relativePath);
 			Log.d(TAG,response);
 		}
-		updateHandleMessage("value","完成");
+		updateHandleMessage("result","照片上傳完成");
 	}
 	
 	public void uploadPhotoToDb(final Photo photo) {
@@ -79,8 +80,10 @@ public class UploadPhoto implements Runnable{
 					if (response != null) {	
 						JSONObject jObj = new JSONObject(response);
 						String result = jObj.getString("result");
-						if(result.contains("success"))
+						if(result.contains("success")) {
 							pid = jObj.getInt("Pid");
+							photo.setPid(pid);
+						}
 						Log.d("uploadPhotoToDb", result);
 					}
 				} catch (JSONException e) {
@@ -100,7 +103,7 @@ public class UploadPhoto implements Runnable{
 				Map<String, String> params = new HashMap<String, String>();
 				params.put("Pname", photo.getPname());
 				params.put("TakeDate", photo.getTakeDate());
-				params.put("Ppath", photo.getpServerPath() + photo.getPname());
+				params.put("Ppath", photo.getServerPath() + photo.getPname());
 				params.put("AlbumID", Integer.toString(photo.getAlbumID()));
 				params.put("UserID", Integer.toString(photo.getUserID()));
 				return params;

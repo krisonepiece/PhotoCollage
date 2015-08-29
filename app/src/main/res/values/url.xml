@@ -6,4 +6,5 @@
     <string name="deleteCloudAlbum">http://140.134.26.13/PhotoCollage/php/CloudAlbum/DeleteCloudAlbum.php</string>
     <string name="uploadPhoto">http://140.134.26.13/PhotoCollage/php/CloudAlbum/UploadPhoto.php</string>
     <string name="uploadFile">http://140.134.26.13/PhotoCollage/php/CloudAlbum/fileUpload.php</string>
+    <string name="callFFmpeg">http://140.134.26.13/PhotoCollage/php/Movie/ffmpegShell.php</string>
 </resources>

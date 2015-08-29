@@ -264,10 +264,10 @@ public class CloudPhotoFragment extends Fragment {
 		@Override
 		public void handleMessage(Message msg) {
 			Bundle data = msg.getData();
-	        String value = data.getString("value");
+	        String value = data.getString("result");
 			((TextView)progressDialog.findViewById(R.id.pg_text)).setText(value);
 			
-			if (value.equals("完成")) {
+			if (value.contains("完成")) {
 				progressDialog.dismiss();
 				//刪除暫存
    				FileTool.deleteFolder("/sdcard/PCtemp");

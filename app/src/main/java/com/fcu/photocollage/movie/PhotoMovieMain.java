@@ -1,16 +1,17 @@
 package com.fcu.photocollage.movie;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -36,29 +37,43 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
-import android.view.animation.RotateAnimation;
-import android.view.animation.ScaleAnimation;
-import android.view.animation.TranslateAnimation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
-
 import com.fcu.photocollage.R;
+import com.fcu.photocollage.cloudalbum.CloudAlbumItem;
 import com.fcu.photocollage.cloudalbum.CloudPhotoItem;
+import com.fcu.photocollage.cloudalbum.CreateCloudAlbum;
+import com.fcu.photocollage.cloudalbum.UploadPhoto;
 import com.fcu.photocollage.imagepicker.Utility;
+import com.fcu.photocollage.library.AnimationTool;
+import com.fcu.photocollage.library.DateTool;
+import com.fcu.photocollage.library.FileTool;
+import com.fcu.photocollage.library.RecordTool;
+import com.fcu.photocollage.member.SQLiteHandler;
+import com.fcu.photocollage.member.SessionManager;
 import com.fcu.photocollage.speechtag.MyRecoder;
+import com.fcu.photocollage.speechtag.UploadRecord;
 
 public class PhotoMovieMain extends Fragment {
+	private static final String TAG = "PhotoMovieMain";
+	private SQLiteHandler db;
+	private SessionManager session;
+	private String name;
+	private int uid;
+	private CloudAlbumItem newAlbum;
+	private EditText dText;
 	private ArrayList<String> paths; // 儲存圖片路徑
 	private ArrayList<CloudPhotoItem> cPaths; // 儲存雲端圖片路徑
-	private ArrayList<Photo> pList; // 照片清單	
+	private ArrayList<Photo> pList; // 照片清單
+	private ArrayList<Photo> rList;	//有語音的照片清單
 	private String musicPath; // 儲存音樂路徑
-	private String user = "Kris"; // 使用者名稱
 	private Button btnGenerate; // 產生按鈕
 	private Button btnAddPic; // 增加圖片按鈕
 	private Button btnAddMus; // 增加音樂按鈕
@@ -73,14 +88,11 @@ public class PhotoMovieMain extends Fragment {
 	private ImageButton btnDelete; // 刪除照片
 	private LinearLayout linelay; // 圖片縮圖線性布局
 	private int currentPhoto; // 當前選擇的照片編號
-	private int pid = 0;
 	private final static int MUSIC = 11;
 	private final static int PHOTO = 22;
 	private boolean hasMusic = false;
 	private int photoCount = 0;
 	private View lastView;
-	Cursor cursor;
-	private HttpPhotoUpload photoUpload;
 	private String tempPath = "/sdcard/PCtemp"; // 暫存資料夾路徑
 	private ProgressDialog progressDialog;
 	// 增加語音
@@ -91,17 +103,16 @@ public class PhotoMovieMain extends Fragment {
 	private boolean isRecording = false;
 	private ProgressBar record_volumn;
 	private MyRecoder myRecoder;
-	private String fileName = null;
 	private View login_view;
 	private MediaPlayer mediaPlayer;
-	// private Intent recognizerIntent;
-	// private SpeechRecognizer sr;
-	private LayoutInflater inflater;	
-	private MagicFileChooser mfChoose;
+	private LayoutInflater inflater;
 	View thisView;
+
 	public PhotoMovieMain() {
         // Empty constructor required for fragment subclasses
     }
+
+	//region 元件初始化
 	private void initializeVariables() {
 		btnGenerate = (Button) thisView.findViewById(R.id.btn_generate);
 		btnAddPic = (Button) thisView.findViewById(R.id.btn_addPic);
@@ -124,9 +135,10 @@ public class PhotoMovieMain extends Fragment {
 		record_ok = (Button) login_view.findViewById(R.id.record_ok);
 		record_cancel = (Button) login_view.findViewById(R.id.record_cancel);		
 	}
+	//endregion
 
+	//region 按鈕狀態初始化
 	private void initializeBtn() {
-		// 按鈕狀態初始化
 		btnPlay.setEnabled(false);
 		btnPlay.setBackgroundColor(getResources().getColor(R.color.green_300));
 		btnTime.setEnabled(false);
@@ -148,6 +160,8 @@ public class PhotoMovieMain extends Fragment {
 		btnGenerate.setEnabled(false);
 		btnGenerate.setBackgroundColor(getResources().getColor(R.color.green_300));
 	}
+	//endregion
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -157,11 +171,25 @@ public class PhotoMovieMain extends Fragment {
 	    // 按鈕狀態初始化
 	    initializeBtn();	    
 		// 建立暫存資料夾
-		createNewFolder(tempPath);
+		FileTool.createNewFolder(tempPath);
 
 		pList = new ArrayList<Photo>();
 
-		// 加入圖片
+		// SqLite database handler
+		db = new SQLiteHandler(getActivity().getApplicationContext());
+
+		// session manager
+		session = new SessionManager(getActivity().getApplicationContext());
+
+		if (session.isLoggedIn()) {
+			// Fetching user details from sqlite
+			HashMap<String, String> user = db.getUserDetails();
+
+			name = user.get("name");
+			uid = Integer.parseInt(user.get("uid"));
+		}
+
+		//region 加入圖片
 		btnAddPic.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -171,8 +199,9 @@ public class PhotoMovieMain extends Fragment {
 
 			}
 		});
+		//endregion
 
-		// 加入音樂
+		//region 加入音樂
 		btnAddMus.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -191,7 +220,9 @@ public class PhotoMovieMain extends Fragment {
 
 			}
 		});
-		// 加入語音
+		//endregion
+
+		//region 加入語音
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		builder.setTitle("語音標籤");
 		builder.setView(login_view);
@@ -200,14 +231,13 @@ public class PhotoMovieMain extends Fragment {
 			@Override
 			public void onClick(View v) {
 				if (btnAddSpe.getText().equals("加入語音")) {
-					fileName = pList.get(currentPhoto).getPid() + ".3gp";
 					dialog.show();
 				} else {
-					fileName = pList.get(currentPhoto).getPid() + ".3gp";
-					Log.i("DEL", fileName);
-					File gpFile = new File("/sdcard/PCtemp/" + fileName);
+					Log.i("DEL", pList.get(currentPhoto).getRname());
+					File gpFile = new File("/sdcard/PCtemp/" + pList.get(currentPhoto).getRname());
 					if (gpFile.delete()) {
 						pList.get(currentPhoto).setRecPath(null); // 移除語音路徑
+						pList.get(currentPhoto).setRname(null);	// 移除語音檔名
 						Toast.makeText(getActivity(), "移除成功",
 								Toast.LENGTH_SHORT).show();
 						btnPlay.setEnabled(false);
@@ -217,8 +247,9 @@ public class PhotoMovieMain extends Fragment {
 				}
 			}
 		});
+		//endregion
 
-		// 產生電影
+		//region 產生電影
 		btnGenerate.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -235,23 +266,37 @@ public class PhotoMovieMain extends Fragment {
 							Bitmap.CompressFormat.JPEG, 70);
 					pList.get(i).setpPath(tempPath + "/" + i + ".jpg");
 				}
-				// 上傳
-				photoUpload = new HttpPhotoUpload(handler, user);
-				photoUpload.setUploadFile(pList, musicPath);
-				Thread createMovieThread = new Thread(photoUpload);
-				createMovieThread.start();
+				//建立相簿
+				dText = new EditText(getActivity());
+				new AlertDialog.Builder(getActivity()).setTitle("幫相簿取個名字吧")
+				.setIcon(R.mipmap.ic_collections_white_24dp)
+						.setView(dText)
+						.setNegativeButton("取消", null)
+						.setPositiveButton("確定", new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+							Log.d(TAG, "AlbumName: " + dText.getText().toString());
 
-				progressDialog = new ProgressDialog(getActivity());
-				progressDialog.setTitle("建立電影");
-				progressDialog.setMessage("請稍後...");
-				progressDialog.setCanceledOnTouchOutside(false);
-				progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-				progressDialog.show();
-
-				
-
+							//進度條
+							progressDialog = new ProgressDialog(getActivity());
+							progressDialog.setCanceledOnTouchOutside(false);
+							progressDialog.show();
+							/*一定要寫在 show 後面!!*/
+							progressDialog.setContentView(R.layout.material_progressbar);    //自定義Layout
+							((TextView) progressDialog.findViewById(R.id.pg_text)).setText("請稍後...");
+							progressDialog.getWindow().setBackgroundDrawableResource(R.color.alpha);    //背景透明
+							newAlbum = new CloudAlbumItem(0, dText.getText().toString(), 0, Integer.toString(R.mipmap.ic_add_white_36dp), name, DateTool.getCurrentTime("yyyy-MM-dd HH:mm:ss"));
+							CreateCloudAlbum createCloudAlbum = new CreateCloudAlbum(handler, uid, getString(R.string.createCloudAlbum), newAlbum);
+							Thread createTd = new Thread(createCloudAlbum);
+							createTd.start();
+							}
+						})
+						.show();
 			}
 		});
+		//endregion
+
+		//region 小按鈕監聽
 		btnAddEff.setOnClickListener(addEffect);
 		btnPlay.setOnClickListener(onPlay);
 		btnTime.setOnClickListener(setSecond);
@@ -263,62 +308,120 @@ public class PhotoMovieMain extends Fragment {
 		record_ok.setOnClickListener(recordSubmit);
 		record_cancel.setOnClickListener(recordSubmit);
 		record_button.setOnClickListener(clickRecord);
-		
+		//endregion
 
 	    return thisView;
 	 }
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-//		setContentView(R.layout.activity_main);
-//		ScreenUtils.initScreen(this);
-//		// 變數初始化
-//		initializeVariables();
-//		// 按鈕狀態初始化
-//		initializeBtn();
 
-
-	}
-//	public static Bitmap convertViewToBitmap(View view)  
-//	{  
-//	    view.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));  
-//	    view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());  
-//	    view.buildDrawingCache();  
-//	    Bitmap bitmap = view.getDrawingCache();  
-//	  
-//	    return bitmap;  
-//	}  
-	/**
-	 * 接收上傳檔案進度
-	 */
+	//region 接收上傳檔案進度
 	private Handler handler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
 			Bundle data = msg.getData();
-	        String value = data.getString("value");
-			progressDialog.setMessage(value);
-			
-			if (value.equals("完成")) {
+	        String result = data.getString("result");
+			((TextView) progressDialog.findViewById(R.id.pg_text)).setText(result);
+			if (result.equals("相簿建立完成")) {
+				for(int i = 0 ; i < pList.size() ; i++){
+					pList.get(i).setAlbumID(newAlbum.getAlbumId());
+				}
+				shell("photo");
+			}
+			else if(result.equals("照片上傳完成")){
+				rList = new ArrayList<Photo>();
+				for(int i = 0 ; i < pList.size() ; i++){
+					if( pList.get(i).getRecPath() != null )
+						rList.add(pList.get(i));
+				}
+				if(rList.size() != 0)
+					shell("record");
+				else if(hasMusic)
+					shell("music");
+				else
+					shell("ffmpeg");
+			}
+			else if(result.equals("語音上傳完成")){
+				//上傳音樂
+				if(hasMusic)
+					shell("music");
+				else
+					shell("ffmpeg");
+			}
+			else if(result.equals("音樂上傳完成")){
+				shell("ffmpeg");
+			}
+			else if(result.equals("完成")){
 				progressDialog.dismiss();
 				// 清空暫存檔案
-				deleteFolder(tempPath);
+				FileTool.deleteFolder(tempPath);
 				// 切換預覽頁面
 				Intent it = new Intent();
 				it.setClass(getActivity(), MovieView.class);
+				it.putExtra("uid", uid);
 				startActivity(it);
+			}
+			else if(result.equals("Error")){
+				progressDialog.dismiss();
+				Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT);
 			}
 		}
 	};
+	//endregion
 
-	/**
-	 * 點選縮圖事件
+	//region 執行對Server的命令
+	private void shell(String file) {
+		Thread uploadThread;
+ 		switch(file){
+			case "photo":
+				//上傳圖片
+				UploadPhoto uploadPhoto = new UploadPhoto(handler, pList, getString(R.string.uploadPhoto), getString(R.string.uploadFile));
+				uploadThread = new Thread(uploadPhoto);
+				uploadThread.start();
+				break;
+			case "record":
+				//上傳語音
+				UploadRecord uploadRecord = new UploadRecord(handler, rList, getString(R.string.uploadRecord), getString(R.string.uploadFile));
+				uploadThread = new Thread(uploadRecord);
+				uploadThread.start();
+				break;
+			case "music":
+				//上傳音樂
+				UploadMusic uploadMusic = new UploadMusic(handler, musicPath, uid,  getString(R.string.uploadFile));
+				uploadThread = new Thread(uploadMusic);
+				uploadThread.start();
+				break;
+			case "ffmpeg":
+				CallFFmpeg callFFmpeg = new CallFFmpeg(handler, createFFmpegCommend(), uid, getString(R.string.callFFmpeg));
+				uploadThread = new Thread(callFFmpeg);
+				uploadThread.start();
+				break;
+		}
+	}
+	//endregion
+
+	//region 產生FFmpeg命令
+	/*
+	 * [張數] [Pid][秒數][翻轉][特效][語音] . . [Pid][秒數][翻轉][特效][語音] [音樂]
 	 */
-	private ImageView getImageView(int i, int pCount) {
-		// 讀取手機解析度
-		// mPhone = new DisplayMetrics();
-		// getWindowManager().getDefaultDisplay().getMetrics(mPhone);
+	private String createFFmpegCommend() {
+		String commend = "";
+		int pCount = pList.size();
+		commend += pCount + " ";
 
+		for(int i = 0 ; i < pCount ; i++){
+			commend += pList.get(i).getPid() + " ";
+			commend += (pList.get(i).getRecSec() > pList.get(i).getSec() ? pList.get(i).getRecSec() : pList.get(i).getSec() ) + " ";	// 命令[秒數], 當語音秒數比照片秒數長，則使用語音秒數
+			commend += pList.get(i).getTurn() + " ";
+			commend += pList.get(i).getEffect() + " ";
+			commend += (pList.get(i).getRecPath() != null ? "1" : "0" ) + " ";
+		}
+		commend += hasMusic ? "1" : "0";
+		return commend;
+	}
+	//endregion
+
+	//region 取得縮圖
+	private ImageView getImageView(int i, int pCount) {
 		ImageView img = new ImageView(getActivity());
 		img.setBackgroundColor(Color.BLACK); // 設定 ImageView 背景顏色
 		img.setPadding(5, 3, 5, 3); // 設定 ImageView 內縮
@@ -334,85 +437,77 @@ public class PhotoMovieMain extends Fragment {
 		File imgFile = new File(paths.get(i));
 		// 圖片壓縮
 		Bitmap myBitmap = ScalePicEx(imgFile.getAbsolutePath(), 600, 800);
-		// Bitmap myBitmap =
-		// BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-		// Bitmap sBitmap = ScalePic(myBitmap, 1.3f, 1.4f);
-//		Glide.with(this)
-//		.load(imgFile)
-//		.override(100, 100)
-//		.centerCrop()
-//		.placeholder(R.drawable.empty_photo)
-//		.error(R.drawable.empty_photo)
-//		.into(img);
+
 		img.setImageBitmap(myBitmap);
 		img.setId(pCount);
 		img.setOnClickListener(imgOnClickListener);
 		img.setOnDragListener(new View.OnDragListener() {
-			// DragListener listener;
+			//region DragListener listener
 			@Override
 			public boolean onDrag(final View view, DragEvent event) {
 				ViewGroup viewGroup = (ViewGroup) view.getParent();
 				DragState dragState = (DragState) event.getLocalState();
 				setupDragDelete(btnDelete, viewGroup);
 				switch (event.getAction()) {
-				// 開始拖動事件
-				case DragEvent.ACTION_DRAG_STARTED:
-					if (view == dragState.view) {
-						view.setVisibility(View.INVISIBLE);
-						Log.i("Drag-start", view.getId() + "");
-						// listener.onDragStarted();
-						btnDelete.setBackgroundColor(getResources().getColor(
-								R.color.light_green_500));
-						shakeAnimation(btnDelete);
-					}
-					return true;
+					// 開始拖動事件
+					case DragEvent.ACTION_DRAG_STARTED:
+						if (view == dragState.view) {
+							view.setVisibility(View.INVISIBLE);
+							Log.i("Drag-start", view.getId() + "");
+							// listener.onDragStarted();
+							btnDelete.setBackgroundColor(getResources().getColor(
+									R.color.light_green_500));
+							AnimationTool.shakeAnimation(btnDelete);
+						}
+						return true;
 					// 拖動中改變位置事件
-				case DragEvent.ACTION_DRAG_LOCATION: {
-					if (view == dragState.view) {
+					case DragEvent.ACTION_DRAG_LOCATION: {
+						if (view == dragState.view) {
+							break;
+						}
+						int index = viewGroup.indexOfChild(view);
+						if ((index > dragState.index && event.getX() > view
+								.getWidth() / 2)
+								|| (index < dragState.index && event.getX() < view
+								.getWidth() / 2)) {
+							// 更新CurrentPhoto
+							if (currentPhoto == view.getId())
+								currentPhoto = dragState.view.getId();
+							else if (currentPhoto == dragState.view.getId())
+								currentPhoto = view.getId();
+							Log.i("CurrentPhoto", currentPhoto + "");
+							swapViews(viewGroup, view, index, dragState);
+							Collections.swap(pList, view.getId(),
+									dragState.view.getId()); // 交換 pList
+							// 交換 view id
+							int tmp = view.getId();
+							view.setId(dragState.view.getId());
+							dragState.view.setId(tmp);
+							Log.i("Drag-swapViews", view.getId() + " " + index
+									+ " " + dragState.view.getId());
+						} else {
+							swapViewsBetweenIfNeeded(viewGroup, index, dragState);
+							Log.i("Drag-swapBetween", view.getId() + " " + index
+									+ " " + dragState.view.getId());
+						}
 						break;
 					}
-					int index = viewGroup.indexOfChild(view);
-					if ((index > dragState.index && event.getX() > view
-							.getWidth() / 2)
-							|| (index < dragState.index && event.getX() < view
-									.getWidth() / 2)) {
-						// 更新CurrentPhoto
-						if (currentPhoto == view.getId())
-							currentPhoto = dragState.view.getId();
-						else if (currentPhoto == dragState.view.getId())
-							currentPhoto = view.getId();
-						Log.i("CurrentPhoto", currentPhoto + "");
-						swapViews(viewGroup, view, index, dragState);
-						Collections.swap(pList, view.getId(),
-								dragState.view.getId()); // 交換 pList
-						// 交換 view id
-						int tmp = view.getId();
-						view.setId(dragState.view.getId());
-						dragState.view.setId(tmp);
-						Log.i("Drag-swapViews", view.getId() + " " + index
-								+ " " + dragState.view.getId());
-					} else {
-						swapViewsBetweenIfNeeded(viewGroup, index, dragState);
-						Log.i("Drag-swapBetween", view.getId() + " " + index
-								+ " " + dragState.view.getId());
-					}
-					break;
-				}
-				// 拖動完成事件
-				case DragEvent.ACTION_DRAG_ENDED:
-					if (view == dragState.view) {
-						view.setVisibility(View.VISIBLE);
-						// listener.onDragEnded();
-						Log.i("Drag-end", dragState.view.getId() + "");
-						if (btnDelete.isEnabled())
-							btnDelete.setBackgroundColor(getResources()
-									.getColor(R.color.green_500));
-						btnDelete.clearAnimation();
-					}
-					break;
+					// 拖動完成事件
+					case DragEvent.ACTION_DRAG_ENDED:
+						if (view == dragState.view) {
+							view.setVisibility(View.VISIBLE);
+							// listener.onDragEnded();
+							Log.i("Drag-end", dragState.view.getId() + "");
+							if (btnDelete.isEnabled())
+								btnDelete.setBackgroundColor(getResources()
+										.getColor(R.color.green_500));
+							btnDelete.clearAnimation();
+						}
+						break;
 				}
 				return true;
 			}
+			//endregion
 		});
 
 		img.setOnLongClickListener(new View.OnLongClickListener() {
@@ -426,10 +521,9 @@ public class PhotoMovieMain extends Fragment {
 		});
 		return img;
 	}
+	//endregion
 
-	/**
-	 * ImageView 點擊事件
-	 */
+	//region 縮圖點擊事件
 	private View.OnClickListener imgOnClickListener = new View.OnClickListener() {
 		public void onClick(View v) {
 			// 啟用按鈕
@@ -471,70 +565,11 @@ public class PhotoMovieMain extends Fragment {
 					Toast.LENGTH_SHORT).show();
 		}
 	};
+	//endregion
 
-	private void shakeAnimation(View v) {
-		// 創建動畫集
-		AnimationSet animSet = new AnimationSet(true);
-		// 加入大小動畫
-		ScaleAnimation scaleAnimation = new ScaleAnimation(1.0f, 1.1f, 1.0f,
-				1.1f);
-		scaleAnimation.setDuration(100);
-		animSet.addAnimation(scaleAnimation);
-		// 加入角度動畫
-		RotateAnimation rotateAnimation = new RotateAnimation(-4.0f, 4.0f,
-				60.0f, 50.0f);
-		rotateAnimation.setDuration(100);
-		rotateAnimation.setRepeatCount(Animation.INFINITE);
-		rotateAnimation.setRepeatMode(Animation.REVERSE);
-		animSet.addAnimation(rotateAnimation);
-		// 加入位置動畫
-		TranslateAnimation translateAnimation = new TranslateAnimation(0.0f,
-				-13.0f, 0.0f, -5.0f);
-		translateAnimation.setDuration(100);
-		animSet.addAnimation(translateAnimation);
-		v.setAnimation(animSet);
-		v.startAnimation(animSet);
-	}
-//	@Override
-//	public View makeView() {
-//		ImageView v1 = new ImageView(thisView.getContext());
-//		v1.setBackgroundColor(0xFF000000); // 設定背景顏色
-//		v1.setScaleType(ImageView.ScaleType.FIT_CENTER); // 設定填充方式
-//		v1.setLayoutParams(new ImageSwitcher.LayoutParams(
-//				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-//		return v1;
-//	}
-
-	/**
-	 * 壓縮圖片
-	 * 
-	 * @param bitmap
-	 * @param w
-	 * @param h
-	 * @return
-	 */
-	public Bitmap ScalePic(Bitmap bitmap, float w, float h) {
-		// 轉換為圖片指定大小
-		// 獲得圖片的寬高
-		int width = bitmap.getWidth();
-		int height = bitmap.getHeight();
-		// 設置想要的大小
-		int newWidth = 800;
-		int newHeight = 600;
-		// 計算缩放比例
-		float scaleWidth = ((float) newWidth) / width;
-		float scaleHeight = ((float) newHeight) / height;
-		// 取得想要缩放的matrix參數
-		Matrix matrix = new Matrix();
-		matrix.postScale(scaleWidth, scaleHeight);
-		Bitmap bmResult = Bitmap.createBitmap(bitmap, 0, 0, width, height,
-				matrix, false);
-		return bmResult;
-	}
-
+	//region 圖片壓縮
 	/**
 	 * 不失真壓縮圖片
-	 * 
 	 */
 	public Bitmap ScalePicEx(String path, int height, int width) {
 
@@ -550,22 +585,9 @@ public class PhotoMovieMain extends Fragment {
 		opts.inInputShareable = true;
 		opts.inPurgeable = true;
 		return BitmapFactory.decodeFile(path, opts);
-
-		/*
-		 * BitmapFactory.Options options =new BitmapFactory.Options();
-		 * options.inJustDecodeBounds = true; Bitmap bitmap =
-		 * BitmapFactory.decodeFile(path, options); options.inJustDecodeBounds =
-		 * false; //計算縮放比 int be = (int)(options.outHeight / h); if (be <= 0) be
-		 * = 1; options.inSampleSize = be;
-		 * //重新讀入圖片，注意這次要把options.inJustDecodeBounds 設為 false哦 bitmap =
-		 * BitmapFactory.decodeFile(path, options); int wg = bitmap.getWidth();
-		 * int hg = bitmap.getHeight(); Log.i("PIC",wg + "," + hg); return
-		 * bitmap;
-		 */
 	}
 
-	public static int computeSampleSize(BitmapFactory.Options options,
-			int minSideLength, int maxNumOfPixels) {
+	public static int computeSampleSize(BitmapFactory.Options options, int minSideLength, int maxNumOfPixels) {
 		int initialSize = computeInitialSampleSize(options, minSideLength,
 				maxNumOfPixels);
 
@@ -582,8 +604,7 @@ public class PhotoMovieMain extends Fragment {
 		return roundedSize;
 	}
 
-	private static int computeInitialSampleSize(BitmapFactory.Options options,
-			int minSideLength, int maxNumOfPixels) {
+	private static int computeInitialSampleSize(BitmapFactory.Options options, int minSideLength, int maxNumOfPixels) {
 		double w = options.outWidth;
 		double h = options.outHeight;
 
@@ -609,8 +630,7 @@ public class PhotoMovieMain extends Fragment {
 	/**
 	 * 壓縮並產生圖片
 	 */
-	protected boolean compressAndCreatePhoto(String path, Bitmap bmp,
-			CompressFormat format, int quality) {
+	protected boolean compressAndCreatePhoto(String path, Bitmap bmp, CompressFormat format, int quality) {
 		// 壓縮圖片
 		FileOutputStream fop;
 		try {
@@ -630,62 +650,13 @@ public class PhotoMovieMain extends Fragment {
 			return false;
 		}
 	}
-
-	/**
-	 * 建立新資料夾
-	 * 
-	 * @param path
-	 */
-	protected void createNewFolder(String path) {
-		// 建立資料夾
-		File sdFile = android.os.Environment.getExternalStorageDirectory();
-		File dirFile = new File(path);
-		if (!dirFile.exists()) {// 如果資料夾不存在
-			dirFile.mkdir();// 建立資料夾
-			Log.i("Create-File", path + "");
-		}
-	}
-
-	/**
-	 * 清空資料夾
-	 * 
-	 * @param path
-	 */
-	protected void deleteFolder(String path) {
-		File delFile = new File(path);
-		for (File i : delFile.listFiles()) {
-			if (i.exists()) {
-				i.delete();
-				Log.i("DELETE-File", i.getName() + "");
-			}
-		}
-	}
-  
-
-//	/**
-//	 * 取得路徑
-//	 */
-//	@Override
-//	protected void onNewIntent(Intent intent) {
-//		super.onNewIntent(intent);
-//
-//		
-//
-//	}
+	//endregion
 
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		Log.i("TAG","onActivityResult RequestCode:" + requestCode);
-//		if (mfChoose.onActivityResult(requestCode, resultCode, data)){
-//			// 取得音樂路徑uri
-//			//Uri uri = data.getData();
-//			musicPath = mfChoose.getChosenFiles()[0].getAbsolutePath();
-//			btnAddMus.setText("移除音樂");
-//			Log.i("Music - Path", musicPath);
-//		}
 
-		
 		// 藉由requestCode判斷是否為新增音樂而呼叫的，且data不為null
 		if (requestCode == MUSIC && data != null) {
 			// 取得音樂路徑uri
@@ -698,33 +669,29 @@ public class PhotoMovieMain extends Fragment {
 	@Override  
 	public void onResume() {  
 	    super.onResume();  	    
-	    Log.i("TAG","onResume");
+	    Log.i(TAG,"onResume");
     	int code = getActivity().getIntent().getIntExtra("code", -1);
 		if (code != 100 && code != 200) {
 			return;
 		}
 		else if(code == 100){
 			Bundle bundle = getActivity().getIntent().getExtras();
-			paths = bundle.getStringArrayList("paths");
-			Log.i("PHOTO - URI", paths.get(0));
+			paths = bundle.getStringArrayList("paths");	//取得手機相片路徑
+
 			for (int i = 0; i < paths.size(); i++) {
-				Photo tmpP = new Photo(pid, paths.get(i), null, 2, 3000, 0, 1);
-				
 				// 取得拍攝日期
-				String takeDate = Utility.getTakeDate(tmpP.getpPath(), "yyyy/MM/dd HH:mm:ss");
-
-				tmpP.setTakeDate(takeDate);
-
-	
-				pList.add(tmpP); // 將相片加入相片群
+				String takeDate = Utility.getTakeDate(paths.get(i), "yyyy/MM/dd HH:mm:ss");
+				//建立相片
+				Photo tmpP = new Photo(paths.get(i), takeDate, 3000, 0, 1, uid);
+				// 將相片加入相片群
+				pList.add(tmpP);
 				linelay.addView(getImageView(i, photoCount));
 				Log.i("ADD-PHOTO", Integer.toString(photoCount));
 				photoCount++;
-				pid++;
+
 				// 啟用產生電影按鈕
 				btnGenerate.setEnabled(true);
-				btnGenerate.setBackgroundColor(getResources().getColor(
-						R.color.green_500));
+				btnGenerate.setBackgroundColor(getResources().getColor(R.color.green_500));
 			}
 		}
 		else if(code == 200){
@@ -747,7 +714,7 @@ public class PhotoMovieMain extends Fragment {
 				linelay.addView(getImageView(i, photoCount));
 				Log.i("ADD-Cloud", Integer.toString(photoCount));
 				photoCount++;
-				pid++;
+
 				// 啟用產生電影按鈕
 				btnGenerate.setEnabled(true);
 				btnGenerate.setBackgroundColor(getResources().getColor(
@@ -756,35 +723,13 @@ public class PhotoMovieMain extends Fragment {
 		}
 		getActivity().getIntent().removeExtra("code");
 	}
-	/**
-	 * 點擊確定與取消按鈕都會呼叫這個方法
-	 * 
-	 * @param view
-	 */
-	public View.OnClickListener recordSubmit = new View.OnClickListener() {		
-		@Override
-		public void onClick(View v) {
-			// 確定按鈕
-			if (v.getId() == R.id.record_ok) {
-				pList.get(currentPhoto).setRecSec(
-						getRecTime("/sdcard/PCtemp/" + fileName));
-				pList.get(currentPhoto).setRecPath("/sdcard/PCtemp/" + fileName); // 儲存語音路徑
-				btnPlay.setEnabled(true);
-				btnPlay.setBackgroundColor(getResources().getColor(R.color.green_500));
-				btnAddSpe.setText("移除語音");
-				record_ok.setEnabled(false);// 隱藏確定按鈕
-				// 取得回傳資料用的Intent物件
-				Intent result = getActivity().getIntent();
-				// 設定回應結果為確定
-				getActivity().setResult(Activity.RESULT_OK, result);
-			} else if (v.getId() == R.id.record_cancel) {
-				record_ok.setEnabled(false);// 隱藏確定按鈕
-			}
-			// 結束
-			dialog.dismiss();
-		}
-	};
 
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+	}
+
+	//region 錄音事件
 	/**
 	 * 錄音按鈕事件
 	 * 
@@ -798,13 +743,14 @@ public class PhotoMovieMain extends Fragment {
 
 			// 開始錄音
 			if (isRecording) {
+				pList.get(currentPhoto).createRname();
 				// 錄音中，關閉確定和取消按鈕
 				record_ok.setEnabled(false);
 				record_cancel.setEnabled(false);
 				// 設定按鈕圖示為錄音中
 				record_button.setImageResource(R.mipmap.ic_stop_white_24dp);
 				// 建立錄音物件
-				myRecoder = new MyRecoder("/PCtemp/" + fileName);
+				myRecoder = new MyRecoder("/PCtemp/" + pList.get(currentPhoto).getRname());
 				// 開始錄音
 				myRecoder.start();
 				// 建立並執行顯示麥克風音量的AsyncTask物件
@@ -834,6 +780,33 @@ public class PhotoMovieMain extends Fragment {
 			}
 		}
 	};
+	/**
+	 * 點擊確定與取消按鈕都會呼叫這個方法
+	 *
+	 * @param view
+	 */
+	public View.OnClickListener recordSubmit = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			// 確定按鈕
+			if (v.getId() == R.id.record_ok) {
+				pList.get(currentPhoto).setRecSec(RecordTool.getRecTime("/sdcard/PCtemp/" + pList.get(currentPhoto).getRname()));
+				pList.get(currentPhoto).setRecPath("/sdcard/PCtemp/" + pList.get(currentPhoto).getRname()); // 儲存語音路徑
+				btnPlay.setEnabled(true);
+				btnPlay.setBackgroundColor(getResources().getColor(R.color.green_500));
+				btnAddSpe.setText("移除語音");
+				record_ok.setEnabled(false);// 隱藏確定按鈕
+				// 取得回傳資料用的Intent物件
+				Intent result = getActivity().getIntent();
+				// 設定回應結果為確定
+				getActivity().setResult(Activity.RESULT_OK, result);
+			} else if (v.getId() == R.id.record_cancel) {
+				record_ok.setEnabled(false);// 隱藏確定按鈕
+			}
+			// 結束
+			dialog.dismiss();
+		}
+	};
 	// 在錄音過程中顯示麥克風音量
     private class MicLevelTask extends AsyncTask<Void, Void, Void> {
         @Override
@@ -851,46 +824,14 @@ public class PhotoMovieMain extends Fragment {
  
             return null;
         }
- 
         @Override
         protected void onProgressUpdate(Void... values) {
             record_volumn.setProgress((int) myRecoder.getAmplitudeEMA());
         } 
     }
+	//endregion
 
-	/**
-	 * 取得語音長度
-	 */
-	private int getRecTime(String recName) {
-		MediaPlayer mp = new MediaPlayer();
-		FileInputStream stream;
-		int duration;
-		try {
-			stream = new FileInputStream(recName);
-			mp.setDataSource(stream.getFD());
-			stream.close();
-			mp.prepare();
-			duration = mp.getDuration();
-			Log.i("Rec-Time", recName + ":" + duration);
-			mp.release();
-			return duration;
-
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalStateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return -1;
-	}
-
+	//region 小按鈕事件
 	// 播放語音事件
 	public View.OnClickListener onPlay = new View.OnClickListener() {		
 		@Override
@@ -901,7 +842,6 @@ public class PhotoMovieMain extends Fragment {
 			mediaPlayer.start();			
 		}
 	};
-
 	// 設定秒數事件
 	public View.OnClickListener setSecond = new View.OnClickListener() {		
 		@Override
@@ -989,7 +929,6 @@ public class PhotoMovieMain extends Fragment {
 			}			
 		}		
 	};
-
 	// 加入特效事件
 	public View.OnClickListener addEffect = new View.OnClickListener() {
 		@Override
@@ -1009,19 +948,9 @@ public class PhotoMovieMain extends Fragment {
 			builder.setNegativeButton("取消", null).show();
 		}
 	};
+	//endregion
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
-
+	//region 拖動刪除事件
 	public void setupDragDelete(View view, final ViewGroup viewGroup) {
 		view.setOnDragListener(new View.OnDragListener() {
 			@Override
@@ -1064,37 +993,8 @@ public class PhotoMovieMain extends Fragment {
 			}
 		});
 	}
-
-	private static void swapViewsBetweenIfNeeded(ViewGroup viewGroup,
-			int index, DragState dragState) {
-		if (index - dragState.index > 1) {
-			int indexAbove = index - 1;
-			swapViews(viewGroup, viewGroup.getChildAt(indexAbove), indexAbove,
-					dragState);
-		} else if (dragState.index - index > 1) {
-			int indexBelow = index + 1;
-			swapViews(viewGroup, viewGroup.getChildAt(indexBelow), indexBelow,
-					dragState);
-		}
-	}
-
-	private static void swapViews(ViewGroup viewGroup, final View view,
-			int index, DragState dragState) {
-		swapViewsBetweenIfNeeded(viewGroup, index, dragState);
-		final float viewX = view.getX();
-		AppUtils.swapViewGroupChildren(viewGroup, view, dragState.view);
-		dragState.index = index;
-		AppUtils.postOnPreDraw(view, new Runnable() {
-			@Override
-			public void run() {
-				ObjectAnimator.ofFloat(view, View.X, viewX, view.getLeft())
-						.setDuration(getDuration(view)).start();
-			}
-		});
-	}
-
 	private static void removeView(final ViewGroup viewGroup,
-			DragState dragState) {
+								   DragState dragState) {
 
 		final int oldViewGroupLayoutParamsHeight = viewGroup.getLayoutParams().height;
 		final int oldViewGroupHeight = viewGroup.getHeight();
@@ -1113,75 +1013,9 @@ public class PhotoMovieMain extends Fragment {
 			});
 		}
 	}
+	//endregion
 
-	/**
-	 * 啟用按鈕
-	 */
-	private void setBtnEnable() {
-		btnTime.setEnabled(true);
-		btnTime.setBackgroundColor(getResources().getColor(R.color.green_500));
-		btnTurnLeft.setEnabled(true);
-		btnTurnLeft
-				.setBackgroundColor(getResources().getColor(R.color.green_500));
-		btnTurnRight.setEnabled(true);
-		btnTurnRight.setBackgroundColor(getResources()
-				.getColor(R.color.green_500));
-		btnMoveLeft.setEnabled(true);
-		btnMoveLeft
-				.setBackgroundColor(getResources().getColor(R.color.green_500));
-		btnMoveRight.setEnabled(true);
-		btnMoveRight.setBackgroundColor(getResources()
-				.getColor(R.color.green_500));
-		btnDelete.setEnabled(true);
-		btnDelete.setBackgroundColor(getResources().getColor(R.color.green_500));
-		btnAddSpe.setEnabled(true);
-		btnAddSpe.setBackgroundColor(getResources().getColor(R.color.white));
-		btnAddEff.setEnabled(true);
-		btnAddEff.setBackgroundColor(getResources().getColor(R.color.white));
-	}
-
-	/*
-	 * final int newViewGroupHeight = measureViewGroupHeight(viewGroup); if
-	 * (viewGroup.getChildCount() > 0) { // Prevent the flash of the new height
-	 * before the start of our // animation.
-	 * AppUtils.setViewLayoutParamsHeight(viewGroup, oldViewGroupHeight); //
-	 * Wait until the OnPreDraw of the last child is called for syncing // the
-	 * two animations on // View and ViewGroup. AppUtils.postOnPreDraw(
-	 * viewGroup.getChildAt(viewGroup.getChildCount() - 1), new Runnable() {
-	 * 
-	 * @Override public void run() { animateViewGroupHeight(viewGroup,
-	 * oldViewGroupLayoutParamsHeight, oldViewGroupHeight, newViewGroupHeight);
-	 * } }); } else { // Animate now since there is no children.
-	 * animateViewGroupHeight(viewGroup, oldViewGroupLayoutParamsHeight,
-	 * oldViewGroupHeight, newViewGroupHeight); } }
-	 */
-	/*
-	 * private static int measureViewGroupHeight(ViewGroup viewGroup) { View
-	 * parent = (View) viewGroup.getParent(); int widthMeasureSpec =
-	 * View.MeasureSpec.makeMeasureSpec( parent.getMeasuredWidth() -
-	 * parent.getPaddingLeft() - parent.getPaddingRight(),
-	 * View.MeasureSpec.AT_MOST); int heightMeasureSpec =
-	 * View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-	 * viewGroup.measure(widthMeasureSpec, heightMeasureSpec); return
-	 * viewGroup.getMeasuredHeight(); }
-	 * 
-	 * private static void animateViewGroupHeight(final ViewGroup viewGroup,
-	 * final int oldLayoutParamsHeight, int oldHeight, int newHeight) {
-	 * ValueAnimator viewGroupAnimator = ValueAnimator.ofInt(oldHeight,
-	 * newHeight).setDuration(getDuration(viewGroup)); viewGroupAnimator
-	 * .setInterpolator(new AccelerateDecelerateInterpolator());
-	 * viewGroupAnimator .addUpdateListener(new
-	 * ValueAnimator.AnimatorUpdateListener() {
-	 * 
-	 * @Override public void onAnimationUpdate(ValueAnimator animation) { int
-	 * animatedValue = (int)animation.getAnimatedValue();
-	 * AppUtils.setViewLayoutParamsHeight(viewGroup, animatedValue); } });
-	 * viewGroupAnimator.addListener(new AnimatorListenerAdapter() {
-	 * 
-	 * @Override public void onAnimationEnd(Animator animation) {
-	 * AppUtils.setViewLayoutParamsHeight(viewGroup, oldLayoutParamsHeight); }
-	 * }); viewGroupAnimator.start(); }
-	 */
+	//region 拖動事件 Method
 	private static int getDuration(View view) {
 		return view.getResources().getInteger(
 				android.R.integer.config_shortAnimTime);
@@ -1206,5 +1040,68 @@ public class PhotoMovieMain extends Fragment {
 			this.view = view;
 			index = ((ViewGroup) view.getParent()).indexOfChild(view);
 		}
+	}
+	//endregion
+
+	//region 交換圖片軸內的View
+	private static void swapViewsBetweenIfNeeded(ViewGroup viewGroup,
+			int index, DragState dragState) {
+		if (index - dragState.index > 1) {
+			int indexAbove = index - 1;
+			swapViews(viewGroup, viewGroup.getChildAt(indexAbove), indexAbove,
+					dragState);
+		} else if (dragState.index - index > 1) {
+			int indexBelow = index + 1;
+			swapViews(viewGroup, viewGroup.getChildAt(indexBelow), indexBelow,
+					dragState);
+		}
+	}
+	private static void swapViews(ViewGroup viewGroup, final View view,
+			int index, DragState dragState) {
+		swapViewsBetweenIfNeeded(viewGroup, index, dragState);
+		final float viewX = view.getX();
+		AppUtils.swapViewGroupChildren(viewGroup, view, dragState.view);
+		dragState.index = index;
+		AppUtils.postOnPreDraw(view, new Runnable() {
+			@Override
+			public void run() {
+				ObjectAnimator.ofFloat(view, View.X, viewX, view.getLeft())
+						.setDuration(getDuration(view)).start();
+			}
+		});
+	}
+	//endregion
+
+	//region 啟用按鈕
+	private void setBtnEnable() {
+		btnTime.setEnabled(true);
+		btnTime.setBackgroundColor(getResources().getColor(R.color.green_500));
+		btnTurnLeft.setEnabled(true);
+		btnTurnLeft.setBackgroundColor(getResources().getColor(R.color.green_500));
+		btnTurnRight.setEnabled(true);
+		btnTurnRight.setBackgroundColor(getResources().getColor(R.color.green_500));
+		btnMoveLeft.setEnabled(true);
+		btnMoveLeft.setBackgroundColor(getResources().getColor(R.color.green_500));
+		btnMoveRight.setEnabled(true);
+		btnMoveRight.setBackgroundColor(getResources().getColor(R.color.green_500));
+		btnDelete.setEnabled(true);
+		btnDelete.setBackgroundColor(getResources().getColor(R.color.green_500));
+		btnAddSpe.setEnabled(true);
+		btnAddSpe.setBackgroundColor(getResources().getColor(R.color.white));
+		btnAddEff.setEnabled(true);
+		btnAddEff.setBackgroundColor(getResources().getColor(R.color.white));
+	}
+	//endregion
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		if (id == R.id.action_settings) {
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 }

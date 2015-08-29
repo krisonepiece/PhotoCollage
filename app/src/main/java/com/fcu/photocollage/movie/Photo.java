@@ -8,18 +8,18 @@ public class Photo {
 	private String takeDate;	//拍攝日期
 	private String uploadDate;	//上傳日期
 	private String pPath;		//相片路徑
-	private String pServerPath;	//相片Server路徑
+	private String serverPath;	//相片Server路徑
+	private String rname;		//語音名稱
 	private String recPath;		//語音路徑
-	private String recServerPath;//語音Server路徑
 	private int recSec;			//語音秒數
 	private int albumID;		//相簿編號
-	private int UserID;		//相簿編號
+	private int UserID;			//相簿編號
 	private int sec;			//秒數
 	private int turn;			//翻轉 ( 1 為翻轉, 0 為不翻 )
 	private int effect;			//特效 ( 1 為加特效, 0 為不加 )
 	
 	public Photo(int pid, String pPath, String recPath, int albumID,
-			 int sec, int turn, int effect) {
+					  int sec, int turn, int effect) {
 		this.pid = pid;
 		this.pPath = pPath;
 		this.recPath = recPath;
@@ -29,6 +29,18 @@ public class Photo {
 		this.turn = turn;
 		this.effect = effect;
 	}
+
+	public Photo(String pPath, String takeDate, int sec, int turn, int effect, int userID) {
+		this.pPath = pPath;
+		this.takeDate = takeDate;
+		this.recPath = null;
+		this.recSec = 0;
+		this.sec = sec;
+		this.turn = turn;
+		this.effect = effect;
+		this.UserID = userID;
+	}
+
 	public Photo(String pPath, int albumID, int userID) {
 		this.pPath = pPath;		
 		this.albumID = albumID;
@@ -39,7 +51,7 @@ public class Photo {
 		this.takeDate = takeDate;
 		this.albumID = albumID;
 		this.UserID = userID;
-		this.pServerPath = "C:\\\\inetpub\\\\wwwroot\\\\PhotoCollage\\\\Data\\\\" + userID + "\\\\picture\\\\" + albumID + "\\\\";
+		//this.pServerPath = "C:\\\\inetpub\\\\wwwroot\\\\PhotoCollage\\\\Data\\\\" + userID + "\\\\picture\\\\" + albumID + "\\\\";
 	}
 	
 	public Photo(int pid, String pname, String takeDate, String uploadDate, String pPath, String recPath) {
@@ -50,9 +62,16 @@ public class Photo {
 		this.pPath = pPath;
 		this.recPath = recPath;
 	}
-	
+	public void createServerPath() {
+		serverPath = "C:\\\\inetpub\\\\wwwroot\\\\PhotoCollage\\\\Data\\\\" + UserID + "\\\\picture\\\\" + albumID + "\\\\";
+	}
+
 	public void createPname() {
 		pname = UserID + "_" + albumID + "_" + DateTool.getCurrentTime("yyyyMMddHHmmssSS") + ".jpg";
+	}
+
+	public void createRname() {
+		rname = UserID + "_" + albumID + "_" + DateTool.getCurrentTime("yyyyMMddHHmmssSS") + ".3gp";
 	}
 
 	public int getPid() {
@@ -143,22 +162,31 @@ public class Photo {
 		UserID = userID;
 	}
 	
-	public String getpServerPath() {
-		return pServerPath;
+	public String getServerPath() {
+		return serverPath;
 	}
 	
-	public void setpServerPath(String pServerPath) {
-		this.pServerPath = pServerPath;
+	public void setServerPath(String pServerPath) {
+		this.serverPath = serverPath;
 	}
-	
-	public String getRecServerPath() {
-		return recServerPath;
+
+	public String getUploadDate() {
+		return uploadDate;
 	}
-	
-	public void setRecServerPath(String recServerPath) {
-		this.recServerPath = recServerPath;
+
+	public void setUploadDate(String uploadDate) {
+		this.uploadDate = uploadDate;
 	}
-/*
+
+	public String getRname() {
+		return rname;
+	}
+
+	public void setRname(String rname) {
+		this.rname = rname;
+	}
+
+	/*
 	@Override
 	public String toString() {
 		return "Photo [pid=" + pid + ", pname=" + pname + ", takeDate="

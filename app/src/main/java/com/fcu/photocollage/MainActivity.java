@@ -11,55 +11,166 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fcu.photocollage.cloudalbum.CloudAlbumFragment;
 import com.fcu.photocollage.member.LoginFragment;
+import com.fcu.photocollage.member.SQLiteHandler;
 import com.fcu.photocollage.member.SessionManager;
 import com.fcu.photocollage.menu.MenuFragment;
+import com.fcu.photocollage.menu.MyAdapter;
 import com.fcu.photocollage.movie.PhotoMovieMain;
+import com.mikepenz.materialdrawer.Drawer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    //First We Declare Titles And Icons For Our Navigation Drawer List View
+    //This Icons And Titles Are holded in an Array as you can see
+
+    private String name = "";
+    private String email = "";
+    String TITLES[] = {"主頁","會員","相片電影","協作相簿"};
+    int ICONS[] = {R.mipmap.ic_home_white_24dp,
+            R.mipmap.ic_person_white_24dp,
+            R.mipmap.ic_movie_creation_white_24dp,
+            R.mipmap.ic_cloud_queue_white_24dp};
+
+    //Similarly we Create a String Resource for the name and email in the header view
+    //And we also create a int resource for profile picture in the header view
+
+    int PROFILE = R.drawable.unnamed;
+    RecyclerView mRecyclerView;                           // Declaring RecyclerView
+    RecyclerView.Adapter mAdapter;                        // Declaring Adapter For Recycler View
+    RecyclerView.LayoutManager mLayoutManager;            // Declaring Layout Manager as a linear layout manager
     private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
+    //private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
+    private SQLiteHandler db;
     private SessionManager session;
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     private String[] mMenuTitles;
     private int[] mMenuIcon = {
-            R.mipmap.ic_home_white_36dp,
-            R.mipmap.ic_person_white_36dp,
-            R.mipmap.ic_movie_creation_white_36dp,
-            R.mipmap.ic_cloud_queue_white_36dp};
+            R.mipmap.ic_home_white_24dp,
+            R.mipmap.ic_person_white_24dp,
+            R.mipmap.ic_movie_creation_white_24dp,
+            R.mipmap.ic_cloud_queue_white_24dp};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // SqLite database handler
+        db = new SQLiteHandler(this.getApplicationContext());
         // session manager
         session = new SessionManager(getApplicationContext());
+        if (session.isLoggedIn()) {
+            // Fetching user details from sqlite
+            HashMap<String, String> user = db.getUserDetails();
+            name = user.get("name");
+            email = user.get("email");
+        }
         //設置 Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
         }
+        mRecyclerView = (RecyclerView) findViewById(R.id.RecyclerView); // Assigning the RecyclerView Object to the xml View
+
+        mRecyclerView.setHasFixedSize(true);                            // Letting the system know that the list objects are of fixed size
+
+        mAdapter = new MyAdapter(TITLES,ICONS,name,email,PROFILE);       // Creating the Adapter of MyAdapter class(which we are going to see in a bit)
+        // And passing the titles,icons,header view name, header view email,
+        // and header view profile picture
+        mRecyclerView.setAdapter(mAdapter);                              // Setting the adapter to RecyclerView
+/***/
+        final GestureDetector mGestureDetector = new GestureDetector(MainActivity.this, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                return true;
+            }
+        });
+        mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+            @Override
+            public boolean onInterceptTouchEvent(RecyclerView recyclerView, MotionEvent motionEvent) {
+                View child = recyclerView.findChildViewUnder(motionEvent.getX(), motionEvent.getY());
+                int idx = recyclerView.getChildPosition(child);
+                Fragment fragment = null;
+                if(idx == 1){
+                    fragment = new MenuFragment();
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+                    setTitle(mMenuTitles[idx-1]);
+                }
+                else if(idx == 2){
+                    fragment = new LoginFragment();
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+                    setTitle(mMenuTitles[idx-1]);
+                }
+                else if(idx == 3){
+                    fragment = new PhotoMovieMain();
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+                    setTitle(mMenuTitles[idx-1]);
+                }
+                else if(idx == 4){
+                    //checkLogin();
+                    fragment = new CloudAlbumFragment();
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+                    setTitle(mMenuTitles[idx - 1]);
+                }
+                else{
+
+                }
+
+
+                //mDrawerList.setItemChecked(position, true);
+
+                mDrawerLayout.closeDrawers();
+                //mDrawerLayout.closeDrawer(mDrawerList);
+
+
+
+//                if (child != null && mGestureDetector.onTouchEvent(motionEvent)) {
+//                    mDrawerLayout.closeDrawers();
+//                    return true;
+//                }
+                return true;
+            }
+            @Override
+            public void onTouchEvent(RecyclerView recyclerView, MotionEvent motionEvent) {
+            }
+            @Override
+            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+            }
+        });
+/***/
+        mLayoutManager = new LinearLayoutManager(this);                 // Creating a layout Manager
+
+        mRecyclerView.setLayoutManager(mLayoutManager);                 // Setting the layout Manager
         mTitle = mDrawerTitle = getTitle();
         mMenuTitles = getResources().getStringArray(R.array.drawer_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        //mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.mipmap.drawer_shadow, GravityCompat.START);
@@ -72,9 +183,9 @@ public class MainActivity extends AppCompatActivity {
             mapValue.put("title", mMenuTitles[i]);
             lstData.add(mapValue);
         }
-        SimpleAdapter adapter = new SimpleAdapter(this, lstData, R.layout.drawer_list_item, new String[]{"icon", "title"}, new int[]{R.id.drawerIcon, R.id.txtItem});
-        mDrawerList.setAdapter(adapter);
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+//        SimpleAdapter adapter = new SimpleAdapter(this, lstData, R.layout.drawer_list_item, new String[]{"icon", "title"}, new int[]{R.id.drawerIcon, R.id.txtItem});
+//        mDrawerList.setAdapter(adapter);
+//        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -85,6 +196,7 @@ public class MainActivity extends AppCompatActivity {
         mDrawerToggle = new ActionBarDrawerToggle(
                 this,                  /* host Activity */
                 mDrawerLayout,         /* DrawerLayout object */
+                toolbar,
                 R.string.drawer_open,  /* "open drawer" description for accessibility */
                 R.string.drawer_close  /* "close drawer" description for accessibility */
         ) {
@@ -96,13 +208,26 @@ public class MainActivity extends AppCompatActivity {
             public void onDrawerOpened(View drawerView) {
                 getSupportActionBar().setTitle(mDrawerTitle);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                if (session.isLoggedIn()) {
+                    // Fetching user details from sqlite
+                    HashMap<String, String> user = db.getUserDetails();
+                    name = user.get("name");
+                    email = user.get("email");
+                }
+                else{
+                    name = "";
+                    email = "";
+                }
+                ((TextView)drawerView.findViewById(R.id.name)).setText(name);
+                ((TextView)drawerView.findViewById(R.id.email)).setText(email);
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         if (savedInstanceState == null) {
-            selectItem(0);
+//            selectItem(0);
         }
+
     }
 
     @Override
@@ -138,35 +263,36 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /* The click listner for ListView in the navigation drawer */
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            selectItem(position);
-        }
-    }
 
-    private void selectItem(int position) {
-        Fragment fragment = null;
-        if(position == 0){
-            fragment = new MenuFragment();
-        }
-        else if(position == 1){
-            fragment = new LoginFragment();
-        }
-        else if(position == 2){
-            fragment = new PhotoMovieMain();
-        }
-        else if(position == 3){
-            checkLogin();
-            fragment = new CloudAlbumFragment();
-        }
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
-        mDrawerList.setItemChecked(position, true);
-        setTitle(mMenuTitles[position]);
-        mDrawerLayout.closeDrawer(mDrawerList);
-    }
+//    /* The click listner for ListView in the navigation drawer */
+//    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+//        @Override
+//        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//            selectItem(position);
+//        }
+//    }
+
+//    private void selectItem(int position) {
+//        Fragment fragment = null;
+//        if(position == 0){
+//            fragment = new MenuFragment();
+//        }
+//        else if(position == 1){
+//            fragment = new LoginFragment();
+//        }
+//        else if(position == 2){
+//            fragment = new PhotoMovieMain();
+//        }
+//        else if(position == 3){
+//            checkLogin();
+//            fragment = new CloudAlbumFragment();
+//        }
+//        FragmentManager fragmentManager = getSupportFragmentManager();
+//        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+//        mDrawerList.setItemChecked(position, true);
+//        setTitle(mMenuTitles[position]);
+//        mDrawerLayout.closeDrawer(mDrawerList);
+//    }
     public void checkLogin(){
         if (!session.isLoggedIn()) {
             new AlertDialog.Builder(this).setTitle("要先登入哦！")
@@ -174,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
                     .setPositiveButton("確定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            selectItem(1);	//跳轉登入頁
+//                            selectItem(1);	//跳轉登入頁
                         }
                     })
                     .show();

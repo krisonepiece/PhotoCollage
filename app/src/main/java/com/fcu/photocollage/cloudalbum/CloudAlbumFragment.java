@@ -12,6 +12,8 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -50,11 +52,13 @@ public class CloudAlbumFragment extends Fragment {
 	private SessionManager session;
 	private ArrayList<CloudAlbumItem> aList;
 	private CloudAlbumAdapter adapter;
+	private int uid;
 	private String name;
 	private String email;
 	private EditText dText;
 	private GridViewMenuListener gvMenuListener;
 	private ProgressDialog progressDialog;
+	private CloudAlbumItem newAlbum;
 	private static final int MENU_ADD_TEAMWORKER = 0;
     private static final int MENU_RENAME = 1;
     private static final int MENU_DELETE = 2;
@@ -83,6 +87,7 @@ public class CloudAlbumFragment extends Fragment {
 			// Fetching user details from sqlite
 			HashMap<String, String> user = db.getUserDetails();
 
+			uid = Integer.parseInt(user.get("uid"));
 			name = user.get("name");
 			email = user.get("email");
 
@@ -195,55 +200,55 @@ public class CloudAlbumFragment extends Fragment {
 	/**
 	 * 建立相簿
 	 */
-	private void createCloudAlbum(final String name, final String email, final String aName) {
-		// Tag used to cancel the request
-		String createAlbum_req = "createAlbum";		
-		StringRequest strReq = new StringRequest(Request.Method.POST,getString(R.string.createCloudAlbum),new Response.Listener<String>() {
-					@Override
-					public void onResponse(String response) {
-						Log.d("createAlbum", "Response: " + response.toString());
-						JSONObject jObj;
-						try {
-							jObj = new JSONObject(response);
-							if (response != null) {
-								//recive result
-								String result = jObj.getString("result");							
-								
-								if(response.toString().contains("Succeed")){								
-									int Aid = jObj.getInt("Aid");
-									aList.add(new CloudAlbumItem(Aid, aName, 0, Integer.toString(R.mipmap.ic_add_white_36dp), name, DateTool.getCurrentTime("yyyy-MM-dd HH:mm:ss")));
-									adapter.notifyDataSetChanged();
-								}
-								Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
-							}
-						} catch (JSONException e) {
-							e.printStackTrace();
-						}
-					}
-				}, new Response.ErrorListener() {
-					@Override
-					public void onErrorResponse(VolleyError error) {
-						Log.e("createAlbum", "Error: " + error.getMessage());
-					}
-				}) {
-
-			@Override
-			protected Map<String, String> getParams() {
-				// Posting params to register url
-				Map<String, String> params = new HashMap<String, String>();
-				params.put("name", name);
-				params.put("email", email);
-				params.put("albumName", aName);
-				return params;
-			}
-		};
-		// Adding request to request queue
-		AppController.getInstance().addToRequestQueue(strReq, createAlbum_req);
-	}
+//	private void createCloudAlbum(final String name, final String email, final String aName) {
+//		// Tag used to cancel the request
+//		String createAlbum_req = "createAlbum";
+//		StringRequest strReq = new StringRequest(Request.Method.POST,getString(R.string.createCloudAlbum),new Response.Listener<String>() {
+//					@Override
+//					public void onResponse(String response) {
+//						Log.d("createAlbum", "Response: " + response.toString());
+//						JSONObject jObj;
+//						try {
+//							jObj = new JSONObject(response);
+//							if (response != null) {
+//								//recive result
+//								String result = jObj.getString("result");
+//
+//								if(response.toString().contains("Succeed")){
+//									int Aid = jObj.getInt("Aid");
+//									aList.add(new CloudAlbumItem(Aid, aName, 0, Integer.toString(R.mipmap.ic_add_white_36dp), name, DateTool.getCurrentTime("yyyy-MM-dd HH:mm:ss")));
+//									adapter.notifyDataSetChanged();
+//								}
+//								Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
+//							}
+//						} catch (JSONException e) {
+//							e.printStackTrace();
+//						}
+//					}
+//				}, new Response.ErrorListener() {
+//					@Override
+//					public void onErrorResponse(VolleyError error) {
+//						Log.e("createAlbum", "Error: " + error.getMessage());
+//					}
+//				}) {
+//
+//			@Override
+//			protected Map<String, String> getParams() {
+//				// Posting params to register url
+//				Map<String, String> params = new HashMap<String, String>();
+//				params.put("name", name);
+//				params.put("email", email);
+//				params.put("albumName", aName);
+//				return params;
+//			}
+//		};
+//		// Adding request to request queue
+//		AppController.getInstance().addToRequestQueue(strReq, createAlbum_req);
+//	}
 	/**
 	 * 刪除相簿
 	 */
-	private void deleteCloudAlbum(final String name, final String email, final int position) {
+	private void deleteCloudAlbum(final int uid, final int position) {
 		// Tag used to cancel the request
 		String deleteAlbum_req = "deleteAlbum";		
 		StringRequest strReq = new StringRequest(Request.Method.POST,getString(R.string.deleteCloudAlbum),new Response.Listener<String>() {
@@ -268,8 +273,7 @@ public class CloudAlbumFragment extends Fragment {
 			protected Map<String, String> getParams() {
 				// Posting params to register url
 				Map<String, String> params = new HashMap<String, String>();
-				params.put("name", name);
-				params.put("email", email);
+				params.put("uid", Integer.toString(uid));
 				params.put("albumID", Integer.toString(aList.get(position).getAlbumId()));
 				return params;
 			}
@@ -308,7 +312,7 @@ public class CloudAlbumFragment extends Fragment {
         		.setPositiveButton("確定", new OnClickListener() {				
         			@Override
         			public void onClick(DialogInterface dialog, int which) {
-        				deleteCloudAlbum(name, email, info.position);					
+        				deleteCloudAlbum(uid, info.position);
         			}
         		})
         		.show();                                
@@ -342,11 +346,15 @@ public class CloudAlbumFragment extends Fragment {
 			.setIcon(R.mipmap.ic_collections_white_24dp)
 			.setView(dText)				
 			.setNegativeButton("取消", null)
-			.setPositiveButton("確定", new OnClickListener() {				
+			.setPositiveButton("確定", new OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					Log.d(TAG,"AlbumName: " + dText.getText().toString());
-					createCloudAlbum(name, email, dText.getText().toString());						
+					Log.d(TAG, "AlbumName: " + dText.getText().toString());
+					newAlbum = new CloudAlbumItem(0, dText.getText().toString(), 0, Integer.toString(R.mipmap.ic_add_white_36dp), name, DateTool.getCurrentTime("yyyy-MM-dd HH:mm:ss"));
+					CreateCloudAlbum createCloudAlbum = new CreateCloudAlbum(createHandle, uid, getString(R.string.createCloudAlbum), newAlbum);
+					Thread createTd = new Thread(createCloudAlbum);
+					createTd.start();
+					//createCloudAlbum(name, email, dText.getText().toString());
 				}
 			})
 			.show();
@@ -368,4 +376,27 @@ public class CloudAlbumFragment extends Fragment {
         Log.d(TAG,"setUserVisibleHint");
         // 每次切換Fragment調用的方法
     }
+
+	/**
+	 * 接收建立相簿進度
+	 */
+	private Handler createHandle = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			Bundle data = msg.getData();
+			String result = data.getString("result");
+			if(result.contains("完成")){
+				aList.add(newAlbum);
+				adapter.notifyDataSetChanged();
+				showToast("建立成功");
+			}
+			else
+				showToast("建立失敗");
+
+
+		}
+	};
+	public void showToast(String text){
+		Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
+	}
 }

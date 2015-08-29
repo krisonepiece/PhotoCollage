@@ -16,8 +16,8 @@ public class CloudAlbumItem {
 		this.pathName = pathName;
 		this.fileCount = fileCount;
 		this.firstImagePath = firstImagePath;
-		this.createDate = createDate;
 		this.userId = userId;
+		this.createDate = createDate;
 	}
 
 	public int getAlbumId() {

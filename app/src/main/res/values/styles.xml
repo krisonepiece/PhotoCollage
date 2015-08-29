@@ -18,7 +18,12 @@
         <item name="colorControlNormal">@color/color_color_ControlNormal</item>
         <item name="android:textColorPrimary">@color/color_color_textPrimary</item>
         <item name="android:windowBackground">@color/color_windowBackground</item>
+        <!-- Status Bar  透明-->
+        <!--<item name="android:windowTranslucentStatus">true</item>-->
+        <!-- Navigation Bar 透明 -->
+        <!--<item name="android:windowTranslucentNavigation">true</item>-->
     </style>
+
 
     <style name="MyCheckBox" parent="@android:style/Widget.CompoundButton.CheckBox">
         <item name="android:button">@drawable/checkbox_selector</item>
@@ -32,23 +37,6 @@
     </style>
 
     <!-- ProgressBar Style -->
-    <style name="Material.Drawable.CircularProgress">
-        <item name="cpd_padding">0dp</item>
-        <item name="cpd_initialAngle">0</item>
-        <item name="cpd_maxSweepAngle">270</item>
-        <item name="cpd_minSweepAngle">1</item>
-        <item name="cpd_strokeSize">4dp</item>
-        <item name="cpd_strokeColor">?attr/colorPrimary</item>
-        <item name="cpd_strokeSecondaryColor">@android:color/transparent</item>
-        <item name="cpd_reverse">false</item>
-        <item name="cpd_rotateDuration">1000</item>
-        <item name="cpd_transformDuration">600</item>
-        <item name="cpd_keepDuration">200</item>
-        <item name="cpd_transformInterpolator">@android:anim/decelerate_interpolator</item>
-        <item name="pv_progressMode">indeterminate</item>
-        <item name="cpd_inAnimDuration">0</item>
-        <item name="cpd_outAnimDuration">@android:integer/config_mediumAnimTime</item>
-    </style>
     <style name="MyProgressBar" parent="@style/Material.Drawable.CircularProgress">
         <item name="cpd_strokeColors">@array/progessbar_color</item><!--顏色陣列-->
     </style>
