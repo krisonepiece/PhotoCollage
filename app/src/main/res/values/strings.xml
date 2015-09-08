@@ -12,6 +12,8 @@
     <string name="finishText">恭喜您！完成了獨一無二的相片電影</string>
     <string name="refresh">重新整理</string>
     <string name="finish">完成</string>
+    <string name="btn_delRecord">移除語音</string>
+    <string name="btn_addRecord">確定</string>
     <!-- 相片選擇器 -->
     <string name="select_album">選擇相簿</string>
     <string name="select_image">選擇圖片</string>
@@ -31,6 +33,12 @@
         <item>相片電影</item>
         <item>協作相簿</item>
     </string-array>
+    <string name="drawer_home">首頁</string>
+    <string name="drawer_collage">相片拼貼</string>
+    <string name="drawer_movie">相片電影</string>
+    <string name="drawer_album">協作相簿</string>
+    <string name="drawer_member">會員中心</string>
+    <string name="drawer_seeting">設定</string>
 
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>

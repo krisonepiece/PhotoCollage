@@ -81,6 +81,7 @@ public class CallFFmpeg  implements Runnable{
                 if(!result) {
                     Log.d("shellCommend", "Error");
                     updateHandleMessage("result","Error");
+                    return;
                 }
                 updateHandleMessage("result","完成");
             }

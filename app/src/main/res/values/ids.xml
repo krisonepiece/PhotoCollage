@@ -2,4 +2,8 @@
 <resources>
     <item type="id" name="tag_first"/>
     <item type="id" name="tag_second"/>
+    <item type="id" name="cacheBitmapKey"/>
+    <item type="id" name="cacheBitmapDirtyKey"/>
+    <item type="id" name="haveRecord"/>
+    <item type="id" name="noRecord"/>
 </resources>

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
@@ -25,32 +27,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <!--
-         android:layout_gravity="start" tells DrawerLayout to treat
-         this as a sliding drawer on the left side for left-to-right
-         languages and on the right side for right-to-left languages.
-         The drawer is given a fixed width in dp and extends the full height of
-         the container. A solid background is used for contrast
-         with the content view.
-        -->
-        <!--<ListView-->
-            <!--android:id="@+id/left_drawer"-->
-            <!--android:layout_width="240dp"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:layout_gravity="start"-->
-            <!--android:background="@color/md_grey_900"-->
-            <!--android:choiceMode="singleChoice"-->
-            <!--android:divider="@android:color/transparent"-->
-            <!--android:dividerHeight="0dp" />-->
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/RecyclerView"
-            android:layout_width="300dp"
+        <android.support.design.widget.NavigationView
+            android:id="@+id/navigation_view"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_gravity="left"
-            android:background="@color/md_grey_800"
-            android:scrollbars="vertical">
-
-        </android.support.v7.widget.RecyclerView>
+            android:layout_gravity="start"
+            android:background="@color/md_grey_900"
+            app:headerLayout="@layout/header"
+            app:menu="@menu/navigation_item"/>
     </android.support.v4.widget.DrawerLayout>
 
 </LinearLayout>

@@ -3,6 +3,8 @@ package com.fcu.photocollage;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
@@ -41,37 +43,15 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    //First We Declare Titles And Icons For Our Navigation Drawer List View
-    //This Icons And Titles Are holded in an Array as you can see
-
     private String name = "";
     private String email = "";
-    String TITLES[] = {"主頁","會員","相片電影","協作相簿"};
-    int ICONS[] = {R.mipmap.ic_home_white_24dp,
-            R.mipmap.ic_person_white_24dp,
-            R.mipmap.ic_movie_creation_white_24dp,
-            R.mipmap.ic_cloud_queue_white_24dp};
-
-    //Similarly we Create a String Resource for the name and email in the header view
-    //And we also create a int resource for profile picture in the header view
-
-    int PROFILE = R.drawable.unnamed;
-    RecyclerView mRecyclerView;                           // Declaring RecyclerView
-    RecyclerView.Adapter mAdapter;                        // Declaring Adapter For Recycler View
-    RecyclerView.LayoutManager mLayoutManager;            // Declaring Layout Manager as a linear layout manager
     private DrawerLayout mDrawerLayout;
-    //private ListView mDrawerList;
+    private NavigationView navigationView;
     private ActionBarDrawerToggle mDrawerToggle;
     private SQLiteHandler db;
     private SessionManager session;
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
-    private String[] mMenuTitles;
-    private int[] mMenuIcon = {
-            R.mipmap.ic_home_white_24dp,
-            R.mipmap.ic_person_white_24dp,
-            R.mipmap.ic_movie_creation_white_24dp,
-            R.mipmap.ic_cloud_queue_white_24dp};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
         // session manager
         session = new SessionManager(getApplicationContext());
         if (session.isLoggedIn()) {
-            // Fetching user details from sqlite
             HashMap<String, String> user = db.getUserDetails();
             name = user.get("name");
             email = user.get("email");
@@ -92,104 +71,54 @@ public class MainActivity extends AppCompatActivity {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
         }
-        mRecyclerView = (RecyclerView) findViewById(R.id.RecyclerView); // Assigning the RecyclerView Object to the xml View
 
-        mRecyclerView.setHasFixedSize(true);                            // Letting the system know that the list objects are of fixed size
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
-        mAdapter = new MyAdapter(TITLES,ICONS,name,email,PROFILE);       // Creating the Adapter of MyAdapter class(which we are going to see in a bit)
-        // And passing the titles,icons,header view name, header view email,
-        // and header view profile picture
-        mRecyclerView.setAdapter(mAdapter);                              // Setting the adapter to RecyclerView
-/***/
-        final GestureDetector mGestureDetector = new GestureDetector(MainActivity.this, new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public boolean onSingleTapUp(MotionEvent e) {
-                return true;
-            }
-        });
-        mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
-            @Override
-            public boolean onInterceptTouchEvent(RecyclerView recyclerView, MotionEvent motionEvent) {
-                View child = recyclerView.findChildViewUnder(motionEvent.getX(), motionEvent.getY());
-                int idx = recyclerView.getChildPosition(child);
-                Fragment fragment = null;
-                if(idx == 1){
-                    fragment = new MenuFragment();
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
-                    setTitle(mMenuTitles[idx-1]);
-                }
-                else if(idx == 2){
-                    fragment = new LoginFragment();
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
-                    setTitle(mMenuTitles[idx-1]);
-                }
-                else if(idx == 3){
-                    fragment = new PhotoMovieMain();
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
-                    setTitle(mMenuTitles[idx-1]);
-                }
-                else if(idx == 4){
-                    //checkLogin();
-                    fragment = new CloudAlbumFragment();
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
-                    setTitle(mMenuTitles[idx - 1]);
-                }
-                else{
-
-                }
-
-
-                //mDrawerList.setItemChecked(position, true);
-
-                mDrawerLayout.closeDrawers();
-                //mDrawerLayout.closeDrawer(mDrawerList);
-
-
-
-//                if (child != null && mGestureDetector.onTouchEvent(motionEvent)) {
-//                    mDrawerLayout.closeDrawers();
-//                    return true;
-//                }
-                return true;
-            }
-            @Override
-            public void onTouchEvent(RecyclerView recyclerView, MotionEvent motionEvent) {
-            }
-            @Override
-            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-            }
-        });
-/***/
-        mLayoutManager = new LinearLayoutManager(this);                 // Creating a layout Manager
-
-        mRecyclerView.setLayoutManager(mLayoutManager);                 // Setting the layout Manager
         mTitle = mDrawerTitle = getTitle();
-        mMenuTitles = getResources().getStringArray(R.array.drawer_array);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        //mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.mipmap.drawer_shadow, GravityCompat.START);
-        // set up the drawer's list view with items and click listener
-        //mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mMenuTitles));
-        List<HashMap<String,String>> lstData = new ArrayList<HashMap<String,String>>();
-        for (int i = 0; i < 4; i++) {
-            HashMap<String, String> mapValue = new HashMap<String, String>();
-            mapValue.put("icon", Integer.toString(mMenuIcon[i]));
-            mapValue.put("title", mMenuTitles[i]);
-            lstData.add(mapValue);
-        }
-//        SimpleAdapter adapter = new SimpleAdapter(this, lstData, R.layout.drawer_list_item, new String[]{"icon", "title"}, new int[]{R.id.drawerIcon, R.id.txtItem});
-//        mDrawerList.setAdapter(adapter);
-//        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-
-        // enable ActionBar app icon to behave as action to toggle nav drawer
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override public boolean onNavigationItemSelected(MenuItem menuItem) {
+                Fragment fragment = null;
+                menuItem.setChecked(true);
+                switch(menuItem.getItemId()){
+                    case R.id.drawer_home:
+                        fragment = new MenuFragment();
+                        break;
+                    case R.id.drawer_member:
+                        fragment = new LoginFragment();
+                        break;
+                    case R.id.drawer_movie:
+                        if(!checkLogin()){
+                            navigationView.setCheckedItem(R.id.drawer_member);
+                            fragment = new LoginFragment();
+                        }
+                        else{
+                            fragment = new PhotoMovieMain();
+                        }
+                        break;
+                    case R.id.drawer_album:
+                        if(!checkLogin()){
+                            navigationView.setCheckedItem(R.id.drawer_member);
+                            fragment = new LoginFragment();
+                        }
+                        else {
+                            fragment = new CloudAlbumFragment();
+                        }
+                        break;
+                    default:
+                }
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+                setTitle(menuItem.getTitle());
+                mDrawerLayout.closeDrawers();
+                return true;
+            }
+        });
 
         // ActionBarDrawerToggle ties together the the proper interactions
         // between the sliding drawer and the action bar app icon
@@ -258,53 +187,27 @@ public class MainActivity extends AppCompatActivity {
 //                Toast.makeText(this, R.string.app_not_available, Toast.LENGTH_LONG).show();
 //            }
 //            return true;
+            case R.id.home:
+                mDrawerLayout.openDrawer(GravityCompat.START);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-
-//    /* The click listner for ListView in the navigation drawer */
-//    private class DrawerItemClickListener implements ListView.OnItemClickListener {
-//        @Override
-//        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//            selectItem(position);
-//        }
-//    }
-
-//    private void selectItem(int position) {
-//        Fragment fragment = null;
-//        if(position == 0){
-//            fragment = new MenuFragment();
-//        }
-//        else if(position == 1){
-//            fragment = new LoginFragment();
-//        }
-//        else if(position == 2){
-//            fragment = new PhotoMovieMain();
-//        }
-//        else if(position == 3){
-//            checkLogin();
-//            fragment = new CloudAlbumFragment();
-//        }
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
-//        mDrawerList.setItemChecked(position, true);
-//        setTitle(mMenuTitles[position]);
-//        mDrawerLayout.closeDrawer(mDrawerList);
-//    }
-    public void checkLogin(){
+    public boolean checkLogin(){
         if (!session.isLoggedIn()) {
             new AlertDialog.Builder(this).setTitle("要先登入哦！")
                     .setIcon(android.R.drawable.ic_dialog_info)
                     .setPositiveButton("確定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-//                            selectItem(1);	//跳轉登入頁
                         }
                     })
                     .show();
+            return false;
         }
+        return true;
     }
 
     @Override
