@@ -235,8 +235,9 @@ public class PhotoMovieMain extends Fragment {
 								/*一定要寫在 show 後面!!*/
 									progressDialog.setContentView(R.layout.material_progressbar);    //自定義Layout
 									((TextView) progressDialog.findViewById(R.id.pg_text)).setText("請稍後...");
-									progressDialog.getWindow().setBackgroundDrawableResource(R.color.alpha);    //背景透明
-									newAlbum = new CloudAlbumItem(0, dText.getText().toString(), 0, Integer.toString(R.mipmap.ic_add_white_36dp), name, DateTool.getCurrentTime("yyyy-MM-dd HH:mm:ss"));
+									((TextView) progressDialog.findViewById(R.id.pg_text)).setTextColor(Color.WHITE);
+									progressDialog.getWindow().setBackgroundDrawableResource(R.color.material_drawer_dark_background);    //背景透明
+									newAlbum = new CloudAlbumItem(0, dText.getText().toString(), 12345, 0, Integer.toString(R.mipmap.ic_add_white_36dp), name, DateTool.getCurrentTime("yyyy-MM-dd HH:mm:ss"));
 									CreateCloudAlbum createCloudAlbum = new CreateCloudAlbum(handler, uid, getString(R.string.createCloudAlbum), newAlbum);
 									Thread createTd = new Thread(createCloudAlbum);
 									createTd.start();

@@ -8,4 +8,19 @@
         android:icon="@mipmap/ic_cloud_upload_white_36dp"
         android:title="@string/upload_photo"
         app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_delete"
+        android:icon="@mipmap/ic_delete_white_36dp"
+        android:title="@string/share_del"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_edit"
+        android:icon="@mipmap/auto_fix"
+        android:title="@string/share_edit"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_download"
+        android:icon="@mipmap/ic_file_download_white_36dp"
+        android:title="@string/share_download"
+        app:showAsAction="ifRoom"/>
 </menu>

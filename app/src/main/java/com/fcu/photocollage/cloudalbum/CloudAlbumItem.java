@@ -3,17 +3,19 @@ package com.fcu.photocollage.cloudalbum;
 public class CloudAlbumItem {
 	private int albumId;
 	private String pathName;
+	private int pcode;
 	private int fileCount;
 	private String firstImagePath;
 	private String createDate;
 	private String userId;
 
 
-	
-	public CloudAlbumItem(int albumId, String pathName, int fileCount,
+
+	public CloudAlbumItem(int albumId, String pathName, int pcode, int fileCount,
 			String firstImagePath, String userId, String createDate) {
 		this.albumId = albumId;
 		this.pathName = pathName;
+		this.pcode = pcode;
 		this.fileCount = fileCount;
 		this.firstImagePath = firstImagePath;
 		this.userId = userId;
@@ -66,6 +68,14 @@ public class CloudAlbumItem {
 
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+
+	public int getPcode() {
+		return pcode;
+	}
+
+	public void setPcode(int pcode) {
+		this.pcode = pcode;
 	}
 
 	@Override

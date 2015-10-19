@@ -39,6 +39,8 @@ dependencies {
     compile('com.mikepenz:materialdrawer:4.0.3@aar') {
         transitive = true
     }
+    compile 'com.lid.labelview:lib:0.1.1'
+    compile 'com.bigkoo:convenientbanner:1.0.7'
     compile files('libs/commons-codec-1.6.jar')
     compile files('libs/commons-logging-1.1.1.jar')
     compile files('libs/fluent-hc-4.2.5.jar')

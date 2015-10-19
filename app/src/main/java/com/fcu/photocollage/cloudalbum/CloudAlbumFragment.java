@@ -17,6 +17,7 @@ import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -55,7 +56,9 @@ public class CloudAlbumFragment extends Fragment {
 	private int uid;
 	private String name;
 	private String email;
+	private String pcode = "1";
 	private EditText dText;
+	private EditText editEmail;
 	private GridViewMenuListener gvMenuListener;
 	private ProgressDialog progressDialog;
 	private CloudAlbumItem newAlbum;
@@ -134,16 +137,18 @@ public class CloudAlbumFragment extends Fragment {
 								for(int i = 0 ; i < size ; i++){
 									JSONObject album = jObj.getJSONObject("a"+i);
 									int Pid = album.getInt("Pid");
+
 									int Aid = album.getInt("Aid");
 									int AlbumSize = album.getInt("AlbumSize");									
 									int Pcode = album.getInt("Pcode");
 									String Ppath = album.getString("Ppath");
 									String Aname = album.getString("Aname");
 									String Uname = album.getString("Uname");
+									String Uid = Integer.toString(album.getInt("Uid"));
 									String CreateDate = album.getString("CreateDate");
 									
-									Log.d("getAlbum","Response:"+ Pid + "," + Ppath + "," + Aname+ "," + Uname+ "," + CreateDate);
-									aList.add(new CloudAlbumItem(Aid, Aname, AlbumSize, Ppath, Uname, CreateDate));
+									Log.d("getAlbum","Response:"+ Pid + "," + Ppath + "," + Aname+ "," + Uid+ "," + CreateDate);
+									aList.add(new CloudAlbumItem(Aid, Aname, Pcode, AlbumSize, Ppath, Uid, CreateDate));
 								}
 								
 								adapter = new CloudAlbumAdapter(getActivity(), aList);
@@ -162,6 +167,8 @@ public class CloudAlbumFragment extends Fragment {
 
 										bundle.putInt("AlbumID", aList.get(position).getAlbumId());
 										bundle.putString("AlbumName", aList.get(position).getPathName());
+										bundle.putInt("pcode", aList.get(position).getPcode());
+										bundle.putString("Uid", aList.get(position).getUserId());
 
 										cloudPhotoFg.setArguments(bundle);
 										fragmentManager
@@ -198,54 +205,6 @@ public class CloudAlbumFragment extends Fragment {
 		return aList;
 	}
 	/**
-	 * 建立相簿
-	 */
-//	private void createCloudAlbum(final String name, final String email, final String aName) {
-//		// Tag used to cancel the request
-//		String createAlbum_req = "createAlbum";
-//		StringRequest strReq = new StringRequest(Request.Method.POST,getString(R.string.createCloudAlbum),new Response.Listener<String>() {
-//					@Override
-//					public void onResponse(String response) {
-//						Log.d("createAlbum", "Response: " + response.toString());
-//						JSONObject jObj;
-//						try {
-//							jObj = new JSONObject(response);
-//							if (response != null) {
-//								//recive result
-//								String result = jObj.getString("result");
-//
-//								if(response.toString().contains("Succeed")){
-//									int Aid = jObj.getInt("Aid");
-//									aList.add(new CloudAlbumItem(Aid, aName, 0, Integer.toString(R.mipmap.ic_add_white_36dp), name, DateTool.getCurrentTime("yyyy-MM-dd HH:mm:ss")));
-//									adapter.notifyDataSetChanged();
-//								}
-//								Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
-//							}
-//						} catch (JSONException e) {
-//							e.printStackTrace();
-//						}
-//					}
-//				}, new Response.ErrorListener() {
-//					@Override
-//					public void onErrorResponse(VolleyError error) {
-//						Log.e("createAlbum", "Error: " + error.getMessage());
-//					}
-//				}) {
-//
-//			@Override
-//			protected Map<String, String> getParams() {
-//				// Posting params to register url
-//				Map<String, String> params = new HashMap<String, String>();
-//				params.put("name", name);
-//				params.put("email", email);
-//				params.put("albumName", aName);
-//				return params;
-//			}
-//		};
-//		// Adding request to request queue
-//		AppController.getInstance().addToRequestQueue(strReq, createAlbum_req);
-//	}
-	/**
 	 * 刪除相簿
 	 */
 	private void deleteCloudAlbum(final int uid, final int position) {
@@ -281,7 +240,49 @@ public class CloudAlbumFragment extends Fragment {
 		// Adding request to request queue
 		AppController.getInstance().addToRequestQueue(strReq, deleteAlbum_req);		
 	}
-	
+
+
+	//region 新增協作者
+	private void addTeamWorker(final String email, final String Aid, final String pcode) {
+		// Tag used to cancel the request
+		String addTeamWorker_req = "addTeamWorker";
+		StringRequest strReq = new StringRequest(Request.Method.POST,getString(R.string.addTeamWorker),new Response.Listener<String>() {
+			@Override
+			public void onResponse(String response) {
+				Log.d("addTeamWorker", "Response: " + response.toString());
+				try {
+					JSONObject jObj = new JSONObject(response);
+					if (response != null) {
+						// User successfully stored in MySQL
+						// Now store the user in sqlite
+						String result = jObj.getString("result");
+						Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+			}
+		}, new Response.ErrorListener() {
+			@Override
+			public void onErrorResponse(VolleyError error) {
+				Log.e("addTeamWorker", "Error: " + error.getMessage());
+			}
+		}) {
+
+			@Override
+			protected Map<String, String> getParams() {
+				// Posting params to register url
+				Map<String, String> params = new HashMap<String, String>();
+				params.put("email", email);
+				params.put("Aid", Aid);
+				params.put("pcode", pcode);
+				return params;
+			}
+		};
+		// Adding request to request queue
+		AppController.getInstance().addToRequestQueue(strReq, addTeamWorker_req);
+	}
+	//endregion
 	//自建長按選單
 	private class GridViewMenuListener implements OnCreateContextMenuListener{
 		@Override
@@ -299,6 +300,34 @@ public class CloudAlbumFragment extends Fragment {
         switch (item.getItemId()) {
             case MENU_ADD_TEAMWORKER:
                 Log.i("ContextMenu", "MENU_ADD_TEAMWORKER was chosen" + info.position);
+				editEmail = new EditText(getActivity());
+				editEmail.setHint(getString(R.string.share_email));
+				editEmail.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+				editEmail.setMaxEms(40);
+				pcode = "1";
+				String[] shareItem = {"新增相片", "刪除相片", "編輯相片", "下載相片"};
+				new AlertDialog.Builder(getActivity()).setTitle("新增協作者")
+						.setView(editEmail)
+						.setMultiChoiceItems(shareItem, new boolean[] {false, false, false, false}, new DialogInterface.OnMultiChoiceClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+								if(isChecked){
+									pcode += Integer.toString(which + 2);
+								}
+								else{
+									pcode.replaceAll(Integer.toString(which + 2), "");
+								}
+							}
+						})
+						.setNegativeButton("取消", null)
+						.setPositiveButton("新增協作者", new OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								addTeamWorker(editEmail.getText().toString(), Integer.toString(aList.get(info.position).getAlbumId()), pcode);
+							}
+						})
+						.show();
+						//.setContentView(R.layout.dialog_sharealbum);
                 return true;
             case MENU_RENAME:
                 Log.i("ContextMenu", "MENU_RENAME was chosen" + info.position);
@@ -350,7 +379,7 @@ public class CloudAlbumFragment extends Fragment {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					Log.d(TAG, "AlbumName: " + dText.getText().toString());
-					newAlbum = new CloudAlbumItem(0, dText.getText().toString(), 0, Integer.toString(R.mipmap.ic_add_white_36dp), name, DateTool.getCurrentTime("yyyy-MM-dd HH:mm:ss"));
+					newAlbum = new CloudAlbumItem(0, dText.getText().toString(), 12345, 0, Integer.toString(R.mipmap.ic_add_white_36dp), name, DateTool.getCurrentTime("yyyy-MM-dd HH:mm:ss"));
 					CreateCloudAlbum createCloudAlbum = new CreateCloudAlbum(createHandle, uid, getString(R.string.createCloudAlbum), newAlbum);
 					Thread createTd = new Thread(createCloudAlbum);
 					createTd.start();

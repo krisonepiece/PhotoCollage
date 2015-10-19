@@ -4,11 +4,8 @@ import java.io.File;
 import android.util.Log;
 
 public class FileTool {
-	/**
-	 * 建立新資料夾
-	 * 
-	 * @param path
-	 */
+
+	//region 建立新資料夾
 	public static void createNewFolder(String path) {
 		// 建立資料夾
 		File sdFile = android.os.Environment.getExternalStorageDirectory();
@@ -18,12 +15,9 @@ public class FileTool {
 			Log.i("Create-File", path + "");
 		}
 	}
+	//endregion
 
-	/**
-	 * 清空資料夾
-	 * 
-	 * @param path
-	 */
+	//region 清空資料夾
 	public static void deleteFolder(String path) {
 		File delFile = new File(path);
 		for (File i : delFile.listFiles()) {
@@ -33,5 +27,6 @@ public class FileTool {
 			}
 		}
 	}
-	
+	//endregion
+
 }

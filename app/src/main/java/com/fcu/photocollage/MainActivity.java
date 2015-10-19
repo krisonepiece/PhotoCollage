@@ -1,10 +1,11 @@
 package com.fcu.photocollage;
 
+import android.app.DownloadManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
@@ -13,36 +14,24 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.fcu.photocollage.cloudalbum.CloudAlbumFragment;
 import com.fcu.photocollage.member.LoginFragment;
 import com.fcu.photocollage.member.SQLiteHandler;
 import com.fcu.photocollage.member.SessionManager;
 import com.fcu.photocollage.menu.MenuFragment;
-import com.fcu.photocollage.menu.MyAdapter;
+import com.fcu.photocollage.menu.MyFragment;
 import com.fcu.photocollage.movie.PhotoMovieMain;
-import com.mikepenz.materialdrawer.Drawer;
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+
+public class MainActivity extends AppCompatActivity implements MyFragment {
     private String name = "";
     private String email = "";
     private DrawerLayout mDrawerLayout;
@@ -52,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private SessionManager session;
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
+    private Fragment fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,38 +73,7 @@ public class MainActivity extends AppCompatActivity {
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override public boolean onNavigationItemSelected(MenuItem menuItem) {
-                Fragment fragment = null;
-                menuItem.setChecked(true);
-                switch(menuItem.getItemId()){
-                    case R.id.drawer_home:
-                        fragment = new MenuFragment();
-                        break;
-                    case R.id.drawer_member:
-                        fragment = new LoginFragment();
-                        break;
-                    case R.id.drawer_movie:
-                        if(!checkLogin()){
-                            navigationView.setCheckedItem(R.id.drawer_member);
-                            fragment = new LoginFragment();
-                        }
-                        else{
-                            fragment = new PhotoMovieMain();
-                        }
-                        break;
-                    case R.id.drawer_album:
-                        if(!checkLogin()){
-                            navigationView.setCheckedItem(R.id.drawer_member);
-                            fragment = new LoginFragment();
-                        }
-                        else {
-                            fragment = new CloudAlbumFragment();
-                        }
-                        break;
-                    default:
-                }
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
-                setTitle(menuItem.getTitle());
+                switchMenu(menuItem.getItemId());
                 mDrawerLayout.closeDrawers();
                 return true;
             }
@@ -156,7 +115,9 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
 //            selectItem(0);
         }
-
+        fragment = new MenuFragment();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
     }
 
     @Override
@@ -244,5 +205,55 @@ public class MainActivity extends AppCompatActivity {
         super.onNewIntent(intent);
         setIntent(intent);
         getIntent().putExtras(intent);
+    }
+
+    @Override
+    public void switchMenu(int itemId){
+        MenuItem menuItem = navigationView.getMenu().findItem(itemId);
+        menuItem.setChecked(true);
+        switch(menuItem.getItemId()){
+            case R.id.drawer_home:
+                fragment = new MenuFragment();
+                break;
+            case R.id.drawer_member:
+                fragment = new LoginFragment();
+                break;
+            case R.id.drawer_movie:
+                if(!checkLogin()){
+                    navigationView.setCheckedItem(R.id.drawer_member);
+                    fragment = new LoginFragment();
+                }
+                else{
+                    fragment = new PhotoMovieMain();
+                }
+                break;
+            case R.id.drawer_album:
+                if(!checkLogin()){
+                    navigationView.setCheckedItem(R.id.drawer_member);
+                    fragment = new LoginFragment();
+                }
+                else {
+                    fragment = new CloudAlbumFragment();
+                }
+                break;
+            default:
+        }
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+        setTitle(menuItem.getTitle());
+    }
+
+    @Override
+    public void downloadManager(String urlStr, String path, String fileName) {
+        DownloadManager downloadManager = (DownloadManager)getSystemService(DOWNLOAD_SERVICE);
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(urlStr));
+        request.setDestinationInExternalPublicDir(path, fileName);
+        // request.setTitle("MeiLiShuo");
+        // request.setDescription("MeiLiShuo desc");
+        // request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        // request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI);
+        // request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
+        // request.setMimeType("application/cn.trinea.download.file");
+        long downloadId = downloadManager.enqueue(request);
     }
 }

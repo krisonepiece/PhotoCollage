@@ -1,8 +1,7 @@
 package com.fcu.photocollage.cloudalbum;
 
 
-import android.app.AlertDialog;
-import android.app.Dialog;
+import android.app.DownloadManager;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -15,14 +14,18 @@ import android.support.v4.app.FragmentManager;
 
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.SparseBooleanArray;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -33,8 +36,8 @@ import com.fcu.photocollage.imagepicker.Utility;
 import com.fcu.photocollage.library.FileTool;
 import com.fcu.photocollage.member.AppController;
 import com.fcu.photocollage.member.SQLiteHandler;
+import com.fcu.photocollage.menu.MyFragment;
 import com.fcu.photocollage.movie.Photo;
-import com.rey.material.widget.ProgressView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,15 +59,17 @@ public class CloudPhotoFragment extends Fragment {
 	private SQLiteHandler db;
 	private int userID;
     private CloudPhotoAdapter adapter;
+	private GridViewMenuListener gvMenuListener;
     private View thisView;
     private int albumId;
+	private String albumUserId;
     private String albumName;
+	private String pcode;
     private ProgressDialog progressDialog;
-	private ProgressView pv_circular;
-
-    public void init() {    	
-        mPhotoWall = (GridView) thisView.findViewById(R.id.cloud_photo_grid);
-	}
+	private MyFragment myFragment;
+	private static final int MENU_EDIT = 0;
+	private static final int MENU_DELETE = 1;
+	private static final int MENU_DOWNLOAD = 2;
 
     @Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -72,8 +77,11 @@ public class CloudPhotoFragment extends Fragment {
     	//super.onCreateView(inflater, container, savedInstanceState);
     	setHasOptionsMenu(true);
     	thisView = inflater.inflate(R.layout.fragment_cloud_photo, container, false);
-    	
-    	init();
+
+		mPhotoWall = (GridView) thisView.findViewById(R.id.cloud_photo_grid);
+		gvMenuListener = new GridViewMenuListener();
+		mPhotoWall.setOnCreateContextMenuListener(gvMenuListener);
+
     	((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
     	((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(albumName);
@@ -151,7 +159,7 @@ public class CloudPhotoFragment extends Fragment {
 						if (size > 0) {
 							for(int i = 0 ; i < size ; i++){
 								JSONObject photo = jObj.getJSONObject("p"+i);
-								int pid = photo.getInt("Pid");;
+								int pid = photo.getInt("Pid");
 								String pName = photo.getString("Pname");
 								String takeDate = photo.getString("TakeDate");
 								String uploadDate = photo.getString("UploadDate");
@@ -194,36 +202,77 @@ public class CloudPhotoFragment extends Fragment {
 		AppController.getInstance().addToRequestQueue(strReq, getPhoto_req);
     }
 
-//    //獲取已選擇的圖片路徑
-//    private ArrayList<Photo> getSelectImage() {
-//        SparseBooleanArray map = adapter.getSelectionMap();
-//        if (map.size() == 0) {
-//            return null;
-//        }
-//
-//        ArrayList<Photo> selectedImageList = new ArrayList<Photo>();
-//
-//        for (int i = 0; i < pList.size(); i++) {
-//            if (map.get(i)) {
-//                selectedImageList.add(pList.get(i));
-//            }
-//        }
-//        return selectedImageList;
-//    }
+    //獲取已選擇的圖片路徑
+    private ArrayList<Photo> getSelectImage() {
+        SparseBooleanArray map = adapter.getSelectionMap();
+        if (map.size() == 0) {
+            return null;
+        }
 
-    
+        ArrayList<Photo> selectedImageList = new ArrayList<Photo>();
+
+        for (int i = 0; i < pList.size(); i++) {
+            if (map.get(i)) {
+                selectedImageList.add(pList.get(i));
+            }
+        }
+        return selectedImageList;
+    }
+
+	/**
+	 * 刪除相片
+	 */
+	private void deleteCloudPhoto(final Photo photo) {
+		// Tag used to cancel the request
+		String deleteCloudPhoto_req = "deleteCloudPhoto";
+		StringRequest strReq = new StringRequest(Request.Method.POST,getString(R.string.deleteCloudPhoto),new Response.Listener<String>() {
+			@Override
+			public void onResponse(String response) {
+				Log.d("deleteCloudPhoto", "Response: " + response.toString());
+				if(response.toString().contains("succeed")){
+					pList.remove(photo);
+					adapter.notifyDataSetChanged();
+					Toast.makeText(getActivity(), "Delete success!", Toast.LENGTH_SHORT).show();
+				}
+			}
+		}, new Response.ErrorListener() {
+			@Override
+			public void onErrorResponse(VolleyError error) {
+				Log.e("deleteCloudPhoto", "Error: " + error.getMessage());
+			}
+		}) {
+
+			@Override
+			protected Map<String, String> getParams() {
+				// Posting params to register url
+				Map<String, String> params = new HashMap<String, String>();
+				params.put("Pid", Integer.toString(photo.getPid()));
+				return params;
+			}
+		};
+		// Adding request to request queue
+		AppController.getInstance().addToRequestQueue(strReq, deleteCloudPhoto_req);
+	}
+
 	@Override
 	public void onResume() {
 		super.onResume();	
 		Log.i(TAG, "onResume");
 		//從相冊頁面跳轉至此頁
-		//if(getArguments() != null){	        
-        if (getArguments().getInt("AlbumID", -1) != -1 && getArguments().getString("AlbumName", null) != null) {
+        if (getArguments().getInt("AlbumID", -1) != -1 &&
+				getArguments().getString("AlbumName", null) != null &&
+				getArguments().getInt("pcode", -1) != -1 &&
+				getArguments().getString("Uid", null) != null ) {
+
         	albumId = getArguments().getInt("AlbumID", -1);
-	        albumName = getArguments().getString("AlbumName", null);
+			albumName = getArguments().getString("AlbumName", null);
+			pcode = Integer.toString(getArguments().getInt("pcode", -1));
+			albumUserId = getArguments().getString("Uid", null);
         	getArguments().remove("AlbumID");
 	        getArguments().remove("AlbumName");
-        //}
+			getArguments().remove("pcode");
+			getArguments().remove("Uid");
+
         }
         else if (getActivity().getIntent().getIntExtra("code", -1) != -1){
         	int code = getActivity().getIntent().getIntExtra("code", -1);
@@ -238,7 +287,7 @@ public class CloudPhotoFragment extends Fragment {
     				String takeDate = Utility.getTakeDate(paths.get(i), "yyyy/MM/dd HH:mm:ss");
     				
     				//建立Photo資訊
-    				Photo tmpP = new Photo(paths.get(i), takeDate, albumId, userID);
+    				Photo tmpP = new Photo(paths.get(i), takeDate, albumId, userID, albumUserId);
     				uploadList.add(tmpP);
     			}
     			//上傳圖片
@@ -276,6 +325,34 @@ public class CloudPhotoFragment extends Fragment {
 			}
 		}
 	};
+	//自建長按選單
+	private class GridViewMenuListener implements View.OnCreateContextMenuListener {
+		@Override
+		public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+			if(pcode.contains("3"))
+				menu.add(Menu.NONE, MENU_DELETE, Menu.NONE, "刪除相片");
+			if(pcode.contains("4"))
+				menu.add(Menu.NONE, MENU_EDIT, Menu.NONE, "編輯相片");
+			if(pcode.contains("5"))
+				menu.add(Menu.NONE, MENU_DOWNLOAD, Menu.NONE, "下載到手機");
+		}
+	}
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+		switch (item.getItemId()) {
+			case MENU_EDIT:
+				Log.i("ContextMenu", "MENU_EDIT was chosen" + info.position);
+				return true;
+			case MENU_DELETE:
+				Log.i("ContextMenu", "MENU_DELETE was chosen" + info.position);
+				return true;
+			case MENU_DOWNLOAD:
+				Log.i("ContextMenu", "MENU_DOWNLOAD was chosen" + info.position);
+				return true;
+		}
+		return super.onContextItemSelected(item);
+	}
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
@@ -286,8 +363,18 @@ public class CloudPhotoFragment extends Fragment {
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		Log.d(TAG,"onCreateOptionsMenu");
 		inflater.inflate(R.menu.cloud_photo_menu, menu);		
-//		MenuItem mi = menu.findItem(R.id.action_check);
-//		mi.setVisible(true);
+		MenuItem miUpload = menu.findItem(R.id.action_upload_photo);
+        MenuItem miDelete = menu.findItem(R.id.action_delete);
+        MenuItem miEdit = menu.findItem(R.id.action_edit);
+        MenuItem miDownload = menu.findItem(R.id.action_download);
+		if(!pcode.contains("2"))
+            miUpload.setVisible(false);
+        if(!pcode.contains("3"))
+            miDelete.setVisible(false);
+        if(!pcode.contains("4"))
+            miEdit.setVisible(false);
+        if(!pcode.contains("5"))
+            miDownload.setVisible(false);
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
@@ -301,7 +388,31 @@ public class CloudPhotoFragment extends Fragment {
 						com.fcu.photocollage.imagepicker.ImagePickerActivity.class);
 				startActivityForResult(intent,PHOTO);
 				return true;
-			
+			case R.id.action_delete:
+				//刪除照片
+                if(pcode.contains("3")) {
+                    ArrayList<Photo> delList = getSelectImage();
+                    for (int i = 0; i < delList.size(); i++) {
+                        deleteCloudPhoto(delList.get(i));
+                    }
+                    adapter.clearSelectionMap();
+                }
+				return true;
+			case R.id.action_edit:
+				//編輯照片
+                if(pcode.contains("4")) {
+
+                }
+				return true;
+			case R.id.action_download:
+				//下載照片
+                if(pcode.contains("5")) {
+                    ArrayList<Photo> downList = getSelectImage();
+                    for (int i = 0; i < downList.size(); i++) {
+						myFragment.downloadManager(downList.get(i).getpPath(), "PhotoCollage", downList.get(i).getPname());
+                    }
+                }
+				return true;
 			case android.R.id.home:
 				backAction();
 				return true;
@@ -315,4 +426,14 @@ public class CloudPhotoFragment extends Fragment {
         // 每次切換Fragment調用的方法
 
     }
+	@Override
+	public void onAttach(Context context) {
+		super.onAttach(context);
+		//當添加Fragment到Activity時調用
+		try {
+			myFragment = (MyFragment) context;
+		} catch (ClassCastException e) {
+			throw new ClassCastException(context.toString() + " must implementMyFragment");
+		}
+	}
 }

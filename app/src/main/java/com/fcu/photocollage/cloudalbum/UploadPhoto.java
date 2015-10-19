@@ -62,7 +62,7 @@ public class UploadPhoto implements Runnable{
 			String tmpPath = "/sdcard/PCtemp/" + pList.get(i).getPname();
 			ImageTool.compressAndCreatePhoto(tmpPath, bitmap, Bitmap.CompressFormat.JPEG, 40);
 			//上傳檔案
-			String relativePath = "../../Data/" + pList.get(i).getUserID() + "/Picture/" + pList.get(i).getAlbumID() + "/" + pList.get(i).getPname();
+			String relativePath = "../../Data/" + pList.get(i).getAlbumUserID() + "/Picture/" + pList.get(i).getAlbumID() + "/" + pList.get(i).getPname();
 			String response = CloudFileUpload.executeMultiPartRequest(sURL, new File(tmpPath), relativePath);
 			Log.d(TAG,response);
 		}

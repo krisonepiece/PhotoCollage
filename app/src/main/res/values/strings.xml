@@ -26,6 +26,13 @@
     <string name="add_album">新增相簿</string>
     <string name="share_album">共享相簿</string>
     <string name="upload_photo">上傳照片</string>
+    <string name="share_email">協作者的 E-mail</string>
+    <string name="share_add">新增相片</string>
+    <string name="share_del">刪除相片</string>
+    <string name="share_edit">編輯相片</string>
+    <string name="share_download">下載相片</string>
+    <string name="share_cancel">取消</string>
+    <string name="share_ok">新增協作者</string>
     <!-- 主選單 -->
     <string-array name="drawer_array">
         <item>主頁</item>
@@ -47,13 +54,13 @@
     <string name="app_not_available">Sorry, there\'s no web browser available</string>
     <!-- 會員介面 -->
     <string name="hint_email">Email</string>
-    <string name="hint_password">Password</string>
-    <string name="hint_name">Fullname</string>
-    <string name="btn_login">LOGIN</string>
-    <string name="btn_register">REGISTER</string>
-    <string name="btn_link_to_register">Not a member? Sign up now.</string>
-    <string name="btn_link_to_login">Already registred! Login Me.</string>
-    <string name="welcome">Welcome</string>
-    <string name="btn_logout">LOGOUT</string>
-    <string name="name">Fullname</string>
+    <string name="hint_password">密碼</string>
+    <string name="hint_name">姓名</string>
+    <string name="btn_login">登入</string>
+    <string name="btn_register">註冊</string>
+    <string name="btn_link_to_register">還不是會員？立即註冊！</string>
+    <string name="btn_link_to_login">已經註冊了！立即登入</string>
+    <string name="welcome">歡迎</string>
+    <string name="btn_logout">登出</string>
+    <string name="name">姓名</string>
 </resources>

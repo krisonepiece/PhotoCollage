@@ -13,7 +13,8 @@ public class Photo {
 	private String recPath;		//語音路徑
 	private int recSec;			//語音秒數
 	private int albumID;		//相簿編號
-	private int UserID;			//相簿編號
+	private int UserID;			//照片上傳者編號
+	private String albumUserID;	//相簿擁有者編號
 	private int sec;			//秒數
 	private int turn;			//翻轉 ( 1 為翻轉, 0 為不翻 )
 	private int effect;			//特效 ( 1 為加特效, 0 為不加 )
@@ -41,17 +42,12 @@ public class Photo {
 		this.UserID = userID;
 	}
 
-	public Photo(String pPath, int albumID, int userID) {
-		this.pPath = pPath;		
-		this.albumID = albumID;
-		this.UserID = userID;
-	}
-	public Photo(String pPath, String takeDate, int albumID, int userID) {
+	public Photo(String pPath, String takeDate, int albumID, int userID, String albumUserID) {
 		this.pPath = pPath;		
 		this.takeDate = takeDate;
 		this.albumID = albumID;
 		this.UserID = userID;
-		//this.pServerPath = "C:\\\\inetpub\\\\wwwroot\\\\PhotoCollage\\\\Data\\\\" + userID + "\\\\picture\\\\" + albumID + "\\\\";
+		this.albumUserID = albumUserID;
 	}
 	
 	public Photo(int pid, String pname, String takeDate, String uploadDate, String pPath, String recPath) {
@@ -63,7 +59,10 @@ public class Photo {
 		this.recPath = recPath;
 	}
 	public void createServerPath() {
-		serverPath = "C:\\\\inetpub\\\\wwwroot\\\\PhotoCollage\\\\Data\\\\" + UserID + "\\\\picture\\\\" + albumID + "\\\\";
+		if (albumUserID == null){
+			albumUserID = Integer.toString(UserID);
+		}
+		serverPath = "C:\\\\inetpub\\\\wwwroot\\\\PhotoCollage\\\\Data\\\\" + albumUserID + "\\\\picture\\\\" + albumID + "\\\\";
 	}
 
 	public void createPname() {
@@ -186,7 +185,14 @@ public class Photo {
 		this.rname = rname;
 	}
 
-	/*
+	public String getAlbumUserID() {
+		return albumUserID;
+	}
+
+	public void setAlbumUserID(String albumUserID) {
+		this.albumUserID = albumUserID;
+	}
+/*
 	@Override
 	public String toString() {
 		return "Photo [pid=" + pid + ", pname=" + pname + ", takeDate="
