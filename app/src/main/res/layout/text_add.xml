@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Main" >
+
+
+
+    <Button
+        android:id="@+id/textFinish"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="確定"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true" />
+
+        <ImageView
+            android:id="@+id/textShow"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="@color/md_white_1000"/>
+    <LinearLayout
+        android:id="@+id/skewXseekBarLin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:gravity="right"
+        android:layout_below="@+id/textShow"
+        android:orientation="horizontal" >
+
+    <SeekBar
+        android:id="@+id/skewXseekBar"
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_height="36dp"
+        android:layout_gravity="center"
+        android:max="10"
+        android:progress="0"/>
+
+    <CheckBox
+        android:id="@+id/skewXcheckBox"
+        android:layout_height="36dp"
+        android:layout_width="66dp"
+        android:text="左斜"
+        android:layout_gravity="end" />
+
+</LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/tool"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:layout_below="@+id/choosecolorHorScroll"
+        android:orientation="horizontal" >
+        <CheckBox
+            android:id="@+id/FakeBoldTextTruecheckBox"
+            android:layout_height="36dp"
+            android:layout_width="66dp"
+            android:text="粗體"
+            android:layout_gravity="end" />
+
+        <CheckBox
+            android:id="@+id/UnderlineTextcheckBox"
+            android:layout_height="36dp"
+            android:layout_width="66dp"
+            android:text="底線"
+            android:layout_gravity="end" />
+
+        </LinearLayout>
+
+    <HorizontalScrollView
+        android:id="@+id/choosecolorHorScroll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:layout_below="@+id/skewXseekBarLin"
+        tools:ignore="UselessParent" >
+
+    <LinearLayout
+        android:id="@+id/choosecolorlinr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:orientation="horizontal" >
+
+
+        <Button
+            android:id="@+id/colorRed"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@color/md_red_500"
+            android:paddingBottom="10dp"
+            android:onClick="colorchoose"
+            android:paddingTop="13dp"/>
+        <Button
+            android:id="@+id/colorOrange"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@color/md_orange_500"
+            android:paddingBottom="10dp"
+            android:onClick="colorchoose"
+            android:paddingTop="13dp" />
+        <Button
+            android:id="@+id/colorYellow"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@color/md_yellow_500"
+            android:paddingBottom="10dp"
+            android:onClick="colorchoose"
+            android:paddingTop="13dp" />
+        <Button
+            android:id="@+id/colorGreen"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@color/md_green_500"
+            android:paddingBottom="10dp"
+            android:onClick="colorchoose"
+            android:paddingTop="13dp" />
+        <Button
+            android:id="@+id/colorBlue"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@color/md_blue_500"
+            android:paddingBottom="10dp"
+            android:onClick="colorchoose"
+            android:paddingTop="13dp" />
+        <Button
+            android:id="@+id/colorPurple"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@color/md_purple_500"
+            android:paddingBottom="10dp"
+            android:onClick="colorchoose"
+            android:paddingTop="13dp" />
+        <Button
+            android:id="@+id/colorBrown"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@color/md_brown_500"
+            android:paddingBottom="10dp"
+            android:onClick="colorchoose"
+            android:paddingTop="13dp" />
+        <Button
+            android:id="@+id/colorGray"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@color/md_grey_500"
+            android:paddingBottom="10dp"
+            android:onClick="colorchoose"
+            android:paddingTop="13dp" />
+        <Button
+            android:id="@+id/colorBlack"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@color/black"
+            android:paddingBottom="10dp"
+            android:onClick="colorchoose"
+            android:paddingTop="13dp" />
+        <Button
+            android:id="@+id/palette"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/palette"
+            android:paddingBottom="10dp"
+            android:onClick="colorchoose"
+            android:paddingTop="13dp" />
+    </LinearLayout>
+</HorizontalScrollView>
+
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/scrollView"
+        android:fillViewport="false"
+        android:layout_below="@+id/tool"
+        >
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:text="AdobeArabic-Bold"
+                android:textSize="20dp"
+                android:onClick="chooseFonts"
+                android:id="@+id/AdobeArabicBold" />
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:text="VLADIMIR"
+                android:textSize="20dp"
+                android:onClick="chooseFonts"
+                android:id="@+id/VLADIMIR" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:text="AdobeArabic-Regular"
+                android:textSize="20dp"
+                android:onClick="chooseFonts"
+                android:id="@+id/AdobeArabicRegular" />
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:text="Aspergit Bold"
+                android:textSize="20dp"
+                android:onClick="chooseFonts"
+                android:id="@+id/AspergitBold" />
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:text="Aspergit"
+                android:textSize="20dp"
+                android:onClick="chooseFonts"
+                android:id="@+id/Aspergit" />
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:text="BodoniFLF-Bold"
+                android:textSize="20dp"
+                android:onClick="chooseFonts"
+                android:id="@+id/BodoniFLFBold" />
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:text="華康行書體"
+                android:textSize="20dp"
+                android:onClick="chooseFonts"
+                android:id="@+id/font2" />
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:text="雨沫"
+                android:textSize="20dp"
+                android:onClick="chooseFonts"
+                android:id="@+id/custom" />
+
+
+
+        </LinearLayout>
+
+
+    </ScrollView>
+
+
+
+
+</RelativeLayout>

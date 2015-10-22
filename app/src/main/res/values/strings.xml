@@ -38,6 +38,7 @@
         <item>主頁</item>
         <item>會員</item>
         <item>相片電影</item>
+        <item>相片拼貼</item>
         <item>協作相簿</item>
     </string-array>
     <string name="drawer_home">首頁</string>

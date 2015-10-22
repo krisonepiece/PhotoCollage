@@ -20,6 +20,11 @@
             android:title="@string/drawer_movie"/>
 
         <item
+            android:id="@+id/drawer_collage"
+            android:icon="@mipmap/ic_dashboard_white_24dp"
+            android:title="@string/drawer_collage"/>
+
+        <item
             android:id="@+id/drawer_album"
             android:icon="@mipmap/ic_cloud_queue_white_24dp"
             android:title="@string/drawer_album"/>

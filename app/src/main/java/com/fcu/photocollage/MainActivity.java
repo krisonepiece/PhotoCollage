@@ -20,8 +20,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
 import com.fcu.photocollage.cloudalbum.CloudAlbumFragment;
+import com.fcu.photocollage.collage.CollageActivity;
 import com.fcu.photocollage.member.LoginFragment;
 import com.fcu.photocollage.member.SQLiteHandler;
 import com.fcu.photocollage.member.SessionManager;
@@ -64,6 +66,9 @@ public class MainActivity extends AppCompatActivity implements MyFragment {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+
+        //全螢幕模式
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         mTitle = mDrawerTitle = getTitle();
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -226,6 +231,9 @@ public class MainActivity extends AppCompatActivity implements MyFragment {
                 else{
                     fragment = new PhotoMovieMain();
                 }
+                break;
+            case R.id.drawer_collage:
+                    fragment = new CollageActivity();
                 break;
             case R.id.drawer_album:
                 if(!checkLogin()){

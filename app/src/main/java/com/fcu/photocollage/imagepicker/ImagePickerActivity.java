@@ -15,19 +15,16 @@
  */
 package com.fcu.photocollage.imagepicker;
 
-import android.content.Intent;
+
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-
-import com.fcu.photocollage.MainActivity;
+import android.view.WindowManager;
 import com.fcu.photocollage.R;
 
 public class ImagePickerActivity extends AppCompatActivity {
@@ -47,7 +44,10 @@ public class ImagePickerActivity extends AppCompatActivity {
         if (toolbar != null) {
             setSupportActionBar(toolbar);
         }
-        
+
+		//全螢幕模式
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         //切換至相片牆Fragment
         phonePhotoFg = new PhotoWallFragment();
 		FragmentManager fragmentManager = getSupportFragmentManager();
@@ -69,19 +69,19 @@ public class ImagePickerActivity extends AppCompatActivity {
 	}	
  
     //重寫返回鍵
-    @Override
-    public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-        	// 切換預覽頁面
-			Intent it = new Intent();
-			it.setClass(this, MainActivity.class);
-			startActivity(it);
-        	FragmentManager fragmentManager = this.getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.imagepick_frame, phoneAlbumFg).commit();
-            return true;
-        } else {
-            return super.onKeyDown(keyCode, event);
-        }
-    }
+//    @Override
+//    public boolean onKeyDown(int keyCode, @NonNull KeyEvent event) {
+//        if (keyCode == KeyEvent.KEYCODE_BACK) {
+//        	// 切換預覽頁面
+//			Intent it = new Intent();
+//			it.setClass(this, MainActivity.class);
+//			startActivity(it);
+//        	FragmentManager fragmentManager = this.getSupportFragmentManager();
+//            fragmentManager.beginTransaction().replace(R.id.imagepick_frame, phoneAlbumFg).commit();
+//            return true;
+//        } else {
+//            return super.onKeyDown(keyCode, event);
+//        }
+//    }
 
 }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape 
+    xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval" >
+	<!-- 圓形內部的填充顏色 -->
+	<solid 
+	    
+	    android:color="#00000000"
+	    android:background="@mipmap/ic_undo_white_24dp">
+	</solid>
+
+</shape>

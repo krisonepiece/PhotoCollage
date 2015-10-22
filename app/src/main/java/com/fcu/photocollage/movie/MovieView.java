@@ -1,7 +1,5 @@
 package com.fcu.photocollage.movie;
 
-
-
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.net.Uri;

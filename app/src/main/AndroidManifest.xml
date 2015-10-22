@@ -28,10 +28,8 @@
         <activity
             android:name=".imagepicker.ImagePickerActivity"
             android:label="@string/select_album" />
-        <activity
-            android:name=".movie.MovieView"
-            android:label="MovieView" >
-        </activity>
+        <activity android:name=".collage.CollageActivity" />
+        <activity android:name=".collage.AddText" />
     </application>
 
 </manifest>
