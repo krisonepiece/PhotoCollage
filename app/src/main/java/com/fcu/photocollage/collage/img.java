@@ -2,10 +2,8 @@ package com.fcu.photocollage.collage;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.ImageView;
-import android.widget.Switch;
 
 
 /**

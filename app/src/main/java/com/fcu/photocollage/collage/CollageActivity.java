@@ -40,6 +40,8 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.fcu.photocollage.R;
 import com.fcu.photocollage.imagepicker.ImagePickerActivity;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -1181,17 +1183,17 @@ public class CollageActivity extends Fragment {
 						currentView = viewGroup.getChildAt(countpicture - 2);
 						Relativelay.removeView(currentView);
 
-						img = new img(getActivity(), overBitmap, 0);
-						img.setId(countpicture - 2);
-						img.setZ(choosepictureZ);
-						img.setX(backimage.getWidth() / 2 - backimage.getWidth() / 4);
-						img.setY(backimage.getHeight() / 2 - backimage.getHeight() / 4);
-						img.setImageBitmap(overBitmap);
+						ImageView pictureFinImg = new img(getActivity(), overBitmap, 0);
+						pictureFinImg.setId(countpicture - 2);
+						pictureFinImg.setZ(choosepictureZ);
+						pictureFinImg.setX(backimage.getWidth() / 2 - backimage.getWidth() / 4);
+						pictureFinImg.setY(backimage.getHeight() / 2 - backimage.getHeight() / 4);
+						pictureFinImg.setImageBitmap(overBitmap);
 
-						Relativelay.addView(img);
-						img.setOnTouchListener(null);
-						img.setOnTouchListener(new MultiTouchListener());
-						img.setOnClickListener(imgOnClickListener);
+						Relativelay.addView(pictureFinImg);
+						pictureFinImg.setOnTouchListener(null);
+						pictureFinImg.setOnTouchListener(new MultiTouchListener());
+						pictureFinImg.setOnClickListener(imgOnClickListener);
 						countpicture--;
 						makeTextAndShow(getActivity(), "結束畫布模式", android.widget.Toast.LENGTH_SHORT);
 					}
@@ -1399,45 +1401,46 @@ public class CollageActivity extends Fragment {
 		for (String path : paths) {
 			//把照片加入陣列中
 			//imagePathList.add(path);
-			Bitmap bitmap = BitmapFactory.decodeFile(path);
 
+			ByteArrayOutputStream baos = null ;
+			baos = new ByteArrayOutputStream();
+			Bitmap bitmap = BitmapFactory.decodeFile(path);
+			bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);
 
 			File imgFile = new File(path);
 			// 圖片壓縮
-			tempBitmap = ScalePicEx(imgFile.getAbsolutePath(), 600, 800);
+			//tempBitmap = ScalePicEx(imgFile.getAbsolutePath(), 600, 800 );
 			//使用createBitmap畫入照片，用於後面判斷圖片大小
 			//tempBitmap = createBitmap(myBitmap);
 			//創建一個新的imageview
 			//img = new ImageView(getActivity());
-			img = new img(getActivity(), tempBitmap, 0);
+			img = new img(getActivity(), bitmap, 0);
 
 			//為這個imageview設定ID
 			img.setId(countpicture);
 			img.setZ(countpicture);
-			//img.setTag(1);
 			Log.d("ADD-PHOTO", Integer.toString(countpicture));
 
 			//使用Glide方法把圖片顯示在imagevieww上
 			Glide.with(getActivity())
-					//圖片來源
-					.load(new File(path))
-							//imageview大小
-							//.resize(tempBitmap.getWidth(),tempBitmap.getHeight())
-					.override(tempBitmap.getWidth(), tempBitmap.getHeight())
-					.centerCrop()
-							//照片載入時所顯示圖片
-					.placeholder(R.drawable.passage_of_time_32)
-							//照片載入錯誤時所顯示圖片
-					.error(R.drawable.no)
-							//所要放到的imageview
-					.into(img);
+			//圖片來源
+			.load(new File(path))
+			//imageview大小
+			//.resize(tempBitmap.getWidth(),tempBitmap.getHeight())
+			.override(bitmap.getWidth(), bitmap.getHeight())
+			//照片載入時所顯示圖片
+			.placeholder(R.drawable.passage_of_time_32)
+			//照片載入錯誤時所顯示圖片
+			.error(R.drawable.no)
+			//所要放到的imageview
+			.into(img);
 
 			//設定要放入RelatriveLayout時的大小，如妥超過螢幕大小會自動縮小
 			RelativeLayout.LayoutParams lp1;
-			if (tempBitmap.getWidth() > Relativelay.getWidth() || tempBitmap.getHeight() > Relativelay.getHeight()) {
-				lp1 = new RelativeLayout.LayoutParams(tempBitmap.getWidth() / 3, tempBitmap.getHeight() / 3);
+			if (bitmap.getWidth() > Relativelay.getWidth() || bitmap.getHeight() > Relativelay.getHeight()) {
+				lp1 = new RelativeLayout.LayoutParams(bitmap.getWidth() / 3, bitmap.getHeight() / 3);
 			} else {
-				lp1 = new RelativeLayout.LayoutParams(tempBitmap.getWidth(), tempBitmap.getHeight());
+				lp1 = new RelativeLayout.LayoutParams(bitmap.getWidth(),bitmap.getHeight());
 			}
 			//設定圖片加入時的位置
 			lp1.leftMargin = addViewLeft;
@@ -1448,7 +1451,7 @@ public class CollageActivity extends Fragment {
 			//imageview點擊事件
 			img.setOnClickListener(imgOnClickListener);
 			//把照片加入RelativeLayout中，座標位置為0,0
-			Relativelay.addView(img, lp1);
+			Relativelay.addView(img,lp1);
 			//照片ID數加1
 			countpicture++;
 			//圖片加入位置計算
