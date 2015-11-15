@@ -1405,16 +1405,16 @@ public class CollageActivity extends Fragment {
 			ByteArrayOutputStream baos = null ;
 			baos = new ByteArrayOutputStream();
 			Bitmap bitmap = BitmapFactory.decodeFile(path);
-			bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);
+			//bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);
 
 			File imgFile = new File(path);
 			// 圖片壓縮
-			//tempBitmap = ScalePicEx(imgFile.getAbsolutePath(), 600, 800 );
+			tempBitmap = ScalePicEx(imgFile.getAbsolutePath(), 700, 900 );
 			//使用createBitmap畫入照片，用於後面判斷圖片大小
 			//tempBitmap = createBitmap(myBitmap);
 			//創建一個新的imageview
 			//img = new ImageView(getActivity());
-			img = new img(getActivity(), bitmap, 0);
+			img = new img(getActivity(), tempBitmap, 0);
 
 			//為這個imageview設定ID
 			img.setId(countpicture);
@@ -1427,7 +1427,7 @@ public class CollageActivity extends Fragment {
 			.load(new File(path))
 			//imageview大小
 			//.resize(tempBitmap.getWidth(),tempBitmap.getHeight())
-			.override(bitmap.getWidth(), bitmap.getHeight())
+			.override(tempBitmap.getWidth(), tempBitmap.getHeight())
 			//照片載入時所顯示圖片
 			.placeholder(R.drawable.passage_of_time_32)
 			//照片載入錯誤時所顯示圖片
@@ -1437,10 +1437,10 @@ public class CollageActivity extends Fragment {
 
 			//設定要放入RelatriveLayout時的大小，如妥超過螢幕大小會自動縮小
 			RelativeLayout.LayoutParams lp1;
-			if (bitmap.getWidth() > Relativelay.getWidth() || bitmap.getHeight() > Relativelay.getHeight()) {
-				lp1 = new RelativeLayout.LayoutParams(bitmap.getWidth() / 3, bitmap.getHeight() / 3);
+			if (tempBitmap.getWidth() > Relativelay.getWidth() || tempBitmap.getHeight() > Relativelay.getHeight()) {
+				lp1 = new RelativeLayout.LayoutParams(tempBitmap.getWidth() / 3, tempBitmap.getHeight() / 3);
 			} else {
-				lp1 = new RelativeLayout.LayoutParams(bitmap.getWidth(),bitmap.getHeight());
+				lp1 = new RelativeLayout.LayoutParams(tempBitmap.getWidth(),tempBitmap.getHeight());
 			}
 			//設定圖片加入時的位置
 			lp1.leftMargin = addViewLeft;
