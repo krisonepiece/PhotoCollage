@@ -45,8 +45,8 @@ public class ImagePickerActivity extends AppCompatActivity {
             setSupportActionBar(toolbar);
         }
 
-		//全螢幕模式
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//		//全螢幕模式
+//		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         //切換至相片牆Fragment
         phonePhotoFg = new PhotoWallFragment();

@@ -388,10 +388,6 @@ public class CloudAlbumFragment extends Fragment {
 			})
 			.show();
 			return true;
-		case R.id.action_share_album:
-			
-			
-			return true;			
 		case android.R.id.home:
 			backAction();
 			return true;

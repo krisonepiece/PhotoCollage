@@ -1,8 +1,11 @@
 package com.fcu.photocollage.cloudalbum;
 
 import android.content.Context;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -23,16 +26,26 @@ import java.util.ArrayList;
  */
 
 public class CloudPhotoAdapter extends BaseAdapter {
+    final private String TAG = "CloudPhotoAdapter";
     private Context context;
     private ArrayList<Photo> imagePathList = null;
-
+    public Menu menu;
+    private String pcode;
+    private MenuItem miDelete;
+    private MenuItem miEdit;
+    private MenuItem miDownload;
 
     //記錄是否被選擇
     private SparseBooleanArray selectionMap;
 
-    public CloudPhotoAdapter(Context context, ArrayList<Photo> imagePathList) {
+    public CloudPhotoAdapter(Context context, ArrayList<Photo> imagePathList, Menu menu, String pcode) {
         this.context = context;
         this.imagePathList = imagePathList;
+        this.menu = menu;
+        this.pcode = pcode;
+        miDelete = menu.findItem(R.id.action_delete);
+        miEdit = menu.findItem(R.id.action_edit);
+        miDownload = menu.findItem(R.id.action_download);
         selectionMap = new SparseBooleanArray();
     }
 
@@ -53,8 +66,7 @@ public class CloudPhotoAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        String filePath = imagePathList.get(position).getpPath(); 
-        
+        String filePath = imagePathList.get(position).getpPath();
         final ViewHolder holder;
         if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(R.layout.cloud_photo_item, null);
@@ -78,12 +90,23 @@ public class CloudPhotoAdapter extends BaseAdapter {
                 Integer position = (Integer) buttonView.getTag(R.id.tag_first);
                 ImageView image = (ImageView) buttonView.getTag(R.id.tag_second);
 
-                selectionMap.put(position, isChecked);
+
                 if (isChecked) {
+                    selectionMap.put(position, isChecked);
+                    Log.d(TAG, "isChecked selectionMap: " + selectionMap.size());
+                    if(selectionMap.size() == 1){
+                        showMenuItem();
+                    }
                     image.setColorFilter(context.getResources().getColor(R.color.image_checked_bg));
                 } else {
+                    selectionMap.delete(position);
+                    Log.d(TAG, "selectionMap: " + selectionMap.size());
+                    if(selectionMap.size() == 0){
+                        hideMenuItem();
+                    }
                     image.setColorFilter(null);
                 }
+
             }
         });
 
@@ -117,4 +140,20 @@ public class CloudPhotoAdapter extends BaseAdapter {
     public void clearSelectionMap() {
         selectionMap.clear();
     }
+
+    public void showMenuItem(){
+        if(pcode.contains("3"))
+            miDelete.setVisible(true);
+        if(pcode.contains("4"))
+            miEdit.setVisible(true);
+        if(pcode.contains("5"))
+            miDownload.setVisible(true);
+    }
+
+    public void hideMenuItem(){
+        miDelete.setVisible(false);
+        miEdit.setVisible(false);
+        miDownload.setVisible(false);
+    }
 }
+

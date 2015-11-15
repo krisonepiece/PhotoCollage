@@ -245,9 +245,9 @@ public class PhotoMovieMain extends Fragment {
 							})
 							.show();
 				} else if (pList.size() > PHOTO_MAX) {
-					Toast.makeText(getActivity(), "最多只能10張哦！", Toast.LENGTH_SHORT);
+					Toast.makeText(getActivity(), "最多只能10張哦！", Toast.LENGTH_SHORT).show();
 				} else {
-					Toast.makeText(getActivity(), "記得加入圖片哦！", Toast.LENGTH_SHORT);
+					Toast.makeText(getActivity(), "記得加入圖片哦！", Toast.LENGTH_SHORT).show();
 				}
 			}
 
@@ -313,7 +313,7 @@ public class PhotoMovieMain extends Fragment {
 			}
 			else if(result.equals("Error")){
 				progressDialog.dismiss();
-				Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT);
+				Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
 			}
 		}
 	};

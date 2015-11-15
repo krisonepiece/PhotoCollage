@@ -67,6 +67,7 @@ public class CloudPhotoFragment extends Fragment {
 	private String pcode;
     private ProgressDialog progressDialog;
 	private MyFragment myFragment;
+	public Menu menu;
 	private static final int MENU_EDIT = 0;
 	private static final int MENU_DELETE = 1;
 	private static final int MENU_DOWNLOAD = 2;
@@ -168,7 +169,7 @@ public class CloudPhotoFragment extends Fragment {
 								//Log.d("getCloudPhoto","Response:"+ pid + "," + pName + "," + pPath);
 								pList.add(new Photo(pid, pName, takeDate, uploadDate, pPath, recPath));
 							}
-							adapter = new CloudPhotoAdapter(getActivity(), pList);
+							adapter = new CloudPhotoAdapter(getActivity(), pList, menu, pcode);
 							mPhotoWall.setAdapter(adapter);
 						}
 						progressDialog.dismiss();
@@ -361,20 +362,12 @@ public class CloudPhotoFragment extends Fragment {
 	
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		Log.d(TAG,"onCreateOptionsMenu");
-		inflater.inflate(R.menu.cloud_photo_menu, menu);		
+		Log.d(TAG, "onCreateOptionsMenu");
+		inflater.inflate(R.menu.cloud_photo_menu, menu);
+		this.menu = menu;
 		MenuItem miUpload = menu.findItem(R.id.action_upload_photo);
-        MenuItem miDelete = menu.findItem(R.id.action_delete);
-        MenuItem miEdit = menu.findItem(R.id.action_edit);
-        MenuItem miDownload = menu.findItem(R.id.action_download);
 		if(!pcode.contains("2"))
             miUpload.setVisible(false);
-        if(!pcode.contains("3"))
-            miDelete.setVisible(false);
-        if(!pcode.contains("4"))
-            miEdit.setVisible(false);
-        if(!pcode.contains("5"))
-            miDownload.setVisible(false);
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
@@ -387,6 +380,8 @@ public class CloudPhotoFragment extends Fragment {
 				Intent intent = new Intent(getActivity(),
 						com.fcu.photocollage.imagepicker.ImagePickerActivity.class);
 				startActivityForResult(intent,PHOTO);
+				return true;
+			case R.id.action_share_album:
 				return true;
 			case R.id.action_delete:
 				//刪除照片
@@ -435,5 +430,9 @@ public class CloudPhotoFragment extends Fragment {
 		} catch (ClassCastException e) {
 			throw new ClassCastException(context.toString() + " must implementMyFragment");
 		}
+	}
+
+	public void hhi(){
+
 	}
 }

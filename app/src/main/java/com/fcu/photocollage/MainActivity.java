@@ -67,8 +67,8 @@ public class MainActivity extends AppCompatActivity implements MyFragment {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
-        //全螢幕模式
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        //全螢幕模式
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         mTitle = mDrawerTitle = getTitle();
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -256,9 +256,9 @@ public class MainActivity extends AppCompatActivity implements MyFragment {
         DownloadManager downloadManager = (DownloadManager)getSystemService(DOWNLOAD_SERVICE);
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(urlStr));
         request.setDestinationInExternalPublicDir(path, fileName);
-        // request.setTitle("MeiLiShuo");
+        // request.setTitle("PhotoCollage");
         // request.setDescription("MeiLiShuo desc");
-        // request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED); //顯示下載完是否通知，默認為下載中通知
         // request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI);
         // request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_HIDDEN);
         // request.setMimeType("application/cn.trinea.download.file");

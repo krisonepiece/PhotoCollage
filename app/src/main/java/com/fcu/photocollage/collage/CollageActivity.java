@@ -955,10 +955,15 @@ public class CollageActivity extends Fragment {
 						cleancanvas.setXfermode(new PorterDuffXfermode(Mode.CLEAR));
 						canvasSave.drawPaint(cleancanvas);
 						cleancanvas.setXfermode(new PorterDuffXfermode(Mode.SRC));
-						if (photo == true)
+						if (photo == true) {
 							canvasSave.drawBitmap(tempImage, drawMatrix, null);
-						//再次畫上編輯前的照片樣子
-						img.setImageBitmap(saveBitmap);
+							//再次畫上編輯前的照片樣子
+							Img.setImageBitmap(saveBitmap);
+						}
+						else if(draw == true)
+						{
+							img.setImageBitmap(saveBitmap);
+						}
 						mActions.clear();
 
 						cutBigX = 0;
