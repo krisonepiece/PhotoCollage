@@ -29,10 +29,14 @@ import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GestureDetectorCompat;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.DragEvent;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -43,6 +47,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
@@ -81,6 +86,7 @@ public class PhotoMovieMain extends Fragment {
 	private ImageButton btnAddPic; 				// 增加圖片按鈕
 	private ImageButton btnAddMus; 				// 增加音樂按鈕
 	private ImageButton btnAdjSize; 			// 調整尺寸
+	private ScrollView scrollPhoto;				// 圖片捲軸
 	private ArrayList<ImageButton> recBtnList;	// 語音按鈕集合
 	private LinearLayout linelay; 				// 圖片縮圖線性布局
 	private final static int MUSIC = 11;
@@ -102,6 +108,9 @@ public class PhotoMovieMain extends Fragment {
 	private MediaPlayer mediaPlayer;
 	private LayoutInflater inflater;
 	private AsyncTask recordTask;
+	private boolean scrollDown;					// 向下捲動開關
+	private boolean scrollUp;					// 向上捲動開關
+	private float lastY;						// 上個座標
 	View thisView;
 	//endregion
 
@@ -124,6 +133,10 @@ public class PhotoMovieMain extends Fragment {
 		record_timeText = (Chronometer) record_view.findViewById(R.id.record_chronometer);
 		record_ok = (Button) record_view.findViewById(R.id.record_ok);
 		record_cancel = (Button) record_view.findViewById(R.id.record_cancel);
+		scrollPhoto = (ScrollView) thisView.findViewById(R.id.honScview);
+		scrollDown = false;
+		scrollUp = false;
+		lastY = 0;
 	}
 	//endregion
 
@@ -416,16 +429,35 @@ public class PhotoMovieMain extends Fragment {
 			public boolean onDrag(final View view, DragEvent event) {
 				ViewGroup viewGroup = (ViewGroup) view.getParent();
 				DragState dragState = (DragState) event.getLocalState();
-
 				switch (event.getAction()) {
 					// 開始拖動事件
 					case DragEvent.ACTION_DRAG_STARTED:
 						if (view == dragState.view) {
+							lastY = 0;
 							view.setVisibility(View.INVISIBLE);
 						}
 						return true;
 					// 拖動中改變位置事件
 					case DragEvent.ACTION_DRAG_LOCATION: {
+						lastY = (lastY == 0) ? event.getY() + view.getY() : lastY;
+
+						Log.d("scroll", "even.getY: " + (event.getY() + view.getY()) + " " + lastY + " " + dragState.view.getScrollY());
+
+						if( event.getY() + view.getY() - lastY > 10 || scrollDown){
+							scrollDown = true;
+							scrollUp = false;
+							scrollPhoto.smoothScrollBy(0,10);
+						}
+						if( event.getY() + view.getY() - lastY < -10 || scrollUp){
+							scrollUp = true;
+							scrollDown = false;
+							scrollPhoto.smoothScrollBy(0,-10);
+						}
+						if(event.getY() + view.getY() - lastY > 10 || event.getY() + view.getY() - lastY < -10){
+							lastY = event.getY() + view.getY();
+						}
+
+
 						if (view == dragState.view) {
 							break;
 						}
@@ -447,6 +479,8 @@ public class PhotoMovieMain extends Fragment {
 					// 拖動完成事件
 					case DragEvent.ACTION_DRAG_ENDED:
 						if (view == dragState.view) {
+							scrollDown = false;
+							scrollUp = false;
 							view.setVisibility(View.VISIBLE);
 						}
 						break;

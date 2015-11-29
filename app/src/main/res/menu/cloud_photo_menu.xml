@@ -4,11 +4,6 @@
     tools:context="com.fcu.imagepicker.AlbumMainActivity" >
 
     <item
-        android:id="@+id/action_share_album"
-        android:icon="@mipmap/ic_share_white_36dp"
-        android:title="@string/share_album"
-        app:showAsAction="always"/>
-    <item
         android:id="@+id/action_upload_photo"
         android:icon="@mipmap/ic_cloud_upload_white_36dp"
         android:title="@string/upload_photo"
@@ -32,4 +27,9 @@
         android:title="@string/share_download"
         android:visible="false"
         app:showAsAction="always"/>
+    <item
+        android:id="@+id/action_share_photo"
+        android:icon="@mipmap/ic_share_white_36dp"
+        android:title="@string/share_photo"
+        app:showAsAction="ifRoom"/>
 </menu>

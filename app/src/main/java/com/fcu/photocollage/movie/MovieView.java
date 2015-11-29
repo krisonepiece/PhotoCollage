@@ -2,6 +2,7 @@ package com.fcu.photocollage.movie;
 
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -21,6 +22,7 @@ import com.fcu.photocollage.menu.MyFragment;
 public class MovieView extends Fragment {
 	private static final String TAG = "MovieView";
 	private View thisView;
+	private ImageButton btnShare;
 	private ImageButton btnRefresh;
 	private ImageButton btnDownload;
 	private VideoView videoMovie;
@@ -32,6 +34,7 @@ public class MovieView extends Fragment {
 		//super.onCreateView(inflater, container, savedInstanceState);
 		setHasOptionsMenu(true);
 		thisView = inflater.inflate(R.layout.movie_view, container, false);
+		btnShare = (ImageButton)thisView.findViewById(R.id.btn_share);
 		btnRefresh = (ImageButton)thisView.findViewById(R.id.btn_refresh);
 		btnDownload = (ImageButton)thisView.findViewById(R.id.btn_download);
 		videoMovie = (VideoView)thisView.findViewById(R.id.video_movie);
@@ -40,6 +43,18 @@ public class MovieView extends Fragment {
 		if( uid != -1) {
 			urlFCU = "http://140.134.26.13/PhotoCollage/Data/" + uid + "/Video/final.mp4";
 			videoPlay(Uri.parse(urlFCU));
+
+			//影片分享事件
+			btnShare.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Intent sendIntent = new Intent();
+					sendIntent.setAction(Intent.ACTION_SEND);
+					sendIntent.putExtra(Intent.EXTRA_TEXT, "這是我在 PhotoCollage 製作的影片: " + urlFCU);
+					sendIntent.setType("text/plain");
+					startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.shareVideo)));
+				}
+			});
 
 			//重新整理事件
 			btnRefresh.setOnClickListener(new OnClickListener() {

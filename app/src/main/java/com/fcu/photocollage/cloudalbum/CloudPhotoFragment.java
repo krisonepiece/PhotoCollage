@@ -6,6 +6,7 @@ import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -381,7 +382,20 @@ public class CloudPhotoFragment extends Fragment {
 						com.fcu.photocollage.imagepicker.ImagePickerActivity.class);
 				startActivityForResult(intent,PHOTO);
 				return true;
-			case R.id.action_share_album:
+			case R.id.action_share_photo:
+				if(pcode.contains("5")) {
+					ArrayList<Photo> delList = getSelectImage();
+					String mesg = "";
+					for (int i = 0; i < delList.size(); i++) {
+						mesg += delList.get(i).getpPath() + (delList.size() > 1 ? "\n" : "");
+					}
+
+					Intent shareIntent = new Intent();
+					shareIntent.setAction(Intent.ACTION_SEND);
+					shareIntent.putExtra(Intent.EXTRA_TEXT, mesg);
+					shareIntent.setType("text/plain");
+					startActivity(Intent.createChooser(shareIntent, getResources().getText(R.string.sharePhoto)));
+				}
 				return true;
 			case R.id.action_delete:
 				//刪除照片
@@ -417,7 +431,7 @@ public class CloudPhotoFragment extends Fragment {
 	@Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        Log.d(TAG,"setUserVisibleHint");
+			Log.d(TAG,"setUserVisibleHint");
         // 每次切換Fragment調用的方法
 
     }
@@ -432,7 +446,4 @@ public class CloudPhotoFragment extends Fragment {
 		}
 	}
 
-	public void hhi(){
-
-	}
 }

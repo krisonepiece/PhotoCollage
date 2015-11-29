@@ -14,6 +14,7 @@
     <string name="finish">完成</string>
     <string name="btn_delRecord">移除語音</string>
     <string name="btn_addRecord">確定</string>
+    <string name="shareVideo">分享影片到...</string>
     <!-- 相片選擇器 -->
     <string name="select_album">選擇相簿</string>
     <string name="select_image">選擇圖片</string>
@@ -25,6 +26,7 @@
     <!-- 協作相簿 -->
     <string name="add_album">新增相簿</string>
     <string name="share_album">共享相簿</string>
+    <string name="share_photo">分享相片</string>
     <string name="upload_photo">上傳照片</string>
     <string name="share_email">協作者的 E-mail</string>
     <string name="share_add">新增相片</string>
@@ -33,6 +35,7 @@
     <string name="share_download">下載相片</string>
     <string name="share_cancel">取消</string>
     <string name="share_ok">新增協作者</string>
+    <string name="sharePhoto">分享相片到...</string>
     <!-- 主選單 -->
     <string-array name="drawer_array">
         <item>主頁</item>
