@@ -41,7 +41,7 @@ public class MovieView extends Fragment {
 
 		int uid = getArguments().getInt("uid", -1);
 		if( uid != -1) {
-			urlFCU = "http://140.134.26.13/PhotoCollage/Data/" + uid + "/Video/final.mp4";
+			urlFCU = "http://52.27.139.156/PhotoCollage/Data/" + uid + "/Video/final.mp4";
 			videoPlay(Uri.parse(urlFCU));
 
 			//影片分享事件

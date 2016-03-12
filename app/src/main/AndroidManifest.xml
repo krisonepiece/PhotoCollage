@@ -12,7 +12,7 @@
     <application
         android:name=".member.AppController"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/icon"
         android:label="@string/app_name"
         android:theme="@style/MyMaterialTheme" >
         <activity
@@ -28,8 +28,13 @@
         <activity
             android:name=".imagepicker.ImagePickerActivity"
             android:label="@string/select_album" />
-        <activity android:name=".collage.CollageActivity" />
         <activity android:name=".collage.AddText" />
+        <activity android:name="com.facebook.FacebookActivity"
+            android:configChanges=
+                "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:label="@string/app_name" />
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
     </application>
 
 </manifest>

@@ -19,6 +19,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Bitmap.CompressFormat;
+import android.graphics.Matrix;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -34,6 +35,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -47,6 +49,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -88,6 +91,7 @@ public class PhotoMovieMain extends Fragment {
 	private ImageButton btnAdjSize; 			// 調整尺寸
 	private ScrollView scrollPhoto;				// 圖片捲軸
 	private ArrayList<ImageButton> recBtnList;	// 語音按鈕集合
+	private ArrayList<ImageView> imageList;		// 相片集合
 	private LinearLayout linelay; 				// 圖片縮圖線性布局
 	private final static int MUSIC = 11;
 	private final static int PHOTO = 22;
@@ -137,6 +141,10 @@ public class PhotoMovieMain extends Fragment {
 		scrollDown = false;
 		scrollUp = false;
 		lastY = 0;
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		builder.setTitle("語音標籤");
+		builder.setView(record_view);
+		dialog = builder.create();
 	}
 	//endregion
 
@@ -154,6 +162,7 @@ public class PhotoMovieMain extends Fragment {
 
 		pList = new ArrayList<Photo>();
 		recBtnList = new ArrayList<ImageButton>();
+		imageList = new ArrayList<ImageView>();
 
 		// SqLite database handler
 		db = new SQLiteHandler(getActivity().getApplicationContext());
@@ -193,6 +202,31 @@ public class PhotoMovieMain extends Fragment {
 					startActivityForResult(intent, MUSIC);
 				} else {
 					musicPath = null;
+				}
+			}
+		});
+		//endregion
+
+		//region 調整尺寸
+		btnAdjSize.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				final float scale = getResources().getDisplayMetrics().density;
+				int width = (int)(300 * scale);
+				int height = (int)(400 * scale);
+				RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(width, height);
+				lp.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+				for(int i = 0 ; i < imageList.size() ; i++){
+					imageList.get(i).setScaleType(ImageView.ScaleType.CENTER_CROP);
+					imageList.get(i).setLayoutParams(lp);
+					File imgFile = new File(pList.get(i).getpPath());
+					Glide.clear(imageList.get(i));
+					Glide.with(getActivity())
+							.load(imgFile)
+							.centerCrop()
+							.placeholder(R.mipmap.empty_photo)
+							.error(R.mipmap.empty_photo)
+							.into(imageList.get(i));
 				}
 			}
 		});
@@ -396,6 +430,7 @@ public class PhotoMovieMain extends Fragment {
 
 		btnAddSpe.setTag(R.id.noRecord);			// 設定語音初始狀態 : 沒有語音檔
 		recBtnList.add(btnAddSpe);				// 儲存語音按鈕
+		imageList.add(img);						// 儲存相片
 		img.setBackgroundColor(Color.BLACK); 	// 設定 ImageView 背景顏色
 		img.setPadding(5, 3, 5, 3); 			// 設定 ImageView 內縮
 //		img.setAdjustViewBounds(true); 			// 打開才可設定最大寬度和高度
@@ -441,7 +476,7 @@ public class PhotoMovieMain extends Fragment {
 					case DragEvent.ACTION_DRAG_LOCATION: {
 						lastY = (lastY == 0) ? event.getY() + view.getY() : lastY;
 
-						Log.d("scroll", "even.getY: " + (event.getY() + view.getY()) + " " + lastY + " " + dragState.view.getScrollY());
+						//Log.d("scroll", "even.getY: " + (event.getY() + view.getY()) + " " + lastY + " " + dragState.view.getScrollY());
 
 						if( event.getY() + view.getY() - lastY > 10 || scrollDown){
 							scrollDown = true;
@@ -520,10 +555,6 @@ public class PhotoMovieMain extends Fragment {
 		//endregion
 
 		//region 加入語音
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setTitle("語音標籤");
-		builder.setView(record_view);
-		dialog = builder.create();
 		btnAddSpe.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {

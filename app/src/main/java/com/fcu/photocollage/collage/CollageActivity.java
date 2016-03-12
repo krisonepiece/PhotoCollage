@@ -40,7 +40,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.fcu.photocollage.R;
 import com.fcu.photocollage.imagepicker.ImagePickerActivity;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -1572,14 +1571,14 @@ public class CollageActivity extends Fragment {
      	    	OutputStream outStream = new FileOutputStream(file);
 	        	     // 將 Bitmap壓縮成指定格式的圖片並寫入檔案串流
 	        	     //compress中間數字為壓縮率100表示不壓縮 90表示壓縮10%以此類推
-     	    	 updateHandleMessage("value","儲存圖片");
-     	    	 savebitmap.compress(Bitmap.CompressFormat.PNG, 20, outStream);
+				updateHandleMessage("value", "儲存圖片");
+				savebitmap.compress(Bitmap.CompressFormat.PNG, 20, outStream);
 	        	 outStream.flush();
      	         outStream.close();
-     	         Relativelay.destroyDrawingCache();
-     	         updateHandleMessage("value","圖片產生完成");
-     	         Toast.makeText(getActivity(),"PhotoCollage_"+getCurrentTime("yyyyMMddHHmmssSS"), Toast.LENGTH_LONG).show();
-     	    } 
+				Relativelay.destroyDrawingCache();
+				updateHandleMessage("value", "圖片產生完成");
+     	         Toast.makeText(getActivity(), "PhotoCollage_" + getCurrentTime("yyyyMMddHHmmssSS"), Toast.LENGTH_LONG).show();
+     	    }
      	    catch (FileNotFoundException e) {
 	        	     // TODO Auto-generated catch block
 	        	     e.printStackTrace();
@@ -2171,6 +2170,7 @@ public class CollageActivity extends Fragment {
 
 		}}
 	//endregion
+
 //
 //	public static Bitmap getMagicDrawingCache(View view) {
 //	Bitmap.Config bitmap_quality = Bitmap.Config.ARGB_8888;

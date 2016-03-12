@@ -20,7 +20,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
+import com.facebook.FacebookSdk;
 import android.widget.TextView;
 import com.fcu.photocollage.cloudalbum.CloudAlbumFragment;
 import com.fcu.photocollage.collage.CollageActivity;
@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements MyFragment {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        FacebookSdk.sdkInitialize(getApplicationContext());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         // SqLite database handler

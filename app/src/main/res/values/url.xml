@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="getCloudAlbum">http://140.134.26.13/PhotoCollage/php/CloudAlbum/GetCloudAlbum.php</string>
-    <string name="getCloudPhoto">http://140.134.26.13/PhotoCollage/php/CloudAlbum/GetCloudPhoto.php</string>
-    <string name="createCloudAlbum">http://140.134.26.13/PhotoCollage/php/CloudAlbum/CreateCloudAlbum.php</string>
-    <string name="deleteCloudAlbum">http://140.134.26.13/PhotoCollage/php/CloudAlbum/DeleteCloudAlbum.php</string>
-    <string name="uploadPhoto">http://140.134.26.13/PhotoCollage/php/CloudAlbum/UploadPhoto.php</string>
-    <string name="uploadRecord">http://140.134.26.13/PhotoCollage/php/CloudAlbum/UploadRecord.php</string>
-    <string name="uploadFile">http://140.134.26.13/PhotoCollage/php/CloudAlbum/fileUpload.php</string>
-    <string name="addTeamWorker">http://140.134.26.13/PhotoCollage/php/CloudAlbum/AddTeamWorker.php</string>
-    <string name="deleteCloudPhoto">http://140.134.26.13/PhotoCollage/php/CloudAlbum/DeleteCloudPhoto.php</string>
-    <string name="callFFmpeg">http://140.134.26.13/PhotoCollage/php/Movie/ffmpegShell.php</string>
+    <string name="getCloudAlbum">http://52.27.139.156/PhotoCollage/php/CloudAlbum/GetCloudAlbum.php</string>
+    <string name="getCloudPhoto">http://52.27.139.156/PhotoCollage/php/CloudAlbum/GetCloudPhoto.php</string>
+    <string name="createCloudAlbum">http://52.27.139.156/PhotoCollage/php/CloudAlbum/CreateCloudAlbum.php</string>
+    <string name="deleteCloudAlbum">http://52.27.139.156/PhotoCollage/php/CloudAlbum/DeleteCloudAlbum.php</string>
+    <string name="uploadPhoto">http://52.27.139.156/PhotoCollage/php/CloudAlbum/UploadPhoto.php</string>
+    <string name="uploadRecord">http://52.27.139.156/PhotoCollage/php/CloudAlbum/UploadRecord.php</string>
+    <string name="uploadFile">http://52.27.139.156/PhotoCollage/php/CloudAlbum/fileUpload.php</string>
+    <string name="addTeamWorker">http://52.27.139.156/PhotoCollage/php/CloudAlbum/AddTeamWorker.php</string>
+    <string name="deleteCloudPhoto">http://52.27.139.156/PhotoCollage/php/CloudAlbum/DeleteCloudPhoto.php</string>
+    <string name="callFFmpeg">http://52.27.139.156/PhotoCollage/php/Movie/ffmpegShell.php</string>
 </resources>

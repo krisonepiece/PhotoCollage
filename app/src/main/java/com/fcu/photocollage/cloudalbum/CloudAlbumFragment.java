@@ -379,7 +379,7 @@ public class CloudAlbumFragment extends Fragment {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					Log.d(TAG, "AlbumName: " + dText.getText().toString());
-					newAlbum = new CloudAlbumItem(0, dText.getText().toString(), 12345, 0, Integer.toString(R.mipmap.ic_add_white_36dp), name, DateTool.getCurrentTime("yyyy-MM-dd HH:mm:ss"));
+					newAlbum = new CloudAlbumItem(0, dText.getText().toString(), 12345, 0, Integer.toString(R.mipmap.ic_add_white_36dp), Integer.toString(uid), DateTool.getCurrentTime("yyyy-MM-dd HH:mm:ss"));
 					CreateCloudAlbum createCloudAlbum = new CreateCloudAlbum(createHandle, uid, getString(R.string.createCloudAlbum), newAlbum);
 					Thread createTd = new Thread(createCloudAlbum);
 					createTd.start();

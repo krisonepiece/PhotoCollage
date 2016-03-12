@@ -35,6 +35,7 @@ public class MenuFragment extends Fragment{
     private ImageButton btnMovie;
     private ImageButton btnAlbum;
     private ImageButton btnMember;
+    private ImageButton btnCollage;
     private ArrayList<Integer> localImages = new ArrayList<Integer>();
     private View thisView;
     private MyFragment myFragment;
@@ -54,6 +55,7 @@ public class MenuFragment extends Fragment{
         btnMovie = (ImageButton) thisView.findViewById(R.id.menu_btn_movie);
         btnAlbum = (ImageButton) thisView.findViewById(R.id.menu_btn_album);
         btnMember = (ImageButton) thisView.findViewById(R.id.menu_btn_member);
+        btnCollage = (ImageButton) thisView.findViewById(R.id.menu_btn_collage);
         LabelView label = new LabelView(getActivity());
         label.setText("NEW");
         label.setBackgroundColor(0xff03a9f4);
@@ -76,6 +78,12 @@ public class MenuFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 myFragment.switchMenu(R.id.drawer_member);
+            }
+        });
+        btnCollage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myFragment.switchMenu(R.id.drawer_collage);
             }
         });
     }

@@ -28,9 +28,9 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
 public class HttpPhotoUpload implements Runnable {
-	private String uploadDbUrl = "http://140.134.26.13/PhotoCollage/php/UploadPhoto.php";
-	private String uploadFileUrl = "http://140.134.26.13/PhotoCollage/php/uploadfile.php";
-	private String ffmpegShellUrl = "http://140.134.26.13/PhotoCollage/php/ffmpegShell.php";
+	private String uploadDbUrl = "http://52.27.139.156/PhotoCollage/php/UploadPhoto.php";
+	private String uploadFileUrl = "http://52.27.139.156/PhotoCollage/php/uploadfile.php";
+	private String ffmpegShellUrl = "http://52.27.139.156/PhotoCollage/php/ffmpegShell.php";
 	private String user;
 	private String pAbPath;
 	private String recAbPath;

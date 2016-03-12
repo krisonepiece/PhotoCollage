@@ -67,4 +67,5 @@
     <string name="welcome">歡迎</string>
     <string name="btn_logout">登出</string>
     <string name="name">姓名</string>
+    <string name="facebook_app_id">900591136714432</string>
 </resources>
